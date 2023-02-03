@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "z8Ir5SEC57x4fQS7+dZtHWeJmkpDoZEsrifYf7K4WwpRjwiUWETHf3duJ1etdBHtVJAyfl1yqzqToXdHR+3ldw==",
+  "success": true,
+  "projectFilePath": "D:\\DEV\\NEW\\SlimeCore\\SlimeCore\\SlimeCore.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\newtonsoft.json\\13.0.2\\newtonsoft.json.13.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
