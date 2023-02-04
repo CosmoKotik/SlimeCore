@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Numerics;
 using System.Reflection.PortableExecutable;
@@ -167,7 +168,7 @@ namespace SlimeCore.Core.Networking
             try
             {
                 Int32 port = 25565;
-                IPAddress localAddr = IPAddress.Parse("127.0.0.1");
+                IPAddress localAddr = IPAddress.Parse("10.0.1.3");
 
                 _client = new TcpListener(localAddr, port);
                 _client.Start();
@@ -175,12 +176,16 @@ namespace SlimeCore.Core.Networking
 
                 while (_listening)
                 {
-                    
+                    TcpClient newClient = _client.AcceptTcpClient();
                     ClientHandler ch = new ClientHandler(_serverManager);
-                    _clientHandlers.Add(ch);
-
-                    //new Task(() => { ch.NetworkHandler(_client); }).Start();
-                    new Thread(() => { ch.NetworkHandler(_client); }).Start();
+                    if (!_clientHandlers.Contains(ch))
+                    {
+                        _clientHandlers.Add(ch);
+                        //_serverManager.ClientHandlers.Add(ch);
+                        
+                        //new Task(() => { ch.NetworkHandler(_client); }).Start();
+                        new Thread(() => { ch.NetworkHandler(newClient, _client); }).Start();
+                    }
                 }
             }
             catch (SocketException e)

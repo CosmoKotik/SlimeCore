@@ -18,31 +18,37 @@ namespace SlimeCore.Core.Networking
 {
     public class ClientHandler
     {
+        public Player CurrentPlayer { get; set; }
+        public ServerManager ServerManager { get; set; }
+
         private TcpListener _client = null;
         private NetworkStream _stream;
         private List<byte> _buffer;
 
-        private Player _player;
-        private ServerManager _serverManager;
-
         private List<byte> _receivedBuffer;
+        private int _lastByte;
+
+        public ClientHandler()
+        {
+
+        }
 
         public ClientHandler(ServerManager serverManager)
         {
             _buffer = new List<byte>();
             _receivedBuffer = new List<byte>();
-            _player = new Player();
-            _serverManager = serverManager;
+            CurrentPlayer = new Player();
+            ServerManager = serverManager;
         }
 
-        public void NetworkHandler(TcpListener client)
+        public void NetworkHandler(TcpClient client, TcpListener listener)
         {
-            var tcpClient = (TcpClient)client.AcceptTcpClient();
+            var tcpClient = client;
             var stream = tcpClient.GetStream();
-            Byte[] bytes = new Byte[254];
+            Byte[] bytes = new Byte[256];
 
             _stream = stream;
-            _client = client;
+            _client = listener;
 
             while (tcpClient.Available > 0)
             {
@@ -52,9 +58,9 @@ namespace SlimeCore.Core.Networking
                 {
                     while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                     {
-                        _receivedBuffer.AddRange(bytes);
                         Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
                         Console.WriteLine("Type: " + GetPacketType(bytes));
+                        _receivedBuffer = bytes.ToList();
                         if (GetPacketType(bytes) == PType.Status)
                         {
                             if (GetPacketId(bytes) == 0)
@@ -63,8 +69,8 @@ namespace SlimeCore.Core.Networking
 
                                 StatusResponse sr = new StatusResponse();
                                 sr.version = new Response.Version() { name = "1.12.2", protocol = 340 };
-                                sr.players = new Response.Players() { max = 100, online = 0 };
-                                sr.description = new Response.Description() { text = "asdasdasasdasd" };
+                                sr.players = new Response.Players() { max = ServerManager.MaxPlayers, online = 0 };
+                                sr.description = new Response.Description() { text = ServerManager.Motd };
                                 sr.previewChat = true;
                                 sr.enforcesSecureChat = true;
 
@@ -77,38 +83,69 @@ namespace SlimeCore.Core.Networking
                             {
                                 // Send back a response.
                                 stream.Write(bytes, 0, bytes.Length);
+
                                 //Console.WriteLine("Sent: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
                             }
+
+                            ServerManager.ClientHandlers.Remove(this);
+                            Console.WriteLine("DisConnected");
+                            tcpClient.Close();
+                            Thread.CurrentThread.Interrupt();
+                            return;
                         }
                         else if (GetPacketType(bytes) == PType.Login)
                         {
                             if (GetPacketId(bytes) == 0)
                             {
+                                var UID = new Random().Next(0, 8471);
                                 var username = GetUsername(bytes);
                                 var uuid = GetResponseString(username);
 
-                                _player.Username = username;
-                                _player.Uuid = uuid;
+                                CurrentPlayer.Username = username;
+                                CurrentPlayer.Uuid = uuid;
+                                CurrentPlayer.EntityID = UID;
+                                CurrentPlayer.Handler = this;
+                                CurrentPlayer.Gamemode = Gamemodes.Gamemode.Creative;
 
                                 WriteString(uuid);
                                 WriteString(username);
                                 Flush(2, PType.Login);
                                 new JoinGame(this).Write();
+                                //new SpawnPlayer(this).Write();
+                                ServerManager.AddPlayer(CurrentPlayer, this);
                             }
                             else if (GetPacketId(bytes) == (int)PlayPackets.ClientSettings)
-                            { 
-                                
+                            {
+                                new ClientSettings(this).Read(bytes);
+                                new PlayerPositionAndLook(this).Write();
+                                new ChunkData(this).Write();
+                                new SpawnPosition(this).Write();
+                                //new PlayerListItem(this) { Action = 0, Latency = 999 }.Write();
                             }
                             //Disconnect d = new Disconnect(this);
                             //d.Write();
                         }
+                        else if (GetPacketType(bytes) == PType.Play)
+                        {
+                            switch (GetPacketId(bytes))
+                            {
+                                case (int)PlayPackets.PlayerPositionAndLook:
+                                    new PlayerPositionAndLook(this).Read();
+                                    break;
+                            }
 
-                        _serverManager.Players.Add(_player);
+                            //ServerManager.Players.Add(CurrentPlayer);
+                        }
+
                         _receivedBuffer.Clear();
+                        _lastByte = 0;
+
                     }
                 }
-                catch { }
+                catch (Exception e) { Console.WriteLine(e.ToString()); }
             }
+            //ServerManager.ClientHandlers.Remove(this);
+            ServerManager.RemovePlayer(CurrentPlayer, this);
             Console.WriteLine("DisConnected");
             tcpClient.Close();
             Thread.CurrentThread.Interrupt();
@@ -138,7 +175,6 @@ namespace SlimeCore.Core.Networking
             _buffer.AddRange(long2);
         }
 
-        private int _lastByte;
         public int ReadByte()
         {
             var returnData = _receivedBuffer[_lastByte];
@@ -167,6 +203,25 @@ namespace SlimeCore.Core.Networking
             Array.Copy(_receivedBuffer.ToArray(), _lastByte, buffered, 0, length);
             _lastByte += length;
             return buffered;
+        }
+
+        public double ReadDouble()
+        {
+            var almostValue = Read(8);
+            return BitConverter.ToDouble(almostValue);
+        }
+
+        public float ReadFloat()
+        {
+            var almost = Read(4);
+            var f = BitConverter.ToSingle(almost, 0);
+            return f;
+        }
+
+        public bool ReadBool()
+        {
+            var almost = Read(1);
+            return BitConverter.ToBoolean(almost);
         }
 
         public string ReadString()
@@ -208,7 +263,10 @@ namespace SlimeCore.Core.Networking
         {
             _buffer.Add(value);
         }
-
+        internal void Write(byte[] value)
+        {
+            _buffer.AddRange(value);
+        }
         internal void WriteShort(short value)
         {
             _buffer.AddRange(BitConverter.GetBytes(value));
@@ -217,7 +275,10 @@ namespace SlimeCore.Core.Networking
         {
             _buffer.AddRange(BitConverter.GetBytes(value));
         }
-
+        internal void WriteFloat(float value)
+        {
+            _buffer.AddRange(BitConverter.GetBytes(value));
+        }
         internal void WriteString(string data, int val = -1)
         {
             var buffer = Encoding.UTF8.GetBytes(data);
@@ -252,7 +313,7 @@ namespace SlimeCore.Core.Networking
         {
             if (bytes.Length > 16)
             {
-                switch (bytes[16])
+                switch (bytes[bytes.ToList().IndexOf(0xDD) + 1])
                 {
                     case 1:
                         return PType.Status;
@@ -278,15 +339,15 @@ namespace SlimeCore.Core.Networking
         public string GetUsername(byte[] bytes)
         {
             string username = "";
-            int offset = 17;
+            int offset = bytes.ToList().IndexOf(0xDD) + 4;
             byte[] buffer = new byte[bytes[offset] + 1];
             for (int i = offset; i - offset < bytes[offset] + 1; i++)
             {
                 buffer[i - offset] = bytes[i];
             }
-            for (int i = 0; i < buffer[2]; i++)
+            for (int i = 0; i < buffer[0]; i++)
             {
-                username += Convert.ToChar(buffer[i + 3]);
+                username += Convert.ToChar(buffer[i + 1]);
             }
             return username;
         }

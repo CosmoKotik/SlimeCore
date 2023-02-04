@@ -1,4 +1,5 @@
-﻿using SlimeCore.Core.Enums;
+﻿using SlimeCore.Core.Entity;
+using SlimeCore.Core.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,11 +20,13 @@ namespace SlimeCore.Core.Networking.Packets
 
         public void Write()
         {
-            _handler.WriteInt(0);
-            _handler.WriteByte((byte)Gamemodes.Gamemode.Survival);
+            Player player = _handler.CurrentPlayer;
+
+            _handler.WriteInt(player.EntityID);
+            _handler.WriteByte((byte)player.Gamemode);
             _handler.WriteInt((int)Dimension.Dimensions.Overworld);
-            _handler.WriteByte((byte)Difficulty.Difficulties.easy);
-            _handler.WriteByte(100);
+            _handler.WriteByte((byte)_handler.ServerManager.Difficutly);
+            _handler.WriteByte(Convert.ToByte(_handler.ServerManager.MaxPlayers));
             _handler.WriteString("default");
             _handler.WriteBool(true);
             _handler.Flush(_packetID);
