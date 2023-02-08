@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Core.Networking.Packets
 {
-    internal class EntityTeleport
+    internal class EntityRelativeMove
     {
-        private int _packetID = 0x4C;
+        private int _packetID = 0x26;
         private ClientHandler _handler;
-        public EntityTeleport(ClientHandler handler)
+        public EntityRelativeMove(ClientHandler handler)
         {
             _handler = handler;
         }
@@ -20,17 +20,21 @@ namespace SlimeCore.Core.Networking.Packets
         {
             if (handler == null)
                 handler = _handler;
+            //var data = (((long)spawn.X & 0x3FFFFFF) << 38) | (((long)spawn.Y & 0xFFF) << 26) | ((long)spawn.Z & 0x3FFFFFF);
 
             Player player = _handler.CurrentPlayer;
 
-            handler.WriteVarInt((byte)player.EntityID);
-            handler.WriteDouble((byte)player.Position.X);
-            handler.WriteDouble((byte)player.Position.Y);
-            handler.WriteDouble((byte)player.Position.Z);
-            handler.WriteByte(Convert.ToByte(player.Yaw));
-            handler.WriteByte(Convert.ToByte(player.Pitch));
+            handler.WriteVarInt(player.EntityID);
+            //_handler.WriteUUID(new Guid(Player.Uuid));
+            //_handler.WriteString(player.Uuid);
+            handler.WriteShort((short)((player.Position.X * 32 - player.OldPosition.X * 32) * 128));
+            handler.WriteShort((short)((player.Position.Y * 32 - player.OldPosition.Y * 32) * 128));
+            handler.WriteShort((short)((player.Position.Z * 32 - player.OldPosition.Z * 32) * 128));
+
+            //_handler.WriteShort(0);
             handler.WriteBool(player.OnGround);
 
+            //_handler.WriteLong(data);
             handler.Flush(_packetID);
         }
 

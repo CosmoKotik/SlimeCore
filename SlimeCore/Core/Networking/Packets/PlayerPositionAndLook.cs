@@ -37,14 +37,14 @@ namespace SlimeCore.Core.Networking.Packets
 
         public void Read()
         {
-            float X = (float)_handler.ReadDouble();
-            float FeetY = (float)_handler.ReadDouble();
-            float Z = (float)_handler.ReadDouble();
+            Vector3 pos = _handler.ReadPosition();
             float Yaw = _handler.ReadFloat();
             float Pitch = _handler.ReadFloat();
             bool OnGround = _handler.ReadBool();
 
-            _handler.CurrentPlayer.PositionAndLookChanged(new Vector3(X, FeetY, Z), (int)Yaw, (int)Pitch, OnGround);
+            Console.WriteLine(pos);
+
+            _handler.CurrentPlayer.PositionAndLookChanged(pos, (int)Yaw, (int)Pitch, OnGround);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace SlimeCore.Core.Networking.Packets
 {
     internal class ChunkData
     {
+
         private int _packetID = 0x20;
         private ClientHandler _handler;
         public ChunkData(ClientHandler handler)
@@ -19,11 +20,15 @@ namespace SlimeCore.Core.Networking.Packets
 
         public void Write()
         {
-            Chunk c = new Chunk();
-            _handler.Write(c.GetWorldBytes());
-
-            //_handler.WriteLong(data);
-            _handler.Flush(_packetID);
+            for (int x = 0; x < 1; x++)
+            {
+                for (int z = 0; z < 2; z++)
+                {
+                    ChunkColumn c = new ChunkColumn() { ChunkX = x, ChunkZ = z };
+                    _handler.Write(c.GetBytes());
+                    _handler.Flush(_packetID);
+                }
+            }
         }
     }
 }

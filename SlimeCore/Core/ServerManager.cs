@@ -4,6 +4,7 @@ using SlimeCore.Core.Networking.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using static SlimeCore.Core.Enums.Difficulty;
@@ -14,6 +15,9 @@ namespace SlimeCore.Core
     {
         public List<Player> Players = new List<Player>();
         public List<ClientHandler> ClientHandlers = new List<ClientHandler>();
+
+        public IPAddress IP = IPAddress.Parse("10.0.1.3");
+        public Int32 Port = 25565;
 
         public int MaxPlayers = 100;
         public string Motd = "yay!!!";
@@ -38,7 +42,7 @@ namespace SlimeCore.Core
             ClientHandlers.Add(handler);
             //new PlayerListItem(handler) { Action = 0, Latency = 0 }.Broadcast(true);
            
-            for (int i = 0; i < ClientHandlers.Count; i++)
+            for (int i = 0; i < ClientHandlers.Count; i++) 
             {
                 if (ClientHandlers[i] != handler)
                 {

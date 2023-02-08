@@ -19,7 +19,7 @@ namespace SlimeCore.Core.Networking.Packets
 
         public void Write()
         {
-            Vector3 spawn = new Vector3(2, 1, 0);
+            Vector3 spawn = new Vector3(0, 0, 0);
             var data = (((long)spawn.X & 0x3FFFFFF) << 38) | (((long)spawn.Y & 0xFFF) << 26) | ((long)spawn.Z & 0x3FFFFFF);
 
             Player player = _handler.CurrentPlayer;

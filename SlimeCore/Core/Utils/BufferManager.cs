@@ -18,7 +18,10 @@ namespace SlimeCore.Core.Utils
             }
             buffer.Add((byte)value);
         }
-
+        internal void Write(byte[] value, ref List<byte> buffer)
+        {
+            buffer.AddRange(value);
+        }
         internal void WriteInt128(BigInteger value, ref List<byte> buffer)
         {
             buffer.AddRange(value.ToByteArray());

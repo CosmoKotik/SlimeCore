@@ -167,10 +167,7 @@ namespace SlimeCore.Core.Networking
 
             try
             {
-                Int32 port = 25565;
-                IPAddress localAddr = IPAddress.Parse("10.0.1.3");
-
-                _client = new TcpListener(localAddr, port);
+                _client = new TcpListener(_serverManager.IP, _serverManager.Port);
                 _client.Start();
                 _listening = true;
 

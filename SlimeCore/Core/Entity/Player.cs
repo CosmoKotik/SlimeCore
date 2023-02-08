@@ -31,24 +31,31 @@ namespace SlimeCore.Core.Entity
 
         public Gamemode Gamemode { get; set; } = Gamemodes.Gamemode.Survival;
         public Vector3 Position { get; set; } = Vector3.Zero;
+        public Vector3 OldPosition { get; set; } = Vector3.Zero;
         public int Yaw { get; set; }
         public int Pitch { get; set; }
         public bool OnGround { get; set; }
 
         public void PositionAndLookChanged(Vector3 position, int yaw, int pitch, bool onGround)
         {
+            this.OldPosition = this.Position;
+
             this.Position = position;
             this.Yaw = yaw;
             this.Pitch = pitch;
             this.OnGround = onGround;
 
-            //new EntityTeleport(Handler).Broadcast();
+            //new EntityTeleport(Handler).Broadcast(true);
         }
 
         public void PositionChanged(Vector3 position, bool onGround)
         {
+            this.OldPosition = this.Position;
+
             this.Position = position;
             this.OnGround = onGround;
+
+            //new EntityTeleport(Handler).Broadcast(true);
         }
     }
 }

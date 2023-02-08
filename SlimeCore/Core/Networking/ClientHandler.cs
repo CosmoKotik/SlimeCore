@@ -50,7 +50,8 @@ namespace SlimeCore.Core.Networking
             _stream = stream;
             _client = listener;
 
-            while (tcpClient.Available > 0)
+            //while (tcpClient.Available > 0)
+            while (stream.DataAvailable)
             {
                 int i = 0;
                 Console.WriteLine("Connected");
@@ -61,6 +62,7 @@ namespace SlimeCore.Core.Networking
                         Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
                         Console.WriteLine("Type: " + GetPacketType(bytes));
                         _receivedBuffer = bytes.ToList();
+                        _lastByte = 2;
                         if (GetPacketType(bytes) == PType.Status)
                         {
                             if (GetPacketId(bytes) == 0)
@@ -111,15 +113,17 @@ namespace SlimeCore.Core.Networking
                                 WriteString(username);
                                 Flush(2, PType.Login);
                                 new JoinGame(this).Write();
+                                new SpawnPosition(this).Write();
                                 //new SpawnPlayer(this).Write();
                                 ServerManager.AddPlayer(CurrentPlayer, this);
                             }
                             else if (GetPacketId(bytes) == (int)PlayPackets.ClientSettings)
                             {
                                 new ClientSettings(this).Read(bytes);
-                                new PlayerPositionAndLook(this).Write();
                                 new ChunkData(this).Write();
-                                new SpawnPosition(this).Write();
+                                new PlayerPositionAndLook(this).Write();
+                                new BlockChange(this) { Position = new Vector3(0, 1, 0), BlockId = 1, Metadata = 0 }.Write();
+                                new BlockChange(this) { Position = Vector3.Zero, BlockId = 2, Metadata = 0 }.Write();
                                 //new PlayerListItem(this) { Action = 0, Latency = 999 }.Write();
                             }
                             //Disconnect d = new Disconnect(this);
@@ -131,6 +135,11 @@ namespace SlimeCore.Core.Networking
                             {
                                 case (int)PlayPackets.PlayerPositionAndLook:
                                     new PlayerPositionAndLook(this).Read();
+                                    new EntityRelativeMove(this).Broadcast(true);
+                                    break;
+                                case (int)PlayPackets.PlayerPosition:
+                                    new PlayerPosition(this).Read();
+                                    new EntityRelativeMove(this).Broadcast(true);
                                     break;
                             }
 
@@ -197,6 +206,19 @@ namespace SlimeCore.Core.Networking
             return value | ((b & 0x7F) << (size * 7));
         }
 
+        public Vector3 ReadPosition()
+        {
+            _lastByte++;
+            int x = Convert.ToInt16(ReadByte());
+            _lastByte += 7;
+            int y = Convert.ToInt16(ReadByte());
+            _lastByte += 7;
+            int z = Convert.ToInt16(ReadByte());
+            _lastByte += 7;
+
+            return new Vector3(x, y, z);
+        }
+
         public byte[] Read(int length)
         {
             var buffered = new byte[length];
@@ -208,7 +230,8 @@ namespace SlimeCore.Core.Networking
         public double ReadDouble()
         {
             var almostValue = Read(8);
-            return BitConverter.ToDouble(almostValue);
+            Console.WriteLine(BitConverter.ToDouble(almostValue, 0));
+            return BitConverter.ToDouble(almostValue, 0);
         }
 
         public float ReadFloat()
@@ -242,6 +265,14 @@ namespace SlimeCore.Core.Networking
             _buffer.Add((byte)value);
         }
 
+        public void WriteVector3(Vector3 position)
+        {
+            var x = Convert.ToInt64(position.X);
+            var y = Convert.ToInt64(position.Y);
+            var z = Convert.ToInt64(position.Z);
+            var toSend = ((x & 0x3FFFFFF) << 38) | ((y & 0xFFF) << 26) | (z & 0x3FFFFFF);
+            WriteLong(toSend);
+        }
         internal void WriteInt128(BigInteger value)
         {
             _buffer.AddRange(value.ToByteArray());
