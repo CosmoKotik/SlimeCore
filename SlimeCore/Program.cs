@@ -1,14 +1,13 @@
 ﻿using SlimeCore.Core;
-using SlimeCore.Core.Networking;
 using System;
 
-namespace SlimeCore 
+namespace SlimeCore
 {
     public class Program
-    {
-        public static void Main()
+    { 
+        public static void Main(string[] args) 
         {
-            ServerManager sm = new ServerManager();
+            ServerManager sm = new ServerManager("10.0.1.3", 11000);
             sm.Start();
         }
     }
