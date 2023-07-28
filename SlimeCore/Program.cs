@@ -8,7 +8,7 @@ namespace SlimeCore
     { 
         public static void Main(string[] args) 
         {
-            Nbt[] nbt = { NbtBuilder.BuildNbt(NbtType.TAG_STRING, "name", (object)"Bananrama"),
+            /*Nbt[] nbt = { NbtBuilder.BuildNbt(NbtType.TAG_STRING, "name", (object)"Bananrama"),
                 NbtBuilder.BuildNbt(NbtType.TAG_STRING, "age", (object)"69"),
                 NbtBuilder.BuildNbt(NbtType.TAG_STRING, "isFuckable", (object)"yes"),
                 NbtBuilder.BuildNbt(NbtType.TAG_STRING, "gay", (object)"MEGA EXTRA GAY")};
@@ -20,7 +20,7 @@ namespace SlimeCore
             byte[] bytes = nbtlist.GetBytes();
 
             Console.WriteLine(BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
-
+*/
             ServerManager sm = new ServerManager("10.0.1.3", 11000);
             sm.Start();
         }
