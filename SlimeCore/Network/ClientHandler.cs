@@ -1,5 +1,7 @@
 ﻿using SlimeCore.Enums;
 using SlimeCore.Network.Packets;
+using SlimeCore.Network.Packets.Login;
+using SlimeCore.Network.Packets.Play;
 using SlimeCore.Network.Packets.Status;
 using System;
 using System.Collections.Generic;
@@ -31,7 +33,7 @@ namespace SlimeCore.Network
 
                 Console.WriteLine("Opened");
                 int i = 0;
-                byte[] bytes = new byte[256];
+                byte[] bytes = new byte[1024];
                 BufferManager bm = new BufferManager();
 
                 while ((i = await _stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
@@ -63,6 +65,11 @@ namespace SlimeCore.Network
 
                                     if (handshake.NextState == (int)ClientState.Status)
                                         new Status(this).Write();
+                                    else if (handshake.NextState == (int)ClientState.Login)
+                                    {
+                                        new LoginSuccess(this).Write();
+                                        new SynchronizePlayerPosition(this).Write();
+                                    }
                                     break;
                                 case PacketType.PING:
                                     new PingLegacy(this).Write();
@@ -83,8 +90,9 @@ namespace SlimeCore.Network
                         case ClientState.Login:
                             switch (PacketHandler.Get(packetID, _currentState))
                             {
-                                case PacketType.HANDSHAKE:
-                                    Handshake handshake = (Handshake)new Handshake(this).Read(bm.GetBytes());
+                                case PacketType.LOGIN_START:
+                                    new LoginSuccess(this).Write();
+                                    new SynchronizePlayerPosition(this).Write();
                                     break;
                             }
                             break;

@@ -12,9 +12,12 @@ namespace SlimeCore.Network
 
         #region Add/Insert
 
-        public void AddInt(int value)
+        public void AddInt(int value, bool isReversed = false)
         {
             byte[] bytes = BitConverter.GetBytes(value);
+
+            if (isReversed)
+                bytes = bytes.Reverse().ToArray();
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
@@ -24,10 +27,48 @@ namespace SlimeCore.Network
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
-        public void AddString(string value)
+        public void AddShort(short value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            //_buffer.Add((byte)bytes.Length);
+            _buffer.AddRange(bytes);
+        }
+        public void AddUShort(ushort value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            //_buffer.Add((byte)bytes.Length);
+            _buffer.AddRange(bytes);
+        }
+        public void AddULong(ulong value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            //_buffer.Add((byte)bytes.Length);
+            _buffer.AddRange(bytes);
+        }
+        public void AddDouble(double value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            //_buffer.Add((byte)bytes.Length);
+            _buffer.AddRange(bytes);
+        }
+        public void AddFloat(float value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            //_buffer.Add((byte)bytes.Length);
+            _buffer.AddRange(bytes);
+        }
+        public void AddString(string value, bool useUShort = false)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(value);
-            AddVarInt(bytes.Length);
+            if (!useUShort)
+                AddVarInt(bytes.Length);
+            else
+            {
+                //AddUShort((ushort)bytes.Length);
+                AddByte((byte)(bytes.Length >> 8));
+                AddByte((byte)bytes.Length);
+            }
+                //AddUShort((ushort)bytes.Length);
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
@@ -128,8 +169,7 @@ namespace SlimeCore.Network
                 i++;
                 _buffer.RemoveAt(0);
             }
-            if (i == 0)
-                _buffer.RemoveAt(0);
+            _buffer.RemoveAt(0);
             return value | ((b & 0x7F) << (size * 7));
         }
 
