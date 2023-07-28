@@ -261,7 +261,7 @@ namespace SlimeCore.Core.Networking
                                     CurrentPlayer.EntityID = UID;
                                     CurrentPlayer.Handler = this;
                                     CurrentPlayer.Gamemode = Gamemodes.Gamemode.Creative;
-
+                                    //
                                     WriteString(uuid);
                                     WriteString(username);
                                     Flush(0x02, PType.Login);
