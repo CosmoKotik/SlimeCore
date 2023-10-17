@@ -1,0 +1,694 @@
+ù²(���z��ÿminecraft:overworldminecraft:the_endminecraft:the_nether
+��
+�minecraft:trim_pattern�type�minecraft:trim_pattern	�value
+����name�minecraft:coast�id����
+�element�
+template_item�,minecraft:coast_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.coast��asset_id�minecraft:coast���name�minecraft:dune�id���
+�element�
+template_item�+minecraft:dune_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.dune��asset_id�minecraft:dune���name�
+minecraft:eye�id���
+�element�
+template_item�*minecraft:eye_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.eye��asset_id�
+minecraft:eye���name�minecraft:host�id���
+�element�
+template_item�+minecraft:host_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.host��asset_id�minecraft:host���name�minecraft:raiser�id���
+�element�
+template_item�-minecraft:raiser_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.raiser��asset_id�minecraft:raiser���name�
+minecraft:rib�id���
+�element�
+template_item�*minecraft:rib_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.rib��asset_id�
+minecraft:rib���name�minecraft:sentry�id���
+�element�
+template_item�-minecraft:sentry_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.sentry��asset_id�minecraft:sentry���name�minecraft:shaper�id���
+�element�
+template_item�-minecraft:shaper_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.shaper��asset_id�minecraft:shaper���name�minecraft:silence�id���
+�element�
+template_item�.minecraft:silence_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.silence��asset_id�minecraft:silence���name�minecraft:snout�id���	
+�element�
+template_item�,minecraft:snout_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.snout��asset_id�minecraft:snout���name�minecraft:spire�id���
+
+�element�
+template_item�,minecraft:spire_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.spire��asset_id�minecraft:spire���name�minecraft:tide�id���
+�element�
+template_item�+minecraft:tide_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.tide��asset_id�minecraft:tide���name�
+minecraft:vex�id���
+�element�
+template_item�*minecraft:vex_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.vex��asset_id�
+minecraft:vex���name�minecraft:ward�id���
+�element�
+template_item�+minecraft:ward_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.ward��asset_id�minecraft:ward���name�minecraft:wayfinder�id���
+�element�
+template_item�0minecraft:wayfinder_armor_trim_smithing_template
+�description�	translate� trim_pattern.minecraft.wayfinder��asset_id�minecraft:wayfinder���name�minecraft:wild�id���
+�element�
+template_item�+minecraft:wild_armor_trim_smithing_template
+�description�	translate�trim_pattern.minecraft.wild��asset_id�minecraft:wild���
+�minecraft:trim_material�type�minecraft:trim_material	�value
+���
+�name�minecraft:amethyst�id����
+�element�
+ingredient�minecraft:amethyst_shard�
+asset_name�amethyst�item_model_index?€��
+�description�color�#9A5CC6�	translate� trim_material.minecraft.amethyst����name�minecraft:copper�id���
+�element�
+ingredient�minecraft:copper_ingot�
+asset_name�copper�item_model_index?���
+�description�color�#B4684D�	translate�trim_material.minecraft.copper����name�minecraft:diamond�id���
+�element
+�override_armor_materials�diamond�diamond_darker��
+ingredient�minecraft:diamond�
+asset_name�diamond�item_model_index?LÌÍ
+�description�color�#6EECD2�	translate�trim_material.minecraft.diamond����name�minecraft:emerald�id���
+�element�
+ingredient�minecraft:emerald�
+asset_name�emerald�item_model_index?333
+�description�color�#11A036�	translate�trim_material.minecraft.emerald����name�minecraft:gold�id���
+�element
+�override_armor_materials�gold�gold_darker��
+ingredient�minecraft:gold_ingot�
+asset_name�gold�item_model_index?™š
+�description�color�#DEB12D�	translate�trim_material.minecraft.gold����name�minecraft:iron�id���
+�element
+�override_armor_materials�iron�iron_darker��
+ingredient�minecraft:iron_ingot�
+asset_name�iron�item_model_index>LÌÍ
+�description�color�#ECECEC�	translate�trim_material.minecraft.iron����name�minecraft:lapis�id���
+�element�
+ingredient�minecraft:lapis_lazuli�
+asset_name�lapis�item_model_index?fff
+�description�color�#416E97�	translate�trim_material.minecraft.lapis����name�minecraft:netherite�id���
+�element
+�override_armor_materials�	netherite�netherite_darker��
+ingredient�minecraft:netherite_ingot�
+asset_name�	netherite�item_model_index>™™š
+�description�color�#625859�	translate�!trim_material.minecraft.netherite����name�minecraft:quartz�id���
+�element�
+ingredient�minecraft:quartz�
+asset_name�quartz�item_model_index=ÌÌÍ
+�description�color�#E3D4C4�	translate�trim_material.minecraft.quartz����name�minecraft:redstone�id���	
+�element�
+ingredient�minecraft:redstone�
+asset_name�redstone�item_model_index>ÌÌÍ
+�description�color�#971607�	translate� trim_material.minecraft.redstone����
+�minecraft:chat_type�type�minecraft:chat_type	�value
+����name�minecraft:chat�id����
+�element
+�chat�translation_key�chat.type.text	�
+parameters����sender�content�
+�	narration�translation_key�chat.type.text.narrate	�
+parameters����sender�content����name�minecraft:emote_command�id���
+�element
+�chat�translation_key�chat.type.emote	�
+parameters����sender�content�
+�	narration�translation_key�chat.type.emote	�
+parameters����sender�content����name�minecraft:msg_command_incoming�id���
+�element
+�chat�translation_key�!commands.message.display.incoming
+�style�color�gray�italic�	�
+parameters����sender�content�
+�	narration�translation_key�chat.type.text.narrate	�
+parameters����sender�content����name�minecraft:msg_command_outgoing�id���
+�element
+�chat�translation_key�!commands.message.display.outgoing
+�style�color�gray�italic�	�
+parameters����target�content�
+�	narration�translation_key�chat.type.text.narrate	�
+parameters����sender�content����name�minecraft:say_command�id���
+�element
+�chat�translation_key�chat.type.announcement	�
+parameters����sender�content�
+�	narration�translation_key�chat.type.text.narrate	�
+parameters����sender�content����name�#minecraft:team_msg_command_incoming�id���
+�element
+�chat�translation_key�chat.type.team.text	�
+parameters����target�sender�content�
+�	narration�translation_key�chat.type.text.narrate	�
+parameters����sender�content����name�#minecraft:team_msg_command_outgoing�id���
+�element
+�chat�translation_key�chat.type.team.sent	�
+parameters����target�sender�content�
+�	narration�translation_key�chat.type.text.narrate	�
+parameters����sender�content����
+�minecraft:dimension_type�type�minecraft:dimension_type	�value
+����name�minecraft:overworld�id����
+�element�piglin_safe��natural�
+ambient_light�����monster_spawn_block_light_limit�����
+infiniburn�#minecraft:infiniburn_overworld�respawn_anchor_works��has_skylight�	bed_works�effects�minecraft:overworld�	has_raids�logical_height��€�coordinate_scale?ð������
+�monster_spawn_light_level�type�minecraft:uniform
+�value�
+min_inclusive�����
+max_inclusive������min_yÿÿÿÀ�	ultrawarm��has_ceiling��height��€���name�minecraft:overworld_caves�id���
+�element�piglin_safe��natural�
+ambient_light�����monster_spawn_block_light_limit�����
+infiniburn�#minecraft:infiniburn_overworld�respawn_anchor_works��has_skylight�	bed_works�effects�minecraft:overworld�	has_raids�logical_height��€�coordinate_scale?ð������
+�monster_spawn_light_level�type�minecraft:uniform
+�value�
+min_inclusive�����
+max_inclusive������min_yÿÿÿÀ�	ultrawarm��has_ceiling�height��€���name�minecraft:the_end�id���
+�element�piglin_safe��natural��
+ambient_light�����monster_spawn_block_light_limit�����
+infiniburn�#minecraft:infiniburn_end�respawn_anchor_works��has_skylight��	bed_works��effects�minecraft:the_end�
+fixed_time������p�	has_raids�logical_height����coordinate_scale?ð������
+�monster_spawn_light_level�type�minecraft:uniform
+�value�
+min_inclusive�����
+max_inclusive������min_y�����	ultrawarm��has_ceiling��height������name�minecraft:the_nether�id���
+�element�piglin_safe�natural��
+ambient_light=ÌÌÍ�monster_spawn_block_light_limit����
+infiniburn�#minecraft:infiniburn_nether�respawn_anchor_works�has_skylight��	bed_works��effects�minecraft:the_nether�
+fixed_time������FP�	has_raids��logical_height���€�coordinate_scale@ �������monster_spawn_light_level����min_y�����	ultrawarm�has_ceiling�height������
+�minecraft:damage_type�type�minecraft:damage_type	�value
+���,�name�minecraft:arrow�id����
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�arrow���name�minecraft:bad_respawn_point�id���
+�element�scaling�always�
+exhaustion=ÌÌÍ�
+message_id�badRespawnPoint�death_message_type�intentional_game_design���name�minecraft:cactus�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�cactus���name�minecraft:cramming�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�cramming���name�minecraft:dragon_breath�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�dragonBreath���name�minecraft:drown�id���
+�element�effects�drowning�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�drown���name�minecraft:dry_out�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�dryout���name�minecraft:explosion�id���
+�element�scaling�always�
+exhaustion=ÌÌÍ�
+message_id�	explosion���name�minecraft:fall�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�fall�death_message_type�
+fall_variants���name�minecraft:falling_anvil�id���	
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�anvil���name�minecraft:falling_block�id���
+
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�fallingBlock���name�minecraft:falling_stalactite�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�fallingStalactite���name�minecraft:fireball�id���
+�element�effects�burning�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�fireball���name�minecraft:fireworks�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�	fireworks���name�minecraft:fly_into_wall�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�flyIntoWall���name�minecraft:freeze�id���
+�element�effects�freezing�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�freeze���name�minecraft:generic�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�generic���name�minecraft:generic_kill�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�genericKill���name�minecraft:hot_floor�id���
+�element�effects�burning�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�hotFloor���name�minecraft:in_fire�id���
+�element�effects�burning�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�inFire���name�minecraft:in_wall�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�inWall���name�minecraft:indirect_magic�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�
+indirectMagic���name�minecraft:lava�id���
+�element�effects�burning�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�lava���name�minecraft:lightning_bolt�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�
+lightningBolt���name�minecraft:magic�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�magic���name�minecraft:mob_attack�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�mob���name�minecraft:mob_attack_no_aggro�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�mob���name�minecraft:mob_projectile�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�mob���name�minecraft:on_fire�id���
+�element�effects�burning�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�onFire���name�minecraft:out_of_world�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�
+outOfWorld���name�minecraft:outside_border�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�
+outsideBorder���name�minecraft:player_attack�id���
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�player���name�minecraft:player_explosion�id��� 
+�element�scaling�always�
+exhaustion=ÌÌÍ�
+message_id�explosion.player���name�minecraft:sonic_boom�id���!
+�element�scaling�always�
+exhaustion�����
+message_id�
+sonic_boom���name�minecraft:stalagmite�id���"
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�
+stalagmite���name�minecraft:starve�id���#
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�starve���name�minecraft:sting�id���$
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�sting���name�minecraft:sweet_berry_bush�id���%
+�element�effects�poking�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�sweetBerryBush���name�minecraft:thorns�id���&
+�element�effects�thorns�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�thorns���name�minecraft:thrown�id���'
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�thrown���name�minecraft:trident�id���(
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�trident���name�minecraft:unattributed_fireball�id���)
+�element�effects�burning�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�onFire���name�minecraft:wither�id���*
+�element�scaling� when_caused_by_living_non_player�
+exhaustion�����
+message_id�wither���name�minecraft:wither_skull�id���+
+�element�scaling� when_caused_by_living_non_player�
+exhaustion=ÌÌÍ�
+message_id�witherSkull���
+�minecraft:worldgen/biome�type�minecraft:worldgen/biome	�value
+���@�name�minecraft:badlands�id����
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�"minecraft:music.overworld.badlands�	min_delay��.à��	sky_color�n±ÿ�grass_color�M�
+foliage_color�žM�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:bamboo_jungle�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�'minecraft:music.overworld.bamboo_jungle�	min_delay��.à��	sky_color�w¨ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?s33�downfall?fff���name�minecraft:basalt_deltas�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�$minecraft:music.nether.basalt_deltas�	min_delay��.à��	sky_color�n±ÿ�
+ambient_sound�$minecraft:ambient.basalt_deltas.loop
+�additions_sound�sound�)minecraft:ambient.basalt_deltas.additions�tick_chance?†»˜Çâ‚A�
+�particle�probability=ñÚë
+�options�type�minecraft:white_ash���water_fog_color�3�	fog_color�h_p�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�$minecraft:ambient.basalt_deltas.mood�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:beach�id���
+�element
+�effects�	sky_color�x§ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?LÌÍ�downfall>ÌÌÍ���name�minecraft:birch_forest�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound� minecraft:music.overworld.forest�	min_delay��.à��	sky_color�z¥ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?™š�downfall?™š���name�minecraft:cherry_grove�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�&minecraft:music.overworld.cherry_grove�	min_delay��.à��	sky_color�{¤ÿ�grass_color�¶Ûa�
+foliage_color�¶Ûa�water_fog_color�]·ï�	fog_color�ÀØÿ�water_color�]·ï
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?LÌÍ���name�minecraft:cold_ocean�id���
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�=WÖ
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:crimson_forest�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�%minecraft:music.nether.crimson_forest�	min_delay��.à��	sky_color�n±ÿ�
+ambient_sound�%minecraft:ambient.crimson_forest.loop
+�additions_sound�sound�*minecraft:ambient.crimson_forest.additions�tick_chance?†»˜Çâ‚A�
+�particle�probability<ÌÌÍ
+�options�type�minecraft:crimson_spore���water_fog_color�3�	fog_color�3�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�%minecraft:ambient.crimson_forest.mood�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:dark_forest�id���
+�element
+�effects�grass_color_modifier�dark_forest
+�music�replace_current_music��	max_delay��]À�sound� minecraft:music.overworld.forest�	min_delay��.à��	sky_color�y¦ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?333�downfall?LÌÍ���name�minecraft:deep_cold_ocean�id���	
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�=WÖ
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:deep_dark�id���
+
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�#minecraft:music.overworld.deep_dark�	min_delay��.à��	sky_color�x§ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?LÌÍ�downfall>ÌÌÍ���name�minecraft:deep_frozen_ocean�id���
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�98É
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?����temperature_modifier�frozen���name�minecraft:deep_lukewarm_ocean�id���
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�E­ò
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:deep_ocean�id���
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:desert�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound� minecraft:music.overworld.desert�	min_delay��.à��	sky_color�n±ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:dripstone_caves�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�)minecraft:music.overworld.dripstone_caves�	min_delay��.à��	sky_color�x§ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?LÌÍ�downfall>ÌÌÍ���name�minecraft:end_barrens�id���
+�element
+�effects�	sky_color�����water_fog_color�3�	fog_color� € �water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature?����downfall?������name�minecraft:end_highlands�id���
+�element
+�effects�	sky_color�����water_fog_color�3�	fog_color� € �water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature?����downfall?������name�minecraft:end_midlands�id���
+�element
+�effects�	sky_color�����water_fog_color�3�	fog_color� € �water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature?����downfall?������name�minecraft:eroded_badlands�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�"minecraft:music.overworld.badlands�	min_delay��.à��	sky_color�n±ÿ�grass_color�M�
+foliage_color�žM�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:flower_forest�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�'minecraft:music.overworld.flower_forest�	min_delay��.à��	sky_color�y¦ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?333�downfall?LÌÍ���name�minecraft:forest�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound� minecraft:music.overworld.forest�	min_delay��.à��	sky_color�y¦ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?333�downfall?LÌÍ���name�minecraft:frozen_ocean�id���
+�element
+�effects�	sky_color�¡ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�98É
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature�����downfall?����temperature_modifier�frozen���name�minecraft:frozen_peaks�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�&minecraft:music.overworld.frozen_peaks�	min_delay��.à��	sky_color�…ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature¿333�downfall?fff���name�minecraft:frozen_river�id���
+�element
+�effects�	sky_color�¡ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�98É
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature�����downfall?������name�minecraft:grove�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�minecraft:music.overworld.grove�	min_delay��.à��	sky_color� ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature¾LÌÍ�downfall?LÌÍ���name�minecraft:ice_spikes�id���
+�element
+�effects�	sky_color�¡ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature�����downfall?������name�minecraft:jagged_peaks�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�&minecraft:music.overworld.jagged_peaks�	min_delay��.à��	sky_color�…ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature¿333�downfall?fff���name�minecraft:jungle�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound� minecraft:music.overworld.jungle�	min_delay��.à��	sky_color�w¨ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?s33�downfall?fff���name�minecraft:lukewarm_ocean�id���
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�E­ò
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:lush_caves�id���
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�$minecraft:music.overworld.lush_caves�	min_delay��.à��	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:mangrove_swamp�id���
+�element
+�effects�grass_color_modifier�swamp
+�music�replace_current_music��	max_delay��]À�sound�minecraft:music.overworld.swamp�	min_delay��.à��	sky_color�x§ÿ�
+foliage_color�±'�water_fog_color�Mz`�	fog_color�ÀØÿ�water_color�:zj
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?LÌÍ�downfall?fff���name�minecraft:meadow�id��� 
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound� minecraft:music.overworld.meadow�	min_delay��.à��	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�NÏ
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?LÌÍ���name�minecraft:mushroom_fields�id���!
+�element
+�effects�	sky_color�w¨ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?fff�downfall?€�����name�minecraft:nether_wastes�id���"
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�$minecraft:music.nether.nether_wastes�	min_delay��.à��	sky_color�n±ÿ�
+ambient_sound�$minecraft:ambient.nether_wastes.loop
+�additions_sound�sound�)minecraft:ambient.nether_wastes.additions�tick_chance?†»˜Çâ‚A��water_fog_color�3�	fog_color�3�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�$minecraft:ambient.nether_wastes.mood�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:ocean�id���#
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�!minecraft:old_growth_birch_forest�id���$
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound� minecraft:music.overworld.forest�	min_delay��.à��	sky_color�z¥ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?™š�downfall?™š���name�minecraft:old_growth_pine_taiga�id���%
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�*minecraft:music.overworld.old_growth_taiga�	min_delay��.à��	sky_color�|£ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature>™™š�downfall?LÌÍ���name�!minecraft:old_growth_spruce_taiga�id���&
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�*minecraft:music.overworld.old_growth_taiga�	min_delay��.à��	sky_color�}£ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature>€���downfall?LÌÍ���name�minecraft:plains�id���'
+�element
+�effects�	sky_color�x§ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?LÌÍ�downfall>ÌÌÍ���name�minecraft:river�id���(
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:savanna�id���)
+�element
+�effects�	sky_color�n±ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:savanna_plateau�id���*
+�element
+�effects�	sky_color�n±ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:small_end_islands�id���+
+�element
+�effects�	sky_color�����water_fog_color�3�	fog_color� € �water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature?����downfall?������name�minecraft:snowy_beach�id���,
+�element
+�effects�	sky_color�¡ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�=WÖ
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature=LÌÍ�downfall>™™š���name�minecraft:snowy_plains�id���-
+�element
+�effects�	sky_color�¡ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature�����downfall?������name�minecraft:snowy_slopes�id���.
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�&minecraft:music.overworld.snowy_slopes�	min_delay��.à��	sky_color�‚Ÿÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature¾™™š�downfall?fff���name�minecraft:snowy_taiga�id���/
+�element
+�effects�	sky_color�ƒžÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�=WÖ
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature¿����downfall>ÌÌÍ���name�minecraft:soul_sand_valley�id���0
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�'minecraft:music.nether.soul_sand_valley�	min_delay��.à��	sky_color�n±ÿ�
+ambient_sound�'minecraft:ambient.soul_sand_valley.loop
+�additions_sound�sound�,minecraft:ambient.soul_sand_valley.additions�tick_chance?†»˜Çâ‚A�
+�particle�probability;ÌÌÍ
+�options�type�
+minecraft:ash���water_fog_color�3�	fog_color�GE�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�'minecraft:ambient.soul_sand_valley.mood�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:sparse_jungle�id���1
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�'minecraft:music.overworld.sparse_jungle�	min_delay��.à��	sky_color�w¨ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?s33�downfall?LÌÍ���name�minecraft:stony_peaks�id���2
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�%minecraft:music.overworld.stony_peaks�	min_delay��.à��	sky_color�v¨ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?€���downfall>™™š���name�minecraft:stony_shore�id���3
+�element
+�effects�	sky_color�}¢ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature>LÌÍ�downfall>™™š���name�minecraft:sunflower_plains�id���4
+�element
+�effects�	sky_color�x§ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?LÌÍ�downfall>ÌÌÍ���name�minecraft:swamp�id���5
+�element
+�effects�grass_color_modifier�swamp
+�music�replace_current_music��	max_delay��]À�sound�minecraft:music.overworld.swamp�	min_delay��.à��	sky_color�x§ÿ�
+foliage_color�jp9�water_fog_color�##�	fog_color�ÀØÿ�water_color�a{d
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?LÌÍ�downfall?fff���name�minecraft:taiga�id���6
+�element
+�effects�	sky_color�}£ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature>€���downfall?LÌÍ���name�minecraft:the_end�id���7
+�element
+�effects�	sky_color�����water_fog_color�3�	fog_color� € �water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature?����downfall?������name�minecraft:the_void�id���8
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature?����downfall?������name�minecraft:warm_ocean�id���9
+�element
+�effects�	sky_color�{¤ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�CÕî
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature?����downfall?������name�minecraft:warped_forest�id���:
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�$minecraft:music.nether.warped_forest�	min_delay��.à��	sky_color�n±ÿ�
+ambient_sound�$minecraft:ambient.warped_forest.loop
+�additions_sound�sound�)minecraft:ambient.warped_forest.additions�tick_chance?†»˜Çâ‚A�
+�particle�probability<iö©
+�options�type�minecraft:warped_spore���water_fog_color�3�	fog_color��water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�$minecraft:ambient.warped_forest.mood�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:windswept_forest�id���;
+�element
+�effects�	sky_color�}¢ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature>LÌÍ�downfall>™™š���name�"minecraft:windswept_gravelly_hills�id���<
+�element
+�effects�	sky_color�}¢ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature>LÌÍ�downfall>™™š���name�minecraft:windswept_hills�id���=
+�element
+�effects�	sky_color�}¢ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation�temperature>LÌÍ�downfall>™™š���name�minecraft:windswept_savanna�id���>
+�element
+�effects�	sky_color�n±ÿ�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature@����downfall�������name�minecraft:wooded_badlands�id���?
+�element
+�effects
+�music�replace_current_music��	max_delay��]À�sound�"minecraft:music.overworld.badlands�	min_delay��.à��	sky_color�n±ÿ�grass_color�M�
+foliage_color�žM�water_fog_color�3�	fog_color�ÀØÿ�water_color�?vä
+�
+mood_sound�
+tick_delay��p�offset@��������sound�minecraft:ambient.cave�block_search_extent������has_precipitation��temperature@����downfall��������minecraft:overworldminecraft:overworldÜŽ(¢\ê�����

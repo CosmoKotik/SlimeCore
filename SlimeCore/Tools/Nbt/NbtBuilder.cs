@@ -113,7 +113,7 @@ namespace SlimeCore.Tools.Nbt
                 bm.InsertBytes(payload[i].GetBytes(false, false));
             }
 
-            bm.InsertBytes(BuildNbt(NbtType.TAG_END).GetBytes());
+            //bm.InsertBytes(BuildNbt(NbtType.TAG_END).GetBytes());
             bm.InsertBytes(BuildNbt(NbtType.TAG_END).GetBytes());
 
             nbt.Payload = bm.GetBytes();

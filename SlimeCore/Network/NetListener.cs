@@ -41,7 +41,7 @@ namespace SlimeCore.Network
             while (_serverManager.IsStarted)
             { 
                 TcpClient client = await _tcpListener.AcceptTcpClientAsync().ConfigureAwait(false);
-                ClientHandler handler = new ClientHandler(client);
+                ClientHandler handler = new ClientHandler(client, _serverManager);
                 await Task.Run((Func<Task>)handler.NetworkHandler);
             }
         }

@@ -72,9 +72,10 @@ namespace SlimeCore.Network
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
-        public void AddBytes(byte[] value)
+        public void AddBytes(byte[] value, bool includeLength = true)
         {
-            _buffer.Add((byte)value.Length);
+            if (includeLength)
+                _buffer.Add((byte)value.Length);
             _buffer.AddRange(value);
         }
         public void AddByte(byte value)
@@ -90,10 +91,10 @@ namespace SlimeCore.Network
 
         public void AddVarInt(int value)
         {
-            while ((value & 128) != 0)
+            while ((value & -128) != 0)
             {
                 _buffer.Add((byte)(value & 127 | 128));
-                value = (int)((uint)value) >> 7;
+                value = (int)(((uint)value) >> 7);
             }
             _buffer.Add((byte)value);
         }

@@ -10,7 +10,7 @@ namespace SlimeCore.Enums
     {
         public static int Get(Versions version, PacketType packet)
         {
-            version = Versions.RELEASE_1_19;
+            version = Versions.RELEASE_1_20;
             switch (version)
             {
                 case Versions.RELEASE_1_19:
@@ -55,6 +55,48 @@ namespace SlimeCore.Enums
                             return 0x36;
                     }
                     break;
+                case Versions.RELEASE_1_20:
+                    switch (packet)
+                    {
+                        //Handshake-Status
+                        case PacketType.HANDSHAKE:
+                            return 0x00;
+                        case PacketType.STATUS:
+                            return 0x00;
+                        case PacketType.PING:
+                            return 0x01;
+
+                        //Login
+                        case PacketType.DISCONNECT:
+                            return 0x00;
+                        case PacketType.ENCRYPTION:
+                            return 0x01;
+                        case PacketType.LOGIN_SUCCESS:
+                            return 0x02;
+                        case PacketType.SET_COMPRESSION:
+                            return 0x03;
+                        case PacketType.LOGIN_PLUGIN_REQUEST:
+                            return 0x04;
+                        case PacketType.LOGIN_PLUGIN_RESPONSE:
+                            return 0x02;
+
+                        //Play
+                        case PacketType.LOGIN_PLAY:
+                            return 0x28;
+                        case PacketType.UPDATE_ENTITY_POSITION:
+                            return 0x2B;
+                        case PacketType.UPDATE_ENTITY_POSITION_AND_ROTATION:
+                            return 0x2C;
+                        case PacketType.UPDATE_ENTITY_ROTATION:
+                            return 0x2D;
+                        case PacketType.PING_PLAY:
+                            return 0x32;
+                        case PacketType.SPAWN_PLAYER:
+                            return 0x03;
+                        case PacketType.SYNCHRONIZE_PLAYER_POSITION:
+                            return 0x3C;
+                    }
+                    break;
             }
 
             return 0;
@@ -63,6 +105,8 @@ namespace SlimeCore.Enums
         public static int Get(PacketType packet)
         {
             //Partially only for 759 aka 1.19
+
+            return Get(Versions.RELEASE_1_20, packet);
 
             switch (packet)
             {

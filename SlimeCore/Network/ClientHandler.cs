@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Core;
+using SlimeCore.Enums;
 using SlimeCore.Network.Packets;
 using SlimeCore.Network.Packets.Login;
 using SlimeCore.Network.Packets.Play;
@@ -14,14 +15,16 @@ namespace SlimeCore.Network
 {
     public class ClientHandler
     {
+        public ServerManager ServerManager { get; set; }
         public Versions ClientVersion { get; set; }
 
         private TcpClient _client;
         private NetworkStream _stream;
         private ClientState _currentState = ClientState.Handshake;
 
-        public ClientHandler(TcpClient client)
+        public ClientHandler(TcpClient client, ServerManager serverManager)
         {
+            this.ServerManager = serverManager;
             this._client = client;
         }
 
@@ -46,10 +49,15 @@ namespace SlimeCore.Network
                     int packetID = bm.GetPacketId();
 
                     byte[] buffer = new byte[packetSize];
-                    for (int x = 0; x < packetSize; x++)
+                    byte[] bufferRAW = new byte[packetSize + 8];
+                    Array.Copy(bm.GetBytes(), buffer, packetSize);
+                    Array.Copy(bytes, bufferRAW, packetSize + 8);
+                    /*for (int x = 0; x < packetSize; x++)
                     {
                         buffer[x] = bm.GetBytes()[x];
-                    }
+                    }*/
+
+                    //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
                     //bytes = new byte[packetSize];
                     //bytes = (byte[])buffer.Clone();
 
@@ -68,7 +76,8 @@ namespace SlimeCore.Network
                                     else if (handshake.NextState == (int)ClientState.Login)
                                     {
                                         new LoginSuccess(this).Write();
-                                        new SynchronizePlayerPosition(this).Write();
+                                        new Login(this).Write();
+                                        //new SynchronizePlayerPosition(this).Write();
                                     }
                                     break;
                                 case PacketType.PING:

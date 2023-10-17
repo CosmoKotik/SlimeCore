@@ -9,6 +9,19 @@ namespace SlimeCore.Core
 {
     public class ServerManager
     {
+        public int MaxPlayers = 20;
+        public int CurrentOnline = 0;
+        public int ViewDistance = 2;
+        public int SimulationDistance = 1;
+
+        public bool ReducedDebugInfo = false;
+        public bool EnableRespawnScreen = true;
+        public bool IsDebug = false;
+        public bool IsFlat = false;
+        public bool HasDeathLocation = false;
+        public int PortalCooldown = 0;
+
+
         public bool IsStarted { get; set; }
 
         public string IpAddress { get; set; }

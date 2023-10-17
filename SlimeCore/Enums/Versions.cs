@@ -8,6 +8,8 @@ namespace SlimeCore.Enums
 {
     public enum Versions
     {
+        RELEASE_1_20_1 = 763,
+        RELEASE_1_20 = 763,
         RELEASE_1_19_4 = 762,
         RELEASE_1_19_3 = 761,
         RELEASE_1_19_2 = 760,

@@ -658,14 +658,13 @@ namespace SlimeCore.Core.Networking
             if (bytes[0] == 0x02)
                 offset = 18;
             byte[] buffer = new byte[bytes[offset] + 1];
+            
             for (int i = offset; i - offset < bytes[offset] + 1; i++)
-            {
                 buffer[i - offset] = bytes[i];
-            }
+            
             for (int i = 0; i < buffer[0]; i++)
-            {
                 username += Convert.ToChar(buffer[i + 1]);
-            }
+            
             return username;
         }
     }

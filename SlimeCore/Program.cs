@@ -21,7 +21,7 @@ namespace SlimeCore
 
             Console.WriteLine(BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 */
-            ServerManager sm = new ServerManager("10.0.1.3", 11000);
+            ServerManager sm = new ServerManager("10.0.0.3", 11000);
             sm.Start();
         }
     }
