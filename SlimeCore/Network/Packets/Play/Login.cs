@@ -41,12 +41,12 @@ namespace SlimeCore.Network.Packets.Play
 
             bm.AddByte(0);
             bm.AddBool(false);
-            bm.AddByte(0);
+            bm.AddByte(1);
             //bm.AddByte(1);
 
             bm.AddByte(0x7A);
             bm.AddByte(0x00);
-            bm.AddByte(0x00);
+            bm.AddByte(0x01);
             bm.AddByte(0xFF);
 
             #region Dimension

@@ -77,7 +77,16 @@ namespace SlimeCore.Network
                                     {
                                         new LoginSuccess(this).Write();
                                         new Login(this).Write();
-                                        //new SynchronizePlayerPosition(this).Write();
+
+                                        new SetCenterChunk(this).Write();
+
+                                        new SetDefaultSpawnPosition(this).Write();
+
+                                        new ChunkDataAndUpdateLight(this).Write();
+
+                                        new SynchronizePlayerPosition(this).Write();
+                                        //new UpdateEntityPositionAndRotation(this).Write();
+                                        this._currentState = ClientState.Play;
                                     }
                                     break;
                                 case PacketType.PING:
@@ -104,6 +113,10 @@ namespace SlimeCore.Network
                                     new SynchronizePlayerPosition(this).Write();
                                     break;
                             }
+                            break;
+                        case ClientState.Play:
+                            //new SynchronizePlayerPosition(this).Write();
+
                             break;
                     }
 

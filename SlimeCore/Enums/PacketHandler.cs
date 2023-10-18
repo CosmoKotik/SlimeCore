@@ -95,6 +95,16 @@ namespace SlimeCore.Enums
                             return 0x03;
                         case PacketType.SYNCHRONIZE_PLAYER_POSITION:
                             return 0x3C;
+                        case PacketType.CHUNK_DATA_AND_UPDATE_LIGHT:
+                            return 0x24;
+                        case PacketType.SET_CENTER_CHUNK:
+                            return 0x4E;
+                        case PacketType.SET_PLAYER_POSITION_AND_ROTATION:
+                            return 0x17;
+                        case PacketType.UNLOAD_CHUNK:
+                            return 0x1E;
+                        case PacketType.SET_DEFAULT_SPAWN_POSITION:
+                            return 0x50;
                     }
                     break;
             }

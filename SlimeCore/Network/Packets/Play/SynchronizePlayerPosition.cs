@@ -35,6 +35,9 @@ namespace SlimeCore.Network.Packets.Play
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
+            /*bm.AddDouble(new Random().Next(0, 20));
+            bm.AddDouble(new Random().Next(0, 20));
+            bm.AddDouble(new Random().Next(0, 20));*/
             bm.AddDouble(0);
             bm.AddDouble(0);
             bm.AddDouble(0);
@@ -45,7 +48,7 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddByte(0x02);
 
             bm.AddVarInt(0);
-            bm.AddBool(false);
+            //bm.AddBool(false);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }
