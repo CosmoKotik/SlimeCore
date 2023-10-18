@@ -105,6 +105,8 @@ namespace SlimeCore.Enums
                             return 0x1E;
                         case PacketType.SET_DEFAULT_SPAWN_POSITION:
                             return 0x50;
+                        case PacketType.KEEP_ALIVE:
+                            return 0x23;
                     }
                     break;
             }

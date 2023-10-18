@@ -36,6 +36,7 @@ namespace SlimeCore.Enums
         CHUNK_DATA_AND_UPDATE_LIGHT,
         UNLOAD_CHUNK,
         SET_CENTER_CHUNK,
-        SET_DEFAULT_SPAWN_POSITION
+        SET_DEFAULT_SPAWN_POSITION,
+        KEEP_ALIVE
     }
 }

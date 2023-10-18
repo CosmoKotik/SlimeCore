@@ -6,6 +6,7 @@ using SlimeCore.Network.Packets.Play;
 using SlimeCore.Network.Packets.Status;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -21,6 +22,8 @@ namespace SlimeCore.Network
         private TcpClient _client;
         private NetworkStream _stream;
         private ClientState _currentState = ClientState.Handshake;
+
+        private long _lastKeepAliveMiliseconds = 0;
 
         public ClientHandler(TcpClient client, ServerManager serverManager)
         {
@@ -116,6 +119,14 @@ namespace SlimeCore.Network
                             break;
                         case ClientState.Play:
                             //new SynchronizePlayerPosition(this).Write();
+                            Console.WriteLine(DateTime.UtcNow.Ticks);
+                            if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
+                            { 
+                                Console.WriteLine("SENDING KEEP ALIVE");
+                                new KeepAlive(this).Write();
+                                //new SynchronizePlayerPosition(this).Write();
+                                _lastKeepAliveMiliseconds = DateTime.UtcNow.Ticks;
+                            }
 
                             break;
                     }

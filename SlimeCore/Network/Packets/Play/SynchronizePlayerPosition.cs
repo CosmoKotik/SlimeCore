@@ -38,9 +38,9 @@ namespace SlimeCore.Network.Packets.Play
             /*bm.AddDouble(new Random().Next(0, 20));
             bm.AddDouble(new Random().Next(0, 20));
             bm.AddDouble(new Random().Next(0, 20));*/
-            bm.AddDouble(0);
-            bm.AddDouble(0);
-            bm.AddDouble(0);
+            bm.AddDouble(700);
+            bm.AddDouble(75);
+            bm.AddDouble(38);
             bm.AddFloat(0);
             bm.AddFloat(0);
 
