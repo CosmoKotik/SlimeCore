@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Core;
+using SlimeCore.Entity;
 using SlimeCore.Enums;
 using SlimeCore.Network.Packets;
 using SlimeCore.Network.Packets.Login;
@@ -25,6 +26,10 @@ namespace SlimeCore.Network
 
         private long _lastKeepAliveMiliseconds = 0;
 
+        private Player _player = new Player();
+        
+        private bool _isBeta = false;
+
         public ClientHandler(TcpClient client, ServerManager serverManager)
         {
             this.ServerManager = serverManager;
@@ -44,9 +49,13 @@ namespace SlimeCore.Network
 
                 while ((i = await _stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
                 {
-                    Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
+                    //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
                     bm.SetBytes(bytes);
+
+                    //For beta 1.7.3 purposes
+                    if (bytes[0].Equals(0x02) && bytes[1].Equals(0x00))
+                        _isBeta = true;
 
                     int packetSize = bm.GetPacketSize() - 1;
                     int packetID = bm.GetPacketId();
@@ -55,14 +64,8 @@ namespace SlimeCore.Network
                     byte[] bufferRAW = new byte[packetSize + 8];
                     Array.Copy(bm.GetBytes(), buffer, packetSize);
                     Array.Copy(bytes, bufferRAW, packetSize + 8);
-                    /*for (int x = 0; x < packetSize; x++)
-                    {
-                        buffer[x] = bm.GetBytes()[x];
-                    }*/
 
-                    //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
-                    //bytes = new byte[packetSize];
-                    //bytes = (byte[])buffer.Clone();
+                    Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
 
                     switch (_currentState)
                     {
@@ -81,14 +84,13 @@ namespace SlimeCore.Network
                                         new LoginSuccess(this).Write();
                                         new Login(this).Write();
 
-                                        new SetCenterChunk(this).Write();
-
-                                        new SetDefaultSpawnPosition(this).Write();
-
                                         new ChunkDataAndUpdateLight(this).Write();
 
-                                        new SynchronizePlayerPosition(this).Write();
-                                        //new UpdateEntityPositionAndRotation(this).Write();
+                                        new SetCenterChunk(this).Write();
+
+                                        new SetDefaultSpawnPosition(this).Write(new Position(5, 0, 5), 0);
+                                        new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
+
                                         this._currentState = ClientState.Play;
                                     }
                                     break;
@@ -113,19 +115,42 @@ namespace SlimeCore.Network
                             {
                                 case PacketType.LOGIN_START:
                                     new LoginSuccess(this).Write();
-                                    new SynchronizePlayerPosition(this).Write();
+                                    //new SynchronizePlayerPosition(this).Write();
+
                                     break;
                             }
                             break;
                         case ClientState.Play:
                             //new SynchronizePlayerPosition(this).Write();
-                            Console.WriteLine(DateTime.UtcNow.Ticks);
+                            //FlushData(StringToByteArray("1E 68 CE 03 40 30 5F E3 D1 E0 1E 26 40 3F 07 14 FC E3 66 0E 40 32 40 F3 60 93 5D 30 9F 00 00 04 42 CE 03 6D 09 54 D7 03 00 CE 00 B4 FE EF 0A 2B D7 03 01 62 01 35 FE 30 00"), false);
                             if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
-                            { 
-                                Console.WriteLine("SENDING KEEP ALIVE");
+                            {
                                 new KeepAlive(this).Write();
                                 //new SynchronizePlayerPosition(this).Write();
                                 _lastKeepAliveMiliseconds = DateTime.UtcNow.Ticks;
+                                //new UpdateEntityPositionAndRotation(this).Write();
+                            }
+
+                            switch (PacketHandler.Get(packetID, _currentState))
+                            {
+                                case PacketType.SET_PLAYER_POSITION_AND_ROTATION:
+                                    SetPlayerPositionAndRotation playerPosAndRot = new SetPlayerPositionAndRotation(this).Read(buffer) as SetPlayerPositionAndRotation;
+
+                                    _player.CurrentPosition = new Position(playerPosAndRot.X, playerPosAndRot.FeetY, playerPosAndRot.Z, playerPosAndRot.Yaw, playerPosAndRot.Pitch);
+
+                                    Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
+
+                                    _player.PreviousPosition = _player.CurrentPosition.Clone();
+                                    break;
+                                case PacketType.SET_PLAYER_POSITION:
+                                    SetPlayerPosition playerPos = new SetPlayerPosition(this).Read(buffer) as SetPlayerPosition;
+
+                                    _player.CurrentPosition = new Position(playerPos.X, playerPos.FeetY, playerPos.Z);
+
+                                    Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
+
+                                    _player.PreviousPosition = _player.CurrentPosition.Clone();
+                                    break;
                             }
 
                             break;
@@ -168,7 +193,26 @@ namespace SlimeCore.Network
                 
             }
         }
+        private static byte[] StringToByteArray(string hexc)
+        {
+            string[] hexValuesSplit = hexc.Split(' ');
+            byte[] bytes = new byte[hexValuesSplit.Length];
+            int i = 0;
+            foreach (string hex in hexValuesSplit)
+            {
+                // Convert the number expressed in base-16 to an integer.
+                int value = Convert.ToInt32(hex, 16);
+                // Get the character corresponding to the integral value.
+                string stringValue = Char.ConvertFromUtf32(value);
+                char charValue = (char)value;
+                //Console.WriteLine("hexadecimal value = {0}, int value = {1}, char value = {2} or {3}",
+                //                    hex, value, stringValue, charValue);
+                bytes[i] = (byte)value;
+                i++;
+            }
 
+            return bytes;
+        }
         private int GetStaticPacketId(PacketType type)
         {
             return PacketHandler.Get(type);

@@ -11,7 +11,7 @@ namespace SlimeCore.Core
     {
         public int MaxPlayers = 20;
         public int CurrentOnline = 0;
-        public int ViewDistance = 2;
+        public int ViewDistance = 8;
         public int SimulationDistance = 1;
 
         public bool ReducedDebugInfo = false;

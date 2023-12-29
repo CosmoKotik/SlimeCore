@@ -100,13 +100,19 @@ namespace SlimeCore.Enums
                         case PacketType.SET_CENTER_CHUNK:
                             return 0x4E;
                         case PacketType.SET_PLAYER_POSITION_AND_ROTATION:
-                            return 0x17;
+                            return 0x15;
                         case PacketType.UNLOAD_CHUNK:
                             return 0x1E;
                         case PacketType.SET_DEFAULT_SPAWN_POSITION:
                             return 0x50;
                         case PacketType.KEEP_ALIVE:
                             return 0x23;
+                    }
+                    break;
+                case Versions.BETA_1_7_3:
+                    switch (packet)
+                    { 
+                        //case PacketType.LOGIN_START
                     }
                     break;
             }
@@ -208,6 +214,12 @@ namespace SlimeCore.Enums
                 case ClientState.Play:
                     switch (packet)
                     {
+                        case 0x14:
+                            return PacketType.SET_PLAYER_POSITION;
+                        case 0x15:
+                            return PacketType.SET_PLAYER_POSITION_AND_ROTATION;
+                        case 0x16:
+                            return PacketType.SET_PLAYER_ROTATION;
                         case 0x23:
                             return PacketType.LOGIN_PLAY;
                         case 0x26:

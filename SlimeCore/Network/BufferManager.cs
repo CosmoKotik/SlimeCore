@@ -12,7 +12,7 @@ namespace SlimeCore.Network
 
         #region Add/Insert
 
-        public void AddInt(int value, bool isReversed = false)
+        public void AddInt(int value, bool isReversed = true)
         {
             byte[] bytes = BitConverter.GetBytes(value);
 
@@ -21,39 +21,51 @@ namespace SlimeCore.Network
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
-        public void AddLong(long value)
+        public void AddLong(long value, bool isReversed = true)
         {
             byte[] bytes = BitConverter.GetBytes(value);
             //_buffer.Add((byte)bytes.Length);
+            if (isReversed)
+                bytes = bytes.Reverse().ToArray();
             _buffer.AddRange(bytes);
         }
-        public void AddShort(short value)
+        public void AddShort(short value, bool isReversed = true)
         {
             byte[] bytes = BitConverter.GetBytes(value);
+            if (isReversed)
+                bytes = bytes.Reverse().ToArray();
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
-        public void AddUShort(ushort value)
+        public void AddUShort(ushort value, bool isReversed = true)
         {
             byte[] bytes = BitConverter.GetBytes(value);
             //_buffer.Add((byte)bytes.Length);
+            if (isReversed)
+                bytes = bytes.Reverse().ToArray();
             _buffer.AddRange(bytes);
         }
-        public void AddULong(ulong value)
+        public void AddULong(ulong value, bool isReversed = true)
         {
             byte[] bytes = BitConverter.GetBytes(value);
             //_buffer.Add((byte)bytes.Length);
+            if (isReversed)
+                bytes = bytes.Reverse().ToArray();
             _buffer.AddRange(bytes);
         }
-        public void AddDouble(double value)
+        public void AddDouble(double value, bool isReversed = true)
         {
             byte[] bytes = BitConverter.GetBytes(value);
+            if (isReversed)
+                bytes = bytes.Reverse().ToArray();
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
-        public void AddFloat(float value)
+        public void AddFloat(float value, bool isReversed = true)
         {
             byte[] bytes = BitConverter.GetBytes(value);
+            if (isReversed)
+                bytes = bytes.Reverse().ToArray();
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
@@ -91,12 +103,38 @@ namespace SlimeCore.Network
 
         public void AddVarInt(int value)
         {
-            while ((value & -128) != 0)
+            /*while ((value & -128) != 0)
             {
                 _buffer.Add((byte)(value & 127 | 128));
                 value = (int)(((uint)value) >> 7);
             }
-            _buffer.Add((byte)value);
+            _buffer.Add((byte)value);*/
+
+            while (true)
+            {
+                if ((value & ~0x7F) == 0)
+                {
+                    _buffer.Add((byte)value);
+                    return;
+                }
+
+                _buffer.Add((byte)((value & 0x7F) | 0x80));
+
+                // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
+                value = (int)(((uint)value) >> 7);
+                //int asd = UnsignedRightShift(value, 7);
+                //value = UnsignedRightShift(value, 7);
+            }
+        }
+
+        public int UnsignedRightShift(int signed, int places)
+        {
+            unchecked // just in case of unusual compiler switches; this is the default
+            {
+                var unsigned = (uint)signed;
+                unsigned >>= places;
+                return (int)unsigned;
+            }
         }
 
         public void AddVarLong(long value)
@@ -174,7 +212,7 @@ namespace SlimeCore.Network
             return value | ((b & 0x7F) << (size * 7));
         }
 
-        public int GetInt()
+        public int GetInt(bool isReversed = true)
         {
             byte[] result = new byte[4];
 
@@ -184,6 +222,9 @@ namespace SlimeCore.Network
             }
 
             _buffer.RemoveRange(0, 4);
+
+            if (isReversed)
+                result = result.Reverse().ToArray();
 
             return BitConverter.ToInt32(result);
         }
@@ -200,7 +241,7 @@ namespace SlimeCore.Network
 
             return BitConverter.ToInt32(result);
         }*/
-        public long GetLong()
+        public long GetLong(bool isReversed = true)
         {
             byte[] result = new byte[8];
 
@@ -211,7 +252,42 @@ namespace SlimeCore.Network
 
             _buffer.RemoveRange(0, 8);
 
+            if (isReversed)
+                result = result.Reverse().ToArray();
+
             return BitConverter.ToInt64(result);
+        }
+        public double GetDouble(bool isReversed = true)
+        {
+            byte[] result = new byte[8];
+
+            for (int i = 0; i < 8; i++)
+            {
+                result[i] = _buffer[i];
+            }
+
+            _buffer.RemoveRange(0, 8);
+
+            if (isReversed)
+                result = result.Reverse().ToArray();
+
+            return BitConverter.ToDouble(result);
+        }
+        public float GetFloat(bool isReversed = true)
+        {
+            byte[] result = new byte[4];
+
+            for (int i = 0; i < 4; i++)
+            {
+                result[i] = _buffer[i];
+            }
+
+            _buffer.RemoveRange(0, 4);
+
+            if (isReversed)
+                result = result.Reverse().ToArray();
+
+            return BitConverter.ToSingle(result);
         }
         public string GetString()
         {

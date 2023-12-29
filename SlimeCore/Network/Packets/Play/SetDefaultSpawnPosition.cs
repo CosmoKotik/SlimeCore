@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using SlimeCore.Entity;
 using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
@@ -30,34 +31,26 @@ namespace SlimeCore.Network.Packets.Play
             throw new NotImplementedException();
         }
 
-        public async void Write()
+        public async void Write(Position position, float angle)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
-            int x = 5;
-            int y = 10;
-            int z = 15;
+            long x = (long)position.PositionX;
+            long y = (long)position.PositionY;
+            long z = (long)position.PositionZ;
 
-            long pos = (((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF));
+            long pos = ((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF);
 
-            long xpos = ((x & 0x3FFFFFF) << 38);
-            long ypos = ((z & 0x3FFFFFF) << 12);
-            long zpos = (y & 0xFFF);
-
-            //Console.WriteLine(pos);
-
-            /*if (x >= 1 << 25) { x -= 1 << 26; }
-            if (y >= 1 << 11) { y -= 1 << 12; }
-            if (z >= 1 << 25) { z -= 1 << 26; }*/
-
-            bm.AddBytes(BitConverter.GetBytes(pos), false);
-            //bm.AddBytes(BitConverter.GetBytes(xpos), false);
-            //bm.AddBytes(BitConverter.GetBytes(ypos), false);
-            //bm.AddBytes(BitConverter.GetBytes(zpos), false);
-            bm.AddFloat(0);
+            bm.AddLong(pos);
+            bm.AddFloat(angle);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
+        }
+
+        public void Write()
+        {
+            throw new NotImplementedException();
         }
     }
 }

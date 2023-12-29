@@ -13,6 +13,13 @@ namespace SlimeCore.Network.Packets.Play
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
+        public double X { get; set; }
+        public double FeetY { get; set; }
+        public double Z { get; set; }
+        public float Yaw { get; set; }
+        public float Pitch { get; set; }
+        public bool OnGround { get; set; }
+
         public SetPlayerPositionAndRotation(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
@@ -26,7 +33,18 @@ namespace SlimeCore.Network.Packets.Play
 
         public object Read(byte[] bytes)
         {
-            throw new NotImplementedException();
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            X = bm.GetDouble();
+            FeetY = bm.GetDouble();
+            Z = bm.GetDouble();
+            
+            Yaw = bm.GetFloat();
+            Pitch = bm.GetFloat();
+            
+            OnGround = bm.GetBool();
+            return this;
         }
 
         public async void Write()

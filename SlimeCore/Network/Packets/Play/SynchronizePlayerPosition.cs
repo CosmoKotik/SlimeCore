@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Entity;
+using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,20 +36,37 @@ namespace SlimeCore.Network.Packets.Play
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
-            /*bm.AddDouble(new Random().Next(0, 20));
-            bm.AddDouble(new Random().Next(0, 20));
-            bm.AddDouble(new Random().Next(0, 20));*/
-            bm.AddDouble(700);
-            bm.AddDouble(75);
-            bm.AddDouble(38);
+            bm.AddDouble(0);
+            bm.AddDouble(0);
+            bm.AddDouble(0);
             bm.AddFloat(0);
             bm.AddFloat(0);
 
             //Set relative y axis
-            bm.AddByte(0x02);
+            bm.AddByte(0);
 
-            bm.AddVarInt(0);
+            bm.AddVarInt(1);
             //bm.AddBool(false);
+
+            await this.ClientHandler.FlushData(bm.GetBytes());
+        }
+
+        public async void Write(Position position)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetPacketId((byte)PacketID);
+
+            bm.AddDouble(position.PositionX);   //Set position x
+            bm.AddDouble(position.PositionY);   //Set position y
+            bm.AddDouble(position.PositionZ);   //Set position z
+            bm.AddFloat(position.Yaw);          //Set yaw
+            bm.AddFloat(position.Pitch);        //Set pitch
+
+            //Set relative x axis
+            bm.AddByte(0);
+
+            //Set teleportation id (for now its 1)
+            bm.AddVarInt(1);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }

@@ -1,4 +1,6 @@
 ﻿using SlimeCore.Core;
+using SlimeCore.Core.Chunks;
+using SlimeCore.Network;
 using SlimeCore.Tools.Nbt;
 using System;
 
@@ -21,8 +23,33 @@ namespace SlimeCore
 
             Console.WriteLine(BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 */
+            //ChunkSection cs = new ChunkSection();
+            //cs.Fill(Enums.BlockType.Stone);
+            //Console.WriteLine("Received: {0}", BitConverter.ToString(cs.GetBytes()).Replace("-", " "));
+
             ServerManager sm = new ServerManager("10.0.0.3", 11000);
             sm.Start();
+        }
+
+        private static byte[] StringToByteArray(string hexc)
+        {
+            string[] hexValuesSplit = hexc.Split(' ');
+            byte[] bytes = new byte[hexValuesSplit.Length];
+            int i = 0;
+            foreach (string hex in hexValuesSplit)
+            {
+                // Convert the number expressed in base-16 to an integer.
+                int value = Convert.ToInt32(hex, 16);
+                // Get the character corresponding to the integral value.
+                string stringValue = Char.ConvertFromUtf32(value);
+                char charValue = (char)value;
+                //Console.WriteLine("hexadecimal value = {0}, int value = {1}, char value = {2} or {3}",
+                //                    hex, value, stringValue, charValue);
+                bytes[i] = (byte)value;
+                i++;
+            }
+
+            return bytes;
         }
     }
 }

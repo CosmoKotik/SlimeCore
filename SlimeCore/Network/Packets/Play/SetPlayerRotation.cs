@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Network.Packets.Play
 {
-    internal class Template : IPacket
+    public class SetPlayerRotation : IPacket
     {
         public Versions Version { get; set; }
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        public Template(ClientHandler clientHandler)
+        public float Yaw { get; set; }
+        public float Pitch { get; set; }
+        public bool OnGround { get; set; }
+
+        public SetPlayerRotation(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
-            this.PacketID = PacketHandler.Get(Version, PacketType.UPDATE_ENTITY_POSITION_AND_ROTATION);
+            this.PacketID = PacketHandler.Get(Version, PacketType.SET_PLAYER_ROTATION);
         }
 
         public void Broadcast(bool includeSelf)
@@ -28,6 +32,11 @@ namespace SlimeCore.Network.Packets.Play
         {
             BufferManager bm = new BufferManager();
             bm.SetBytes(bytes);
+
+            Yaw = bm.GetFloat();
+            Pitch = bm.GetFloat();
+
+            OnGround = bm.GetBool();
 
             return this;
         }

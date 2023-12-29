@@ -14,5 +14,8 @@ namespace SlimeCore.Entity
         public byte PreviousGamemode { get; set; }
         public int DimensionCount { get; set; }
         public string[] DimensionNames { get; set; }
+
+        public Position CurrentPosition { get; set; } = new Position();
+        public Position PreviousPosition { get; set; } = new Position();
     }
 }

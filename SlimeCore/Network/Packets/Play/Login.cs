@@ -39,7 +39,7 @@ namespace SlimeCore.Network.Packets.Play
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
-            bm.AddByte(0);
+            bm.AddByte(15);
             bm.AddBool(false);
             bm.AddByte(1);
             //bm.AddByte(1);
