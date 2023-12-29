@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Entity;
+using SlimeCore.Enums;
 using SlimeCore.Network.Packets.Nbts;
 using SlimeCore.Tools.Nbt;
 using System;
@@ -30,24 +31,36 @@ namespace SlimeCore.Network.Packets.Play
         public object Read(byte[] bytes)
         {
             BufferManager bm = new BufferManager();
-            throw new NotImplementedException();
+            bm.SetBytes(bytes);
+
+            Player p = new Player()
+            {
+                Username = bm.GetString(),
+            };
+
+            if (bm.GetBool())
+                p.UUID = bm.GetUUID();
+
+            return p;
         }
 
+        public async void Write() { }
+
         //FUCK MOJANG!!!!!!!!!!!!!!!!
-        public async void Write()
+        public async void Write(Player player)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
-            bm.AddByte(15);
-            bm.AddBool(false);
-            bm.AddByte(1);
-            //bm.AddByte(1);
+            bm.AddInt(player.EntityID);      //Entity ID
+            bm.AddBool(false);  //Is hardcore
+            bm.AddByte(player.Gamemode);      //Gamemode
+            bm.AddByte(player.PreviousGamemode);      //Previous gamemode
 
-            bm.AddByte(0x7A);
+            /*bm.AddByte(0x7A);
             bm.AddByte(0x00);
             bm.AddByte(0x01);
-            bm.AddByte(0xFF);
+            bm.AddByte(0xFF);*/
 
             #region Dimension
             bm.AddVarInt(3);                          //Dimension size

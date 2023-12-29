@@ -32,6 +32,12 @@ namespace SlimeCore.Entity
             this.PositionZ = Z;
         }
 
+        public Position(double X, double Z)
+        {
+            this.PositionX = X;
+            this.PositionZ = Z;
+        }
+
         public static Position operator *(Position pos1, Position pos2)
         {
             return new Position()

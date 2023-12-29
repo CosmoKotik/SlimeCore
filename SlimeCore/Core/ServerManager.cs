@@ -1,4 +1,5 @@
-﻿using SlimeCore.Network;
+﻿using SlimeCore.Entity;
+using SlimeCore.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,16 @@ namespace SlimeCore.Core
         public bool HasDeathLocation = false;
         public int PortalCooldown = 0;
 
+        public int TickPerSecond = 20;
+        public float CurrentTPS = 20;
 
         public bool IsStarted { get; set; }
 
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
+        public List<ClientHandler> NetClients = new List<ClientHandler>();
+        public List<Player> Players = new List<Player>();
         private NetListener _listener;
 
         public ServerManager(string ip, int port) 
@@ -41,7 +46,30 @@ namespace SlimeCore.Core
         {
             IsStarted = true;
 
+            new Thread(new ThreadStart(HandleTicksUpdate)).Start();
+
             _listener.Listen();
+        }
+
+        private async void HandleTicksUpdate()
+        {
+            long lastTickTime = DateTime.UtcNow.Ticks;
+
+            while (IsStarted)
+            {
+                CurrentTPS = DateTime.UtcNow.Ticks - lastTickTime;
+                //Console.WriteLine(CurrentTPS);
+                lock (NetClients)
+                    NetClients.ForEach(async client => { await client.TickUpdate(); });
+
+                lastTickTime = DateTime.UtcNow.Ticks;
+                await Task.Delay(GetWaitTSPTime());
+            }
+        }
+
+        private int GetWaitTSPTime()
+        {
+            return 1000 / TickPerSecond;
         }
     }
 }

@@ -84,6 +84,10 @@ namespace SlimeCore.Network
             //_buffer.Add((byte)bytes.Length);
             _buffer.AddRange(bytes);
         }
+        public void AddUUID(Guid uuid)
+        {
+            _buffer.AddRange(uuid.ToByteArray());
+        }
         public void AddBytes(byte[] value, bool includeLength = true)
         {
             if (includeLength)
@@ -307,6 +311,26 @@ namespace SlimeCore.Network
             bool value = _buffer[0] != 0;
             _buffer.RemoveAt(0);
             return value;
+        }
+        public byte GetByte()
+        {
+            byte value = _buffer[0];
+            _buffer.RemoveAt(0);
+            return value;
+        }
+
+        public Guid GetUUID()
+        {
+            byte[] result = new byte[16];
+
+            for (int i = 0; i < 16; i++)
+            {
+                result[i] = _buffer[i];
+            }
+
+            _buffer.RemoveRange(0, 16);
+
+            return new Guid(result);
         }
 
         #endregion

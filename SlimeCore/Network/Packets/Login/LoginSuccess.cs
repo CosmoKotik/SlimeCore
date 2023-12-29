@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using SlimeCore.Entity;
 using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
@@ -33,15 +34,18 @@ namespace SlimeCore.Network.Packets.Login
             throw new NotImplementedException();
         }
 
-        public async void Write()
+        public async void Write() { }
+
+        public async void Write(Player player)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
             //bm.AddString("c4b13b59042c4a82bed5d5eaf124036a");
             //bm.AddString(GetResponseString("_CosmoKotik_"));
-            bm.AddULong(1);
-            bm.AddULong(1);
-            bm.AddString("_CosmoKotik_");
+            //bm.AddULong(1);
+            //bm.AddULong(1);
+            bm.AddUUID(player.UUID);
+            bm.AddString(player.Username);
             bm.AddVarInt(0);
 
             await this.ClientHandler.FlushData(bm.GetBytes());

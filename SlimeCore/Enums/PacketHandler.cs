@@ -107,6 +107,8 @@ namespace SlimeCore.Enums
                             return 0x50;
                         case PacketType.KEEP_ALIVE:
                             return 0x23;
+                        case PacketType.PLAYER_INFO_UPDATE:
+                            return 0x3A;
                     }
                     break;
                 case Versions.BETA_1_7_3:
@@ -198,7 +200,7 @@ namespace SlimeCore.Enums
                     switch (packet)
                     {
                         case 0x00:
-                            return PacketType.DISCONNECT;
+                            return PacketType.LOGIN_START;
                         case 0x01:
                             return PacketType.ENCRYPTION;
                         case 0x02:
@@ -230,10 +232,14 @@ namespace SlimeCore.Enums
                             return PacketType.UPDATE_ENTITY_ROTATION;
                         case 0x2D:
                             return PacketType.UPDATE_ENTITY_ROTATION;
-                        case 0x02:
+                        case 0x03:
                             return PacketType.SPAWN_PLAYER;
+                        case 0x3A:
+                            return PacketType.PLAYER_INFO_UPDATE;
                         case 0x36:
                             return PacketType.SYNCHRONIZE_PLAYER_POSITION;
+                        case 0x08:
+                            return PacketType.CLIENT_INFORMATION;
                     }
                     break;
             }
