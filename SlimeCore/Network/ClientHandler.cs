@@ -85,7 +85,7 @@ namespace SlimeCore.Network
                             {
                                 byte[] correcetdBytes = new byte[receivedTask.Result];
                                 Array.Copy(bytes, correcetdBytes, receivedTask.Result);
-                                //Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
+                                Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
                                 bm.SetBytes(correcetdBytes);
                                 //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
@@ -118,7 +118,7 @@ namespace SlimeCore.Network
 
                                         buffer = new byte[packetSize];
                                         Array.Copy(bm.GetBytes(), buffer, packetSize);
-                                        //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
+                                        Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
 
                                         HandleBytes(buffer, correcetdBytes, packetID);
                                     }
@@ -429,7 +429,7 @@ namespace SlimeCore.Network
                                 new SetHeadRotation(x).Write(_player);
                             });
 
-                            Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
+                            //Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
                             break;
                         case PacketType.SET_PLAYER_POSITION:
                             _player.PreviousPosition = _player.CurrentPosition.Clone();
@@ -445,7 +445,7 @@ namespace SlimeCore.Network
                                 new UpdateEntityPosition(x).Write(_player);
                             });
 
-                            Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
+                            //Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
                             break;
                         case PacketType.SET_PLAYER_ROTATION:
                             _player.PreviousPosition = _player.CurrentPosition.Clone();
@@ -455,7 +455,7 @@ namespace SlimeCore.Network
                             _player.CurrentPosition.Yaw = playerRot.Yaw;
                             _player.CurrentPosition.Pitch = playerRot.Pitch;
 
-                            Console.WriteLine($"Yaw: {playerRot.Yaw}  Pitch: {playerRot.Pitch}");
+                            //Console.WriteLine($"Yaw: {playerRot.Yaw}  Pitch: {playerRot.Pitch}");
 
                             _player.IsOnGround = playerRot.OnGround;
 
@@ -463,6 +463,13 @@ namespace SlimeCore.Network
                             {
                                 new UpdateEntityRotation(x).Write(_player);
                                 new SetHeadRotation(x).Write(_player);
+                            });
+                            break;
+                        case PacketType.PLAYER_COMMAND:
+                            new PlayerCommand(this).Read(buffer);
+                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            {
+                                new SetEntityMetadata(x).Write(_player, MetadataType.IsCrouching);
                             });
                             break;
                     }
@@ -481,6 +488,8 @@ namespace SlimeCore.Network
 
         public async Task OnLoadedWorld()
         {
+            _player.PreviousTickPlayer = _player.Clone();
+
             this._isConnected = true;
 
             //Broadcast to everyone that player joined
@@ -516,6 +525,14 @@ namespace SlimeCore.Network
 
                 new PlayerInfoUpdate(this).AddPlayer(ueban).Write();
                 new SpawnPlayer(this).Write(ueban);*/
+            }
+
+            if (_player.IsCrouching != _player.PreviousTickPlayer.IsCrouching)
+            {
+                ServerManager.NetClients.ForEach(x =>
+                {
+                    new SetEntityMetadata(x).Write(_player, MetadataType.IsCrouching);
+                });
             }
 
             /*if (ServerManager.NetClients.Count > 1)
@@ -558,6 +575,8 @@ namespace SlimeCore.Network
                 new UpdateEntityPositionAndRotation(x).Write(_player);
                 Console.WriteLine("asdasdadasdasd");
             });*/
+
+            _player.PreviousTickPlayer = _player.Clone();
         }
 
         public async Task FlushData(byte[] bytes, bool includeSize = true)
@@ -586,7 +605,7 @@ namespace SlimeCore.Network
             }
 
             //stream.Flush();
-            //Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
+            Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
         }
         private static byte[] StringToByteArray(string hexc)
         {

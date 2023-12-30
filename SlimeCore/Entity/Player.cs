@@ -26,11 +26,14 @@ namespace SlimeCore.Entity
         public bool AllowServerListings { get; set; }
 
         public bool IsOnGround { get; set; }
+        public bool IsCrouching { get; set; }
 
         public Guid UUID { get; set; }
 
         public Position CurrentPosition { get; set; }
         public Position PreviousPosition { get; set; }
+
+        public Player PreviousTickPlayer { get; set; }
 
         public Player()
         { 
@@ -39,6 +42,33 @@ namespace SlimeCore.Entity
 
             Gamemode = 0x01;
             PreviousGamemode = 0xFF;
+        }
+
+        public Player Clone()
+        {
+            return new Player()
+            {
+                EnableTextFiltering = this.EnableTextFiltering,
+                AllowServerListings = this.AllowServerListings,
+                ChatColored = this.ChatColored,
+                DisplayedSkinParts = this.DisplayedSkinParts,
+                MainHand = this.MainHand,
+                ChatMode = this.ChatMode,
+                UUID = this.UUID,
+                CurrentPosition = this.CurrentPosition,
+                PreviousPosition = this.PreviousPosition,
+                DimensionCount = this.DimensionCount,
+                DimensionNames = this.DimensionNames,
+                EntityID = this.EntityID,
+                Gamemode = this.Gamemode,
+                IsCrouching = this.IsCrouching,
+                IsHardcore = this.IsHardcore,
+                IsOnGround = this.IsOnGround,
+                Locale = this.Locale,
+                PreviousGamemode = this.PreviousGamemode,
+                Username = this.Username,
+                ViewDistance = this.ViewDistance,
+            };
         }
     }
 }

@@ -91,6 +91,8 @@ namespace SlimeCore.Enums
                             return 0x2D;
                         case PacketType.SET_HEAD_ROTATION:
                             return 0x42;
+                        case PacketType.PLAYER_COMMAND:
+                            return 0x1E;
                         case PacketType.PING_PLAY:
                             return 0x32;
                         case PacketType.SPAWN_PLAYER:
@@ -111,6 +113,8 @@ namespace SlimeCore.Enums
                             return 0x23;
                         case PacketType.PLAYER_INFO_UPDATE:
                             return 0x3A;
+                        case PacketType.SET_ENTITY_METADATA:
+                            return 0x52;
                     }
                     break;
                 case Versions.BETA_1_7_3:
@@ -244,6 +248,8 @@ namespace SlimeCore.Enums
                             return PacketType.SYNCHRONIZE_PLAYER_POSITION;
                         case 0x08:
                             return PacketType.CLIENT_INFORMATION;
+                        case 0x1E:
+                            return PacketType.PLAYER_COMMAND;
                     }
                     break;
             }
