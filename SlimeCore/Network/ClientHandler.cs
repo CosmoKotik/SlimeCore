@@ -456,12 +456,17 @@ namespace SlimeCore.Network
 
             //Broadcast to everyone that player joined
             lock (ServerManager.NetClients)
+            {
                 ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                 {
                     //_player.PreviousPosition = _player.CurrentPosition.Clone();
                     new PlayerInfoUpdate(x).AddPlayer(_player).Write();
                     new SpawnPlayer(x).Write(_player);
+
+                    new PlayerInfoUpdate(this).AddPlayer(x._player).Write();
+                    new SpawnPlayer(this).Write(x._player);
                 });
+            }
 
             lock (ServerManager.NetClients)
                 ServerManager.NetClients.Add(this);
