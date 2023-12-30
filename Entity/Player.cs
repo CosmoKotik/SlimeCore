@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlimeCore.Core.Metadata;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +28,10 @@ namespace SlimeCore.Entity
 
         public bool IsOnGround { get; set; }
         public bool IsCrouching { get; set; }
+        public bool IsSwimming { get; set; }
+        public bool IsSleeping { get; set; }
+
+        public Metadata Metadata { get; set; }
 
         public Guid UUID { get; set; }
 
@@ -42,6 +47,10 @@ namespace SlimeCore.Entity
 
             Gamemode = 0x01;
             PreviousGamemode = 0xFF;
+
+            Metadata = new Metadata();
+            Metadata.AddMetadata("IsCrouching", MetadataType.Byte, MetadataValue.IsCrouching);
+            Metadata.AddMetadata("IsCrouchingPose", MetadataType.Pose, MetadataValue.IsCrouching);
         }
 
         public Player Clone()

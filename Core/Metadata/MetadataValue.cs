@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlimeCore.Enums
+namespace SlimeCore.Core.Metadata
 {
-    public enum MetadataType
+    public enum MetadataValue
     {
+        IsStanding,
         IsOnFire,
         IsCrouching,
         Unused,

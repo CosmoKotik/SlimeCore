@@ -36,10 +36,14 @@ namespace SlimeCore.Network.Packets.Play
             switch (actionId)
             {
                 case 0:
-                    ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).IsCrouching = true;
+                    //ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).IsCrouching = true;
+                    ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).Metadata.UpdateMetadata("IsCrouchingPose", Core.Metadata.MetadataValue.IsCrouching);
+                    ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).Metadata.UpdateMetadata("IsCrouching", Core.Metadata.MetadataValue.IsCrouching);
                     break;
                 case 1:
-                    ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).IsCrouching = false;
+                    //ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).IsCrouching = false;
+                    ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).Metadata.UpdateMetadata("IsCrouchingPose", Core.Metadata.MetadataValue.IsStanding);
+                    ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).Metadata.UpdateMetadata("IsCrouching", Core.Metadata.MetadataValue.IsStanding);
                     break;
             }
 

@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Core;
+using SlimeCore.Core.Metadata;
 using SlimeCore.Entity;
 using SlimeCore.Enums;
 using SlimeCore.Network.Packets;
@@ -403,6 +404,7 @@ namespace SlimeCore.Network
                             _player.MainHand = setting.DisplayedSkinParts;
                             _player.EnableTextFiltering = setting.EnableTextFiltering;
                             _player.AllowServerListings = setting.AllowServerListings;
+
                             new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
 
                             new ChunkDataAndUpdateLight(this).Write();
@@ -467,9 +469,10 @@ namespace SlimeCore.Network
                             break;
                         case PacketType.PLAYER_COMMAND:
                             new PlayerCommand(this).Read(buffer);
+                            
                             ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
-                                new SetEntityMetadata(x).Write(_player, MetadataType.IsCrouching);
+                                new SetEntityMetadata(x).Write(_player, _player.Metadata);
                             });
                             break;
                     }
@@ -500,9 +503,13 @@ namespace SlimeCore.Network
                     //_player.PreviousPosition = _player.CurrentPosition.Clone();
                     new PlayerInfoUpdate(x).AddPlayer(_player).Write();
                     new SpawnPlayer(x).Write(_player);
+                    new UpdateEntityPositionAndRotation(x).Write(_player);
+                    new SetHeadRotation(x).Write(_player);
 
                     new PlayerInfoUpdate(this).AddPlayer(x._player).Write();
                     new SpawnPlayer(this).Write(x._player);
+                    new UpdateEntityPositionAndRotation(this).Write(x._player);
+                    new SetHeadRotation(this).Write(x._player);
                 });
             }
 
@@ -527,13 +534,13 @@ namespace SlimeCore.Network
                 new SpawnPlayer(this).Write(ueban);*/
             }
 
-            if (_player.IsCrouching != _player.PreviousTickPlayer.IsCrouching)
+            /*if (_player.Metadata != _player.PreviousTickPlayer.Metadata)
             {
                 ServerManager.NetClients.ForEach(x =>
                 {
-                    new SetEntityMetadata(x).Write(_player, MetadataType.IsCrouching);
+                    new SetEntityMetadata(x).Write(_player, _player.Metadata);
                 });
-            }
+            }*/
 
             /*if (ServerManager.NetClients.Count > 1)
             {
@@ -605,7 +612,7 @@ namespace SlimeCore.Network
             }
 
             //stream.Flush();
-            Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
+            //Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
         }
         private static byte[] StringToByteArray(string hexc)
         {
