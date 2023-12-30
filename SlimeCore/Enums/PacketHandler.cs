@@ -89,6 +89,8 @@ namespace SlimeCore.Enums
                             return 0x2C;
                         case PacketType.UPDATE_ENTITY_ROTATION:
                             return 0x2D;
+                        case PacketType.SET_HEAD_ROTATION:
+                            return 0x42;
                         case PacketType.PING_PLAY:
                             return 0x32;
                         case PacketType.SPAWN_PLAYER:
@@ -232,6 +234,8 @@ namespace SlimeCore.Enums
                             return PacketType.UPDATE_ENTITY_ROTATION;
                         case 0x2D:
                             return PacketType.UPDATE_ENTITY_ROTATION;
+                        case 0x42:
+                            return PacketType.SET_HEAD_ROTATION;
                         case 0x03:
                             return PacketType.SPAWN_PLAYER;
                         case 0x3A:

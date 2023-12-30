@@ -102,7 +102,7 @@ namespace SlimeCore.Network
 
                                 byte[] buffer = new byte[packetSize];
                                 Array.Copy(bm.GetBytes(), buffer, packetSize);
-                                Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
+                                //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
 
                                 HandleBytes(buffer, correcetdBytes, packetID);
 
@@ -118,7 +118,7 @@ namespace SlimeCore.Network
 
                                         buffer = new byte[packetSize];
                                         Array.Copy(bm.GetBytes(), buffer, packetSize);
-                                        Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
+                                        //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
 
                                         HandleBytes(buffer, correcetdBytes, packetID);
                                     }
@@ -423,6 +423,12 @@ namespace SlimeCore.Network
 
                             _player.IsOnGround = playerPosAndRot.OnGround;
 
+                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            {
+                                new UpdateEntityPositionAndRotation(x).Write(_player);
+                                new SetHeadRotation(x).Write(_player);
+                            });
+
                             Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
                             break;
                         case PacketType.SET_PLAYER_POSITION:
@@ -430,11 +436,34 @@ namespace SlimeCore.Network
 
                             SetPlayerPosition playerPos = new SetPlayerPosition(this).Read(buffer) as SetPlayerPosition;
 
-                            _player.CurrentPosition = new Position(playerPos.X, playerPos.FeetY, playerPos.Z);
+                            _player.CurrentPosition = new Position(playerPos.X, playerPos.FeetY, playerPos.Z, _player.PreviousPosition.Yaw, _player.PreviousPosition.Pitch);
 
                             _player.IsOnGround = playerPos.OnGround;
 
+                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            {
+                                new UpdateEntityPosition(x).Write(_player);
+                            });
+
                             Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
+                            break;
+                        case PacketType.SET_PLAYER_ROTATION:
+                            _player.PreviousPosition = _player.CurrentPosition.Clone();
+
+                            SetPlayerRotation playerRot = new SetPlayerRotation(this).Read(buffer) as SetPlayerRotation;
+
+                            _player.CurrentPosition.Yaw = playerRot.Yaw;
+                            _player.CurrentPosition.Pitch = playerRot.Pitch;
+
+                            Console.WriteLine($"Yaw: {playerRot.Yaw}  Pitch: {playerRot.Pitch}");
+
+                            _player.IsOnGround = playerRot.OnGround;
+
+                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            {
+                                new UpdateEntityRotation(x).Write(_player);
+                                new SetHeadRotation(x).Write(_player);
+                            });
                             break;
                     }
 
@@ -483,58 +512,81 @@ namespace SlimeCore.Network
             {
                 new SetCenterChunk(this).Write(new Position((int)_player.CurrentPosition.PositionX / 16, (int)_player.CurrentPosition.PositionZ / 16));
 
-                Player ueban = new Player() { Username = $"CUM{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = new Position(new Random().Next(0, 16), -60, new Random().Next(0, 16)) };
+                /*Player ueban = new Player() { Username = $"CUM{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = new Position(new Random().Next(0, 16), -60, new Random().Next(0, 16)) };
 
                 new PlayerInfoUpdate(this).AddPlayer(ueban).Write();
-                new SpawnPlayer(this).Write(ueban);
+                new SpawnPlayer(this).Write(ueban);*/
             }
+
+            /*if (ServerManager.NetClients.Count > 1)
+            {
+                if (Math.Round(_player.PreviousPosition.PositionX, 3) != Math.Round(_player.CurrentPosition.PositionX, 3) ||
+                Math.Round(_player.PreviousPosition.PositionY, 3) != Math.Round(_player.CurrentPosition.PositionY, 3) ||
+                Math.Round(_player.PreviousPosition.PositionZ, 3) != Math.Round(_player.CurrentPosition.PositionZ, 3))
+                {
+                    if (Math.Round(_player.PreviousPosition.Yaw, 2) != Math.Round(_player.CurrentPosition.Yaw, 2) ||
+                    Math.Round(_player.PreviousPosition.Pitch, 2) != Math.Round(_player.CurrentPosition.Pitch, 2))
+                        ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                        {
+                            new UpdateEntityPositionAndRotation(x).Write(_player);
+                            new SetHeadRotation(x).Write(_player);
+                        });
+                    else
+                        ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                        {
+                            new UpdateEntityPosition(x).Write(_player);
+                        });
+                }
+                else if (Math.Round(_player.PreviousPosition.Yaw, 2) != Math.Round(_player.CurrentPosition.Yaw, 2) ||
+                Math.Round(_player.PreviousPosition.Pitch, 2) != Math.Round(_player.CurrentPosition.Pitch, 2))
+                    ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                    {
+                        new UpdateEntityRotation(x).Write(_player);
+                        new SetHeadRotation(x).Write(_player);
+                    });
+            }*/
 
 
             //FUN
-            if (_player.PreviousPosition.XYZ.PositionX != _player.CurrentPosition.XYZ.PositionX ||
-                _player.PreviousPosition.XYZ.PositionY != _player.CurrentPosition.XYZ.PositionY ||
-                _player.PreviousPosition.XYZ.PositionZ != _player.CurrentPosition.XYZ.PositionZ)
-            {
-                /*Player ueban = new Player() { Username = $"GONDON{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = _player.CurrentPosition.Clone() };
+            /*Player ueban = new Player() { Username = $"GONDON{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = _player.CurrentPosition.Clone() };
 
                 new PlayerInfoUpdate(this).AddPlayer(ueban).Write();
                 new SpawnPlayer(this).Write(ueban);*/
 
-                /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
-                {
-                    new UpdateEntityPositionAndRotation(x).Write(_player);
-                    Console.WriteLine("asdasdadasdasd");
-                });*/
-            }
-
-            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+            /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
             {
                 new UpdateEntityPositionAndRotation(x).Write(_player);
-            });
+                Console.WriteLine("asdasdadasdasd");
+            });*/
         }
 
         public async Task FlushData(byte[] bytes, bool includeSize = true)
         {
-            try
+            lock (__lastPacketTimeLock)
+                _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+            BufferManager bm = new BufferManager();
+            if (includeSize)
+                bm.AddVarInt(bytes.Length);
+            //bm.AddByte((byte)bytes.Length);
+            bm.InsertBytes(bytes);
+
+            //_stream.Write(bm.GetBytes(), 0, bm.GetBytes().Length);
+
+            using (CancellationTokenSource source = new CancellationTokenSource())
             {
-                lock (__lastPacketTimeLock)
-                    _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                CancellationToken token = source.Token;
 
-                BufferManager bm = new BufferManager();
-                if (includeSize)
-                    bm.AddVarInt(bytes.Length);
-                //bm.AddByte((byte)bytes.Length);
-                bm.InsertBytes(bytes);
+                try
+                {
+                    await this._client.SendAsync(bm.GetBytes(), SocketFlags.None, token);
+                }
+                catch (SocketException ex) { }
+                finally { source.Cancel(); }
+            }
 
-                //_stream.Write(bm.GetBytes(), 0, bm.GetBytes().Length);
-                await this._client.SendAsync(bm.GetBytes(), SocketFlags.None);
-                //stream.Flush();
-                Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
-            }
-            catch
-            { 
-                
-            }
+            //stream.Flush();
+            //Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
         }
         private static byte[] StringToByteArray(string hexc)
         {

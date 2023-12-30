@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Network.Packets.Play
 {
-    internal class UpdateEntityPositionAndRotation : IPacket
+    public class UpdateEntityRotation : IPacket
     {
         public Versions Version { get; set; }
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        public UpdateEntityPositionAndRotation(ClientHandler clientHandler)
+        public UpdateEntityRotation(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
-            this.PacketID = PacketHandler.Get(Version, PacketType.UPDATE_ENTITY_POSITION_AND_ROTATION);
+            this.PacketID = PacketHandler.Get(Version, PacketType.UPDATE_ENTITY_ROTATION);
         }
 
         public void Broadcast(bool includeSelf)
@@ -36,14 +36,13 @@ namespace SlimeCore.Network.Packets.Play
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
+            //bm.AddString("c4b13b59042c4a82bed5d5eaf124036a");
+            //bm.AddString(GetResponseString("_CosmoKotik_"));
 
             int angleYaw = (int)((player.CurrentPosition.Yaw / 360) * 256);
             int anglePitch = (int)((player.CurrentPosition.Pitch / 360) * 256);
 
             bm.AddVarInt(player.EntityID);
-            bm.AddShort((short)((player.CurrentPosition.PositionX * 32 - player.PreviousPosition.PositionX * 32) * 128));
-            bm.AddShort((short)((player.CurrentPosition.PositionY * 32 - player.PreviousPosition.PositionY * 32) * 128));
-            bm.AddShort((short)((player.CurrentPosition.PositionZ * 32 - player.PreviousPosition.PositionZ * 32) * 128));
             bm.AddByte((byte)angleYaw);
             bm.AddByte((byte)anglePitch);
             bm.AddBool(player.IsOnGround);
