@@ -29,6 +29,8 @@ namespace SlimeCore
 
             ServerManager sm = new ServerManager("10.0.0.3", 11000);
             sm.Start();
+
+            Console.Read();
         }
 
         private static byte[] StringToByteArray(string hexc)

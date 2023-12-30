@@ -347,5 +347,9 @@ namespace SlimeCore.Network
         {
             return _buffer.ToArray();
         }
+        public void RemoveRangeByte(int range)
+        {
+            _buffer.RemoveRange(0, range);
+        }
     }
 }

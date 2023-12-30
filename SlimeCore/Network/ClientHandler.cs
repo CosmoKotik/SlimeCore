@@ -20,8 +20,10 @@ namespace SlimeCore.Network
         public ServerManager ServerManager { get; set; }
         public Versions ClientVersion { get; set; }
 
-        private TcpClient _client;
-        private NetworkStream _stream;
+        public int KickTimeout { get; set; } = 10000;
+
+        private Socket _client;
+        //private NetworkStream _stream;
         private ClientState _currentState = ClientState.Handshake;
 
         private long _lastKeepAliveMiliseconds = 0;
@@ -33,17 +35,24 @@ namespace SlimeCore.Network
         private bool _isAlive = true;
         private bool _isConnected = false;
 
-        public ClientHandler(TcpClient client, ServerManager serverManager)
+        private object __lastPacketTimeLock = new object();
+        private long _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        private CancellationTokenSource _cancellationToken;
+
+        public ClientHandler(Socket client, ServerManager serverManager)
         {
             this.ServerManager = serverManager;
             this._client = client;
         }
 
-        public async Task NetworkHandler()
+        public async Task NetworkHandler(CancellationTokenSource token)
         {
+            this._cancellationToken = token;
+
             try
             {
-                _stream = _client.GetStream();
+                //_stream = _client.GetStream();
 
                 Console.WriteLine("Opened");
                 int i = 0;
@@ -59,7 +68,73 @@ namespace SlimeCore.Network
 
                 //ServerManager.Players.Add(_player);
 
-                while ((i = await _stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
+                this._client.NoDelay = true;
+                this._client.ReceiveTimeout = 1000;
+                this._client.SendTimeout = 1000;
+
+                using (this._client)
+                {
+                    while (_isAlive && this._client.Connected)
+                    {
+                        if (this._client.Available > 0)
+                        {
+                            lock(__lastPacketTimeLock)
+                                _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+                            using (var receivedTask = this._client.ReceiveAsync(bytes, SocketFlags.None))
+                            {
+                                byte[] correcetdBytes = new byte[receivedTask.Result];
+                                Array.Copy(bytes, correcetdBytes, receivedTask.Result);
+                                //Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
+                                bm.SetBytes(correcetdBytes);
+                                //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
+
+                                if (bytes[0].Equals(0x02) && bytes[1].Equals(0x00))
+                                    _isBeta = true;
+
+                                int packetSize = bm.GetPacketSize() - 1;
+                                int packetID = bm.GetPacketId();
+
+                                /* byte[] buffer = new byte[packetSize];
+                                 byte[] bufferRAW = new byte[packetSize + 8];
+                                 Array.Copy(bm.GetBytes(), buffer, packetSize);
+                                 Array.Copy(bytes, bufferRAW, packetSize + 8);*/
+
+                                byte[] buffer = new byte[packetSize];
+                                Array.Copy(bm.GetBytes(), buffer, packetSize);
+                                Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
+
+                                HandleBytes(buffer, correcetdBytes, packetID);
+
+                                //Check if there is more shit in the bytes after the first packet
+                                if (bm.GetBytes().Length > packetSize)
+                                {
+                                    try
+                                    {
+                                        bm.RemoveRangeByte(packetSize);
+                                        //Console.WriteLine("Receiveasdasdasdasdd: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " ") + "   " + bm.GetBytes().Length);
+                                        packetSize = bm.GetPacketSize() - 1;
+                                        packetID = bm.GetPacketId();
+
+                                        buffer = new byte[packetSize];
+                                        Array.Copy(bm.GetBytes(), buffer, packetSize);
+                                        Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
+
+                                        HandleBytes(buffer, correcetdBytes, packetID);
+                                    }
+                                    catch { }
+                                }
+                            }
+                        }
+
+                        if (_lastPacketTime < DateTimeOffset.Now.ToUnixTimeMilliseconds() - KickTimeout)
+                            _isAlive = false;
+
+                        await Task.Delay(1);
+                    }
+                }
+
+                /*while ((i = await _stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
                 {
                     //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
@@ -91,7 +166,8 @@ namespace SlimeCore.Network
 
                                     if (handshake.NextState == (int)ClientState.Status)
                                         new Status(this).Write();
-                                    /*else if (handshake.NextState == (int)ClientState.Login)
+                                    */
+                /*else if (handshake.NextState == (int)ClientState.Login)
                                     {
                                         switch (PacketHandler.Get(packetID, _currentState))
                                         {
@@ -115,6 +191,7 @@ namespace SlimeCore.Network
                                         this._currentState = ClientState.Play;
                                         this._isConnected = true;
                                     }*/
+                /*
                                     break;
                                 case PacketType.PING:
                                     new PingLegacy(this).Write();
@@ -185,7 +262,7 @@ namespace SlimeCore.Network
                                     _player.CurrentPosition = new Position(playerPosAndRot.X, playerPosAndRot.FeetY, playerPosAndRot.Z, playerPosAndRot.Yaw, playerPosAndRot.Pitch);
 
                                     Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
-                                break;
+                                    break;
                                 case PacketType.SET_PLAYER_POSITION:
                                     _player.PreviousPosition = _player.CurrentPosition.Clone();
 
@@ -194,7 +271,7 @@ namespace SlimeCore.Network
                                     _player.CurrentPosition = new Position(playerPos.X, playerPos.FeetY, playerPos.Z);
 
                                     Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
-                                break;
+                                    break;
                             }
 
                             if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
@@ -209,7 +286,7 @@ namespace SlimeCore.Network
                     }
 
                     await Task.Delay(1);
-                }
+                }*/
             }
             catch (Exception ex) 
             { 
@@ -228,6 +305,149 @@ namespace SlimeCore.Network
                     ServerManager.NetClients.Remove(this);
                 }
             }
+            
+            token.Cancel();
+        }
+
+        private void HandleBytes(byte[] buffer, byte[] bytes, int packetID)
+        {
+            switch (_currentState)
+            {
+                case ClientState.Handshake:
+                    switch (PacketHandler.Get(packetID, _currentState))
+                    {
+                        case PacketType.HANDSHAKE:
+                            Handshake handshake = (Handshake)new Handshake(this).Read(buffer);
+                            this.ClientVersion = (Versions)handshake.ProtocolVersion;
+                            this._currentState = (ClientState)handshake.NextState;
+
+                            if (handshake.NextState == (int)ClientState.Status)
+                                new Status(this).Write();
+                            /*else if (handshake.NextState == (int)ClientState.Login)
+                            {
+                                switch (PacketHandler.Get(packetID, _currentState))
+                                {
+                                    case PacketType.LOGIN_START:
+                                        _player = new Login(this).Read(buffer) as Player;
+                                        _player.EntityID = ServerManager.Players.Count + 1;
+                                        ServerManager.Players.Add(_player);
+                                        break;
+                                }
+
+                                new LoginSuccess(this).Write(_player);
+                                new Login(this).Write(_player);
+
+                                new ChunkDataAndUpdateLight(this).Write();
+
+                                new SetCenterChunk(this).Write(new Position(0, 0));
+
+                                new SetDefaultSpawnPosition(this).Write(new Position(5, 0, 5), 0);
+                                new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
+
+                                this._currentState = ClientState.Play;
+                                this._isConnected = true;
+                            }*/
+                            break;
+                        case PacketType.PING:
+                            new PingLegacy(this).Write();
+                            break;
+                    }
+                    break;
+                case ClientState.Status:
+                    switch (PacketHandler.Get(packetID, _currentState))
+                    {
+                        case PacketType.STATUS:
+                            new Status(this).Write();
+                            break;
+                        case PacketType.PING:
+                            new Ping(this).ReadWrite(bytes);
+                            break;
+                    }
+                    break;
+                case ClientState.Login:
+                    switch (PacketHandler.Get(packetID, _currentState))
+                    {
+                        case PacketType.LOGIN_START:
+                            //new LoginSuccess(this).Write();
+                            //new SynchronizePlayerPosition(this).Write();
+                            _player = new Login(this).Read(buffer) as Player;
+
+                            lock (ServerManager.Players)
+                            {
+                                _player.EntityID = ServerManager.Players.Count + 1;
+                                ServerManager.Players.Add(_player);
+                            }
+
+                            new LoginSuccess(this).Write(_player);
+                            new Login(this).Write(_player);
+
+                            this._currentState = ClientState.Play;
+                            break;
+                    }
+                    break;
+                case ClientState.Play:
+                    //new SynchronizePlayerPosition(this).Write();
+                    //FlushData(StringToByteArray("1E 68 CE 03 40 30 5F E3 D1 E0 1E 26 40 3F 07 14 FC E3 66 0E 40 32 40 F3 60 93 5D 30 9F 00 00 04 42 CE 03 6D 09 54 D7 03 00 CE 00 B4 FE EF 0A 2B D7 03 01 62 01 35 FE 30 00"), false);
+
+                    switch (PacketHandler.Get(packetID, _currentState))
+                    {
+                        case PacketType.CLIENT_INFORMATION:
+                            ClientInformation setting = new ClientInformation(this).Read(buffer) as ClientInformation;
+
+                            _player.Locale = setting.Locale;
+                            _player.ViewDistance = setting.ViewDistance;
+                            _player.ChatMode = setting.ChatMode;
+                            _player.ChatColored = setting.ChatColored;
+                            _player.DisplayedSkinParts = setting.DisplayedSkinParts;
+                            _player.MainHand = setting.DisplayedSkinParts;
+                            _player.EnableTextFiltering = setting.EnableTextFiltering;
+                            _player.AllowServerListings = setting.AllowServerListings;
+
+                            new ChunkDataAndUpdateLight(this).Write();
+
+                            new SetCenterChunk(this).Write(new Position(0, 0));
+
+                            new SetDefaultSpawnPosition(this).Write(new Position(5, 0, 5), 0);
+                            new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
+
+                            this._currentState = ClientState.Play;
+                            this._isConnected = true;
+                            break;
+                        case PacketType.SET_PLAYER_POSITION_AND_ROTATION:
+                            _player.PreviousPosition = _player.CurrentPosition.Clone();
+
+                            SetPlayerPositionAndRotation playerPosAndRot = new SetPlayerPositionAndRotation(this).Read(buffer) as SetPlayerPositionAndRotation;
+
+                            _player.CurrentPosition = new Position(playerPosAndRot.X, playerPosAndRot.FeetY, playerPosAndRot.Z, playerPosAndRot.Yaw, playerPosAndRot.Pitch);
+
+                            Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
+                            break;
+                        case PacketType.SET_PLAYER_POSITION:
+                            _player.PreviousPosition = _player.CurrentPosition.Clone();
+
+                            SetPlayerPosition playerPos = new SetPlayerPosition(this).Read(buffer) as SetPlayerPosition;
+
+                            _player.CurrentPosition = new Position(playerPos.X, playerPos.FeetY, playerPos.Z);
+
+                            Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
+                            break;
+                    }
+
+                    if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
+                    {
+                        new KeepAlive(this).Write();
+                        //new SynchronizePlayerPosition(this).Write();
+                        _lastKeepAliveMiliseconds = DateTime.UtcNow.Ticks;
+                        //new UpdateEntityPositionAndRotation(this).Write();
+                    }
+
+                    break;
+            }
+        }
+
+        public async Task OnLoadedWorld()
+        { 
+            
         }
 
         public async Task TickUpdate()
@@ -251,7 +471,7 @@ namespace SlimeCore.Network
             //FUN
             /*if (_player.PreviousPosition != _player.CurrentPosition)
             {
-                Player ueban = new Player() { Username = $"CUM{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = _player.CurrentPosition.Clone() };
+                Player ueban = new Player() { Username = $"GONDON{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = _player.CurrentPosition.Clone() };
 
                 new PlayerInfoUpdate(this).AddPlayer(ueban).Write();
                 new SpawnPlayer(this).Write(ueban);
@@ -262,13 +482,17 @@ namespace SlimeCore.Network
         {
             try
             {
+                lock (__lastPacketTimeLock)
+                    _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
                 BufferManager bm = new BufferManager();
                 if (includeSize)
                     bm.AddVarInt(bytes.Length);
                 //bm.AddByte((byte)bytes.Length);
                 bm.InsertBytes(bytes);
 
-                _stream.Write(bm.GetBytes(), 0, bm.GetBytes().Length);
+                //_stream.Write(bm.GetBytes(), 0, bm.GetBytes().Length);
+                await this._client.SendAsync(bm.GetBytes(), SocketFlags.None);
                 //stream.Flush();
                 Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
             }

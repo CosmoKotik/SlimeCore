@@ -30,8 +30,8 @@ namespace SlimeCore.Core
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
-        public List<ClientHandler> NetClients = new List<ClientHandler>();
-        public List<Player> Players = new List<Player>();
+        public List<ClientHandler> NetClients { get; set; } = new List<ClientHandler>();
+        public List<Player> Players { get; set; } = new List<Player>();
         private NetListener _listener;
 
         public ServerManager(string ip, int port) 
