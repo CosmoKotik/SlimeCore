@@ -62,9 +62,6 @@ namespace SlimeCore.Network
                             await Task.Run(() => 
                             {
                                 ClientHandler handler = new ClientHandler(client, _serverManager);
-                                lock (_serverManager.NetClients)
-                                    _serverManager.NetClients.Add(handler);
-
 
                                 handler.NetworkHandler(cancellationTokenSource);
                             }, cancellationTokenSource.Token);

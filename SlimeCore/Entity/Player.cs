@@ -25,6 +25,8 @@ namespace SlimeCore.Entity
         public bool EnableTextFiltering { get; set; }
         public bool AllowServerListings { get; set; }
 
+        public bool IsOnGround { get; set; }
+
         public Guid UUID { get; set; }
 
         public Position CurrentPosition { get; set; }

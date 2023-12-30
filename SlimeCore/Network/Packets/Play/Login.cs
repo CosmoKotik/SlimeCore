@@ -36,10 +36,15 @@ namespace SlimeCore.Network.Packets.Play
             Player p = new Player()
             {
                 Username = bm.GetString(),
+                CurrentPosition = new Position(5, -60, 5),
+                PreviousPosition = new Position(5, -60, 5)
             };
 
             if (bm.GetBool())
                 p.UUID = bm.GetUUID();
+
+            p.Username = $"player{new Random().Next(291, 893)}";
+            p.UUID = Guid.NewGuid();
 
             return p;
         }

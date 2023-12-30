@@ -302,7 +302,8 @@ namespace SlimeCore.Network
                     _client = null;
                     Console.WriteLine("Closed");
 
-                    ServerManager.NetClients.Remove(this);
+                    lock(ServerManager.NetClients)
+                        ServerManager.NetClients.Remove(this);
                 }
             }
             
@@ -402,16 +403,16 @@ namespace SlimeCore.Network
                             _player.MainHand = setting.DisplayedSkinParts;
                             _player.EnableTextFiltering = setting.EnableTextFiltering;
                             _player.AllowServerListings = setting.AllowServerListings;
+                            new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
 
                             new ChunkDataAndUpdateLight(this).Write();
 
                             new SetCenterChunk(this).Write(new Position(0, 0));
 
-                            new SetDefaultSpawnPosition(this).Write(new Position(5, 0, 5), 0);
-                            new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
+                            new SetDefaultSpawnPosition(this).Write(new Position(5, -60, 5), 0);
 
                             this._currentState = ClientState.Play;
-                            this._isConnected = true;
+                            OnLoadedWorld().ConfigureAwait(false).GetAwaiter().GetResult();
                             break;
                         case PacketType.SET_PLAYER_POSITION_AND_ROTATION:
                             _player.PreviousPosition = _player.CurrentPosition.Clone();
@@ -419,6 +420,8 @@ namespace SlimeCore.Network
                             SetPlayerPositionAndRotation playerPosAndRot = new SetPlayerPositionAndRotation(this).Read(buffer) as SetPlayerPositionAndRotation;
 
                             _player.CurrentPosition = new Position(playerPosAndRot.X, playerPosAndRot.FeetY, playerPosAndRot.Z, playerPosAndRot.Yaw, playerPosAndRot.Pitch);
+
+                            _player.IsOnGround = playerPosAndRot.OnGround;
 
                             Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
                             break;
@@ -428,6 +431,8 @@ namespace SlimeCore.Network
                             SetPlayerPosition playerPos = new SetPlayerPosition(this).Read(buffer) as SetPlayerPosition;
 
                             _player.CurrentPosition = new Position(playerPos.X, playerPos.FeetY, playerPos.Z);
+
+                            _player.IsOnGround = playerPos.OnGround;
 
                             Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
                             break;
@@ -446,8 +451,20 @@ namespace SlimeCore.Network
         }
 
         public async Task OnLoadedWorld()
-        { 
-            
+        {
+            this._isConnected = true;
+
+            //Broadcast to everyone that player joined
+            lock (ServerManager.NetClients)
+                ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                {
+                    //_player.PreviousPosition = _player.CurrentPosition.Clone();
+                    new PlayerInfoUpdate(x).AddPlayer(_player).Write();
+                    new SpawnPlayer(x).Write(_player);
+                });
+
+            lock (ServerManager.NetClients)
+                ServerManager.NetClients.Add(this);
         }
 
         public async Task TickUpdate()
@@ -469,13 +486,26 @@ namespace SlimeCore.Network
 
 
             //FUN
-            /*if (_player.PreviousPosition != _player.CurrentPosition)
+            if (_player.PreviousPosition.XYZ.PositionX != _player.CurrentPosition.XYZ.PositionX ||
+                _player.PreviousPosition.XYZ.PositionY != _player.CurrentPosition.XYZ.PositionY ||
+                _player.PreviousPosition.XYZ.PositionZ != _player.CurrentPosition.XYZ.PositionZ)
             {
-                Player ueban = new Player() { Username = $"GONDON{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = _player.CurrentPosition.Clone() };
+                /*Player ueban = new Player() { Username = $"GONDON{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = _player.CurrentPosition.Clone() };
 
                 new PlayerInfoUpdate(this).AddPlayer(ueban).Write();
-                new SpawnPlayer(this).Write(ueban);
-            }*/
+                new SpawnPlayer(this).Write(ueban);*/
+
+                /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                {
+                    new UpdateEntityPositionAndRotation(x).Write(_player);
+                    Console.WriteLine("asdasdadasdasd");
+                });*/
+            }
+
+            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+            {
+                new UpdateEntityPositionAndRotation(x).Write(_player);
+            });
         }
 
         public async Task FlushData(byte[] bytes, bool includeSize = true)

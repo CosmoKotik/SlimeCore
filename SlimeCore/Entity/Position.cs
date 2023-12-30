@@ -14,6 +14,13 @@ namespace SlimeCore.Entity
         public float Yaw { get; set; } = 0;
         public float Pitch { get; set; } = 0;
 
+        public Position XYZ 
+        { get 
+            { 
+                return new Position((int)PositionX, (int)PositionY, (int)PositionZ);
+            } 
+        }
+
         public Position() { }
 
         public Position(double X, double Y, double Z, float yaw, float pitch)
@@ -96,6 +103,11 @@ namespace SlimeCore.Entity
                 Yaw = this.Yaw,
                 Pitch = this.Pitch
             };
+        }
+
+        public Position Round()
+        {
+            return new Position((int)PositionX, (int)PositionY, (int)PositionZ);
         }
     }
 }

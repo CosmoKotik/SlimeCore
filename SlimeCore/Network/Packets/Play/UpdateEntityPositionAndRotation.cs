@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Entity;
+using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,27 +30,22 @@ namespace SlimeCore.Network.Packets.Play
             throw new NotImplementedException();
         }
 
-        public async void Write()
+        public async void Write() { }
+
+        public async void Write(Player player)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
             //bm.AddString("c4b13b59042c4a82bed5d5eaf124036a");
             //bm.AddString(GetResponseString("_CosmoKotik_"));
 
-            short currentX = 40;
-            short prevX = 43;
-            short currentY = 30;
-            short prevY = 28;
-            short currentZ = 10;
-            short prevZ = 9;
-
-            bm.AddVarInt(251658618);
-            bm.AddShort((short)((currentX * 32 - prevX * 32) * 128));
-            bm.AddShort((short)((currentY * 32 - prevY * 32) * 128));
-            bm.AddShort((short)((currentZ * 32 - prevZ * 32) * 128));
-            bm.AddByte(92);
-            bm.AddByte(16);
-            bm.AddBool(false);
+            bm.AddVarInt(player.EntityID);
+            bm.AddShort((short)((player.CurrentPosition.PositionX * 32 - player.PreviousPosition.PositionX * 32) * 128));
+            bm.AddShort((short)((player.CurrentPosition.PositionY * 32 - player.PreviousPosition.PositionY * 32) * 128));
+            bm.AddShort((short)((player.CurrentPosition.PositionZ * 32 - player.PreviousPosition.PositionZ * 32) * 128));
+            bm.AddByte((byte)player.CurrentPosition.Yaw);
+            bm.AddByte((byte)player.CurrentPosition.Pitch);
+            bm.AddBool(player.IsOnGround);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }
