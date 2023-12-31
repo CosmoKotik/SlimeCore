@@ -115,6 +115,8 @@ namespace SlimeCore.Enums
                             return 0x3A;
                         case PacketType.SET_ENTITY_METADATA:
                             return 0x52;
+                        case PacketType.ENTITY_ANIMATION:
+                            return 0x04;
                     }
                     break;
                 case Versions.BETA_1_7_3:
@@ -250,6 +252,8 @@ namespace SlimeCore.Enums
                             return PacketType.CLIENT_INFORMATION;
                         case 0x1E:
                             return PacketType.PLAYER_COMMAND;
+                        case 0x2F:
+                            return PacketType.SWING_ARM;
                     }
                     break;
             }

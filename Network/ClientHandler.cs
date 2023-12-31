@@ -405,16 +405,19 @@ namespace SlimeCore.Network
                             _player.EnableTextFiltering = setting.EnableTextFiltering;
                             _player.AllowServerListings = setting.AllowServerListings;
 
-                            new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
+                            if (!_isConnected)
+                            {
+                                new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
 
-                            new ChunkDataAndUpdateLight(this).Write();
+                                new ChunkDataAndUpdateLight(this).Write();
 
-                            new SetCenterChunk(this).Write(new Position(0, 0));
+                                new SetCenterChunk(this).Write(new Position(0, 0));
 
-                            new SetDefaultSpawnPosition(this).Write(new Position(5, -60, 5), 0);
+                                new SetDefaultSpawnPosition(this).Write(new Position(5, -60, 5), 0);
 
-                            this._currentState = ClientState.Play;
-                            OnLoadedWorld().ConfigureAwait(false).GetAwaiter().GetResult();
+                                this._currentState = ClientState.Play;
+                                OnLoadedWorld().ConfigureAwait(false).GetAwaiter().GetResult();
+                            }
                             break;
                         case PacketType.SET_PLAYER_POSITION_AND_ROTATION:
                             _player.PreviousPosition = _player.CurrentPosition.Clone();
@@ -473,6 +476,14 @@ namespace SlimeCore.Network
                             ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
                                 new SetEntityMetadata(x).Write(_player, _player.Metadata);
+                            });
+                            break;
+                        case PacketType.SWING_ARM:
+                            bool arm = (bool)new SwingArm(this).Read(buffer);
+
+                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            {
+                                new EntityAnimation(x).Write(_player, (Animations)(arm ? 3 : 0));
                             });
                             break;
                     }
@@ -590,6 +601,9 @@ namespace SlimeCore.Network
         {
             lock (__lastPacketTimeLock)
                 _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+            if (_client == null)
+                return;
 
             BufferManager bm = new BufferManager();
             if (includeSize)
