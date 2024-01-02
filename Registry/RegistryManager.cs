@@ -126,12 +126,17 @@ namespace SlimeCore.Registry
 
         public int GetBlockId(int itemID)
         { 
-            return BlockToItemMap.Find(x => x.ItemID == itemID).ID;
+            return BlockToItemMap.Find(x => x.ItemID == itemID && x.IsDefault && !x.waterlogged).ID;
         }
 
         public int GetBlockId(int itemID, Direction direction)
         {
-            return BlockToItemMap.Find(x => x.ItemID == itemID && (x.Direction.Equals(direction) || (x.Direction.Equals(Direction.None) && x.IsDefault))).ID;
+            return BlockToItemMap.Find(x => x.ItemID == itemID && (x.Direction.Equals(direction) || (x.Direction.Equals(Direction.None) && x.IsDefault)) && !x.waterlogged).ID;
+        }
+
+        public int GetBlockId(int itemID, Direction direction, Direction half)
+        {
+            return BlockToItemMap.Find(x => x.ItemID == itemID && (x.Direction.Equals(direction) || (x.Direction.Equals(Direction.None) && x.IsDefault)) && (x.Half.Equals(half) || (x.Half.Equals(Direction.None) && x.IsDefault)) && !x.waterlogged).ID;
         }
     }
 }

@@ -429,6 +429,8 @@ namespace SlimeCore.Network
 
                             _player.IsOnGround = playerPosAndRot.OnGround;
 
+                            UpdatePlayerDirections();
+
                             ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
                                 new UpdateEntityPositionAndRotation(x).Write(_player);
@@ -464,6 +466,8 @@ namespace SlimeCore.Network
                             //Console.WriteLine($"Yaw: {playerRot.Yaw}  Pitch: {playerRot.Pitch}");
 
                             _player.IsOnGround = playerRot.OnGround;
+
+                            UpdatePlayerDirections();
 
                             ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
@@ -543,7 +547,7 @@ namespace SlimeCore.Network
                             ServerManager.NetClients.ForEach(x =>
                             {
                                 //new BlockUpdate(x).Write(blockPosition, _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem));
-                                new BlockUpdate(x).Write(blockPosition, ServerManager.Registry.GetBlockId(_player.Inventory.GetItem("hotbar", _player.CurrentHeldItem), _player.LookDirection));
+                                new BlockUpdate(x).Write(blockPosition, ServerManager.Registry.GetBlockId(_player.Inventory.GetItem("hotbar", _player.CurrentHeldItem), _player.LookDirection, _player.HalfDirection));
                             });
 
                             new AcknowledgeBlockChange(this).Write(item.Sequence);
@@ -603,6 +607,30 @@ namespace SlimeCore.Network
 
             lock (ServerManager.NetClients)
                 ServerManager.NetClients.Add(this);
+        }
+
+        private void UpdatePlayerDirections()
+        {
+            int headAngle = (int)(_player.CurrentPosition.Yaw - (360 * (int)(_player.CurrentPosition.Yaw / 360)));
+
+            if (headAngle > 0)
+                headAngle = headAngle - 360;
+
+            Console.WriteLine(headAngle);
+
+            if (headAngle <= -45 && headAngle > -135)
+                _player.LookDirection = Direction.East;
+            else if (headAngle <= -135 && headAngle > -225)
+                _player.LookDirection = Direction.North;
+            else if (headAngle <= -225 && headAngle > -315)
+                _player.LookDirection = Direction.West;
+            else if (headAngle <= -315 || headAngle > -45)
+                _player.LookDirection = Direction.South;
+
+            if (_player.CurrentPosition.Pitch <= 0)
+                _player.HalfDirection = Direction.Top;
+            else
+                _player.HalfDirection = Direction.Bottom;
         }
 
         public async Task TickUpdate()
@@ -676,20 +704,6 @@ namespace SlimeCore.Network
                 new UpdateEntityPositionAndRotation(x).Write(_player);
                 Console.WriteLine("asdasdadasdasd");
             });*/
-
-            int headAngle = (int)(_player.CurrentPosition.Yaw - (360 * (int)(_player.CurrentPosition.Yaw / 360)));
-
-            if (headAngle > 0)
-                headAngle = headAngle - 360;
-
-            if (headAngle <= -45 && headAngle > -135)
-                _player.LookDirection = Direction.East;
-            else if (headAngle <= -135 && headAngle > -225)
-                _player.LookDirection = Direction.North;
-            else if (headAngle <= -225 && headAngle > -315)
-                _player.LookDirection = Direction.West;
-            else if (headAngle <= -315)
-                _player.LookDirection = Direction.South;
 
             _player.PreviousTickPlayer = _player.Clone();
         }

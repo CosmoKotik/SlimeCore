@@ -41,6 +41,7 @@ namespace SlimeCore.Entity
         public Position Size { get; set; } = new Position(0.7, 1.62, 0.7);
 
         public Direction LookDirection { get; set; } = Direction.North;
+        public Direction HalfDirection { get; set; } = Direction.Top;
 
         public Player PreviousTickPlayer { get; set; }
 
