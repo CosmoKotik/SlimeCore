@@ -86,7 +86,7 @@ namespace SlimeCore.Network
                             {
                                 byte[] correcetdBytes = new byte[receivedTask.Result];
                                 Array.Copy(bytes, correcetdBytes, receivedTask.Result);
-                                Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
+                                //Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
                                 bm.SetBytes(correcetdBytes);
                                 //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
@@ -119,7 +119,7 @@ namespace SlimeCore.Network
 
                                         buffer = new byte[packetSize];
                                         Array.Copy(bm.GetBytes(), buffer, packetSize);
-                                        Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
+                                        //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
 
                                         HandleBytes(buffer, correcetdBytes, packetID);
                                     }
@@ -544,6 +544,11 @@ namespace SlimeCore.Network
                 new PlayerInfoUpdate(this).AddPlayer(ueban).Write();
                 new SpawnPlayer(this).Write(ueban);*/
             }
+
+            ServerManager.NetClients.ForEach(x =>
+            {
+                new SetBlockDestroyStage(x).Write(_player, _player.CurrentPosition - new Position(0, 1, 0), (byte)new Random().Next(0, 9));
+            });
 
             /*if (_player.Metadata != _player.PreviousTickPlayer.Metadata)
             {

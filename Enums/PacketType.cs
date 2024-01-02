@@ -30,6 +30,7 @@ namespace SlimeCore.Enums
         SET_PLAYER_POSITION_AND_ROTATION,
         SET_PLAYER_POSITION,
         SET_PLAYER_ROTATION,
+        SET_BLOCK_DESTROY_STAGE,
         PLAYER_INFO_UPDATE,
         PLAYER_COMMAND,
         SET_ENTITY_METADATA,
@@ -46,6 +47,7 @@ namespace SlimeCore.Enums
         UNLOAD_CHUNK,
         SET_CENTER_CHUNK,
         SET_DEFAULT_SPAWN_POSITION,
-        KEEP_ALIVE
+        KEEP_ALIVE,
+        PLAYER_ACTION
     }
 }

@@ -49,8 +49,8 @@ namespace SlimeCore.Entity
             PreviousGamemode = 0xFF;
 
             Metadata = new Metadata();
-            Metadata.AddMetadata("IsCrouching", MetadataType.Byte, MetadataValue.IsCrouching);
-            Metadata.AddMetadata("IsCrouchingPose", MetadataType.Pose, MetadataValue.IsCrouching);
+            Metadata.AddMetadata("IsCrouching", MetadataType.Byte, MetadataValue.IsStanding);
+            Metadata.AddMetadata("IsCrouchingPose", MetadataType.Pose, MetadataValue.IsStanding);
         }
 
         public Player Clone()

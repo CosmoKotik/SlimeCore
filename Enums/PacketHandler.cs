@@ -117,6 +117,8 @@ namespace SlimeCore.Enums
                             return 0x52;
                         case PacketType.ENTITY_ANIMATION:
                             return 0x04;
+                        case PacketType.SET_BLOCK_DESTROY_STAGE:
+                            return 0x07;
                     }
                     break;
                 case Versions.BETA_1_7_3:
