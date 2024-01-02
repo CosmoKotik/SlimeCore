@@ -509,6 +509,58 @@ namespace SlimeCore.Network
 
                             new AcknowledgeBlockChange(this).Write(pa.Sequence);
                             break;
+                        case PacketType.USE_ITEM_ON:
+                            UseItemOn item = new UseItemOn(this).Read(buffer) as UseItemOn;
+
+                            Position blockPosition = item.Position;
+                            switch (item.Face)
+                            {
+                                case Face.Bottom:
+                                    blockPosition -= new Position(0, 1, 0);
+                                    break;
+                                case Face.Top:
+                                    blockPosition += new Position(0, 1, 0);
+                                    break;
+                                case Face.North:
+                                    blockPosition -= new Position(0, 0, 1);
+                                    break;
+                                case Face.South:
+                                    blockPosition += new Position(0, 0, 1);
+                                    break;
+                                case Face.West:
+                                    blockPosition -= new Position(1, 0, 0);
+                                    break;
+                                case Face.East:
+                                    blockPosition += new Position(1, 0, 0);
+                                    break;
+                            }
+
+
+                            if (_player.CheckIsColliding(blockPosition))
+                                break;
+
+                            ServerManager.NetClients.ForEach(x =>
+                            {
+                                new BlockUpdate(x).Write(blockPosition, _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem));
+                            });
+
+                            new AcknowledgeBlockChange(this).Write(item.Sequence);
+                            break;
+                        case PacketType.SET_CREATIVE_MODE_SLOT:
+                            SetCreativeModeSlot slot = new SetCreativeModeSlot(this).Read(buffer) as SetCreativeModeSlot;
+
+                            if (slot.SlotIndex == -1)
+                            { 
+                                //Item dropped
+                            }
+                            else
+                                _player.Inventory.SetItem(slot.SlotIndex, slot.ItemID);
+                            break;
+                        case PacketType.SET_HELD_ITEM:
+                            short slotIndex = (short)new SetHeldItem(this).Read(buffer);
+
+                            _player.CurrentHeldItem = slotIndex;
+                            break;
                     }
 
                     if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)

@@ -17,7 +17,7 @@ namespace SlimeCore.Entity
         public Position XYZ 
         { get 
             { 
-                return new Position((int)PositionX, (int)PositionY, (int)PositionZ);
+                return new Position(PositionX, PositionY, PositionZ);
             } 
         }
 
@@ -107,7 +107,27 @@ namespace SlimeCore.Entity
 
         public Position Round()
         {
-            return new Position((int)PositionX, (int)PositionY, (int)PositionZ);
+            return new Position(Math.Floor(PositionX), Math.Floor(PositionY), Math.Floor(PositionZ));
+        }
+
+        public bool Equals(Position other, bool round = false) 
+        {
+            if (!round)
+            {
+                if (PositionX == other.PositionX &&
+                    PositionY == other.PositionY &&
+                    PositionZ == other.PositionZ)
+                    return true;
+            }
+            else
+            {
+                if (Math.Truncate(PositionX) == other.PositionX &&
+                    Math.Truncate(PositionY) == other.PositionY &&
+                    Math.Truncate(PositionZ) == other.PositionZ)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

@@ -232,6 +232,22 @@ namespace SlimeCore.Network
 
             return BitConverter.ToInt32(result);
         }
+        public short GetShort(bool isReversed = true)
+        {
+            byte[] result = new byte[2];
+
+            for (int i = 0; i < 2; i++)
+            {
+                result[i] = _buffer[i];
+            }
+
+            _buffer.RemoveRange(0, 2);
+
+            if (isReversed)
+                result = result.Reverse().ToArray();
+
+            return BitConverter.ToInt16(result);
+        }
         /*public int GetLong()
         {
             byte[] result = new byte[_buffer[0]];

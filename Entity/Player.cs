@@ -37,8 +37,12 @@ namespace SlimeCore.Entity
 
         public Position CurrentPosition { get; set; }
         public Position PreviousPosition { get; set; }
+        public Position Size { get; set; } = new Position(0.7, 1.62, 0.7);
 
         public Player PreviousTickPlayer { get; set; }
+
+        public Inventory Inventory { get; set; }
+        public short CurrentHeldItem { get; set; } = 0;
 
         public Player()
         { 
@@ -51,6 +55,14 @@ namespace SlimeCore.Entity
             Metadata = new Metadata();
             Metadata.AddMetadata("IsCrouching", MetadataType.Byte, MetadataValue.IsStanding);
             Metadata.AddMetadata("IsCrouchingPose", MetadataType.Pose, MetadataValue.IsStanding);
+
+            Inventory = new Inventory();
+            Inventory.Add("crafting_output", 0, 0);
+            Inventory.Add("crafting_input", 1, 4);
+            Inventory.Add("armor", 5, 8);
+            Inventory.Add("main", 9, 35);
+            Inventory.Add("hotbar", 36, 44);
+            Inventory.Add("offhand", 45, 45);
         }
 
         public Player Clone()
@@ -78,6 +90,39 @@ namespace SlimeCore.Entity
                 Username = this.Username,
                 ViewDistance = this.ViewDistance,
             };
+        }
+
+        public bool CheckIsColliding(Position position)
+        {
+            Position pos = CurrentPosition.XYZ.Clone();
+
+            double xDecimal = CurrentPosition.PositionX - Math.Truncate(CurrentPosition.PositionX);
+            double yDecimal = CurrentPosition.PositionY - Math.Truncate(CurrentPosition.PositionY);
+            double zDecimal = CurrentPosition.PositionZ - Math.Truncate(CurrentPosition.PositionZ);
+
+            if (pos.Equals(position, true) || pos.Equals(position - new Position(0, 1, 0), true))
+                return true;
+
+            if (xDecimal > 0.700)
+                pos.PositionX = Math.Ceiling(pos.PositionX);
+            else if (xDecimal < 0.300)
+                pos.PositionX = Math.Floor(pos.PositionX - 1);
+            else
+                pos.PositionX = Math.Floor(pos.PositionX);
+
+            if (zDecimal > 0.700)
+                pos.PositionZ = Math.Ceiling(pos.PositionZ);
+            else if (zDecimal < 0.300)
+                pos.PositionZ = Math.Floor(pos.PositionZ - 1);
+            else
+                pos.PositionZ = Math.Floor(pos.PositionZ);
+
+            pos.PositionY = Math.Floor(pos.PositionY);
+
+            if (pos.Equals(position))
+                return true;
+
+            return false;
         }
     }
 }

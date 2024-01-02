@@ -35,6 +35,7 @@ namespace SlimeCore.Enums
         ACKNOWLEDGE_BLOCK_CHANGE,
         PLAYER_INFO_UPDATE,
         PLAYER_COMMAND,
+        USE_ITEM_ON,
         SET_ENTITY_METADATA,
         ENTITY_ANIMATION,
         SWING_ARM,
@@ -50,6 +51,8 @@ namespace SlimeCore.Enums
         SET_CENTER_CHUNK,
         SET_DEFAULT_SPAWN_POSITION,
         KEEP_ALIVE,
-        PLAYER_ACTION
+        PLAYER_ACTION,
+        SET_CREATIVE_MODE_SLOT,
+        SET_HELD_ITEM
     }
 }

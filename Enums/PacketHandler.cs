@@ -238,14 +238,6 @@ namespace SlimeCore.Enums
                             return PacketType.SET_PLAYER_ROTATION;
                         case 0x23:
                             return PacketType.LOGIN_PLAY;
-                        case 0x26:
-                            return PacketType.UPDATE_ENTITY_POSITION;
-                        case 0x27:
-                            return PacketType.UPDATE_ENTITY_POSITION_AND_ROTATION;
-                        case 0x28:
-                            return PacketType.UPDATE_ENTITY_ROTATION;
-                        case 0x2D:
-                            return PacketType.UPDATE_ENTITY_ROTATION;
                         case 0x42:
                             return PacketType.SET_HEAD_ROTATION;
                         case 0x03:
@@ -262,6 +254,12 @@ namespace SlimeCore.Enums
                             return PacketType.SWING_ARM;
                         case 0x1D:
                             return PacketType.PLAYER_ACTION;
+                        case 0x31:
+                            return PacketType.USE_ITEM_ON;
+                        case 0x2B:
+                            return PacketType.SET_CREATIVE_MODE_SLOT;
+                        case 0x28:
+                            return PacketType.SET_HELD_ITEM;
                     }
                     break;
             }
