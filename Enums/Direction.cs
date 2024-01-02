@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Enums
 {
-    public enum Face
+    public enum Direction
     {
         Bottom,
         Top,
         North,
         South,
         West,
-        East
+        East,
+        None
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlimeCore.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,9 @@ namespace SlimeCore.Registry
         public int ID { get; set; }
         public int ItemID { get; set; }
         public bool IsDefault { get; set; }
+        public Direction Direction { get; set; }
+        public Direction Half { get; set; }
+        public bool waterlogged { get; set; }
     }
 
     internal class PropertiesArray

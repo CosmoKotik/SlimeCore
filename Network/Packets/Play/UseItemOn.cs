@@ -17,7 +17,7 @@ namespace SlimeCore.Network.Packets.Play
 
         public int Hand { get; set; }
         public Position Position { get; set; }
-        public Face Face { get; set; }
+        public Direction Face { get; set; }
         public float CursorPosX { get; set; }
         public float CursorPosY { get; set; }
         public float CursorPosZ { get; set; }
@@ -49,7 +49,7 @@ namespace SlimeCore.Network.Packets.Play
 
             this.Position = new Position(x, y, z);
 
-            this.Face = (Face)bm.GetByte();
+            this.Face = (Direction)bm.GetByte();
             this.CursorPosX = bm.GetFloat();
             this.CursorPosY = bm.GetFloat();
             this.CursorPosZ = bm.GetFloat();

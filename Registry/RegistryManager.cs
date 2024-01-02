@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SlimeCore.Entity;
+using SlimeCore.Enums;
 
 namespace SlimeCore.Registry
 {
@@ -31,15 +32,25 @@ namespace SlimeCore.Registry
                 {
                     for (int s = 0; s < obj.ElementAt(i).First["states"].Count(); s++)
                     {
-                        bool isDefault = (bool)obj.ElementAt(i).First["states"].ElementAt(s).Value<bool>("default");
-                        if (!isDefault)
-                            continue;
+                        JToken state = obj.ElementAt(i).First["states"].ElementAt(s);
+                        JToken properties = state["properties"];
+                        bool isDefault = state.Value<bool>("default");
+                        /*if (!isDefault)
+                            continue;*/
+
+                        if (properties == null)
+                            properties = state;
+
+                        //Console.WriteLine(properties.Value<string>("facing"));
 
                         BlockRegistry block = new BlockRegistry()
                         { 
                             ID = int.Parse(obj.ElementAt(i).First["states"].ElementAt(s)["id"].ToString()),
                             Name = obj.ElementAt(i).Path,
-                            IsDefault = isDefault
+                            IsDefault = isDefault,
+                            Direction = ParseDirection(properties.Value<string>("facing")),
+                            Half = ParseDirection(properties.Value<string>("half")),
+                            waterlogged = properties.Value<bool>("waterlogged")
                         };
 
                         this.BlockToItemMap.Add(block);
@@ -51,6 +62,26 @@ namespace SlimeCore.Registry
                 }
 
                 return obj;
+            }
+        }
+
+        private Direction ParseDirection(string direction)
+        {
+            switch (direction)
+            {
+                case "top":
+                    return Direction.Top;
+                case "bottom":
+                    return Direction.Bottom;
+                case "north":
+                    return Direction.North;
+                case "south":
+                    return Direction.South;
+                case "east":
+                    return Direction.East;
+                case "west":
+                    return Direction.West;
+                default: return Direction.None;
             }
         }
 
@@ -81,9 +112,7 @@ namespace SlimeCore.Registry
                         };
 
                         if (type.Equals("minecraft:item"))
-                        {
                             BlockToItemMap.FindAll(x => x.Name.Equals(name)).ForEach(x => x.ItemID = id);
-                        }
 
                         /*Console.Write(obj.ElementAt(i).Path);
                         Console.Write("    id: ");
@@ -98,6 +127,11 @@ namespace SlimeCore.Registry
         public int GetBlockId(int itemID)
         { 
             return BlockToItemMap.Find(x => x.ItemID == itemID).ID;
+        }
+
+        public int GetBlockId(int itemID, Direction direction)
+        {
+            return BlockToItemMap.Find(x => x.ItemID == itemID && (x.Direction.Equals(direction) || (x.Direction.Equals(Direction.None) && x.IsDefault))).ID;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Core.Metadata;
+using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,8 @@ namespace SlimeCore.Entity
         public Position CurrentPosition { get; set; }
         public Position PreviousPosition { get; set; }
         public Position Size { get; set; } = new Position(0.7, 1.62, 0.7);
+
+        public Direction LookDirection { get; set; } = Direction.North;
 
         public Player PreviousTickPlayer { get; set; }
 
