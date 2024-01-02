@@ -1,5 +1,6 @@
 ﻿using SlimeCore.Entity;
 using SlimeCore.Network;
+using SlimeCore.Registry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,8 @@ namespace SlimeCore.Core
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
+        public RegistryManager Registry { get; set; }
+
         public List<ClientHandler> NetClients { get; set; } = new List<ClientHandler>();
         public List<Player> Players { get; set; } = new List<Player>();
         private NetListener _listener;
@@ -38,6 +41,10 @@ namespace SlimeCore.Core
         { 
             this.IpAddress = ip;
             this.Port = port;
+
+            this.Registry = new RegistryManager();
+            this.Registry.ParseBlocks("G:\\Dev\\SlimeCore\\Assets\\blocks.json");
+            this.Registry.ParseItems("G:\\Dev\\SlimeCore\\Assets\\items.json");
 
             _listener = new NetListener(this);
         }

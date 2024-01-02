@@ -86,7 +86,7 @@ namespace SlimeCore.Network
                             {
                                 byte[] correcetdBytes = new byte[receivedTask.Result];
                                 Array.Copy(bytes, correcetdBytes, receivedTask.Result);
-                                //Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
+                                Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
                                 bm.SetBytes(correcetdBytes);
                                 //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
@@ -541,7 +541,8 @@ namespace SlimeCore.Network
 
                             ServerManager.NetClients.ForEach(x =>
                             {
-                                new BlockUpdate(x).Write(blockPosition, _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem));
+                                //new BlockUpdate(x).Write(blockPosition, _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem));
+                                new BlockUpdate(x).Write(blockPosition, ServerManager.Registry.GetBlockId(_player.Inventory.GetItem("hotbar", _player.CurrentHeldItem)));
                             });
 
                             new AcknowledgeBlockChange(this).Write(item.Sequence);

@@ -1,6 +1,8 @@
 ﻿using SlimeCore.Core;
 using SlimeCore.Core.Chunks;
 using SlimeCore.Network;
+using SlimeCore.Network.Packets.Nbts;
+using SlimeCore.Registry;
 using SlimeCore.Tools.Nbt;
 using System;
 

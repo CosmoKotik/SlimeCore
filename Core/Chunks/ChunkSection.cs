@@ -20,7 +20,7 @@ namespace SlimeCore.Core.Chunks
 
         public void Fill(BlockType type)
         {
-            Block block = new Block(type, 0, 0);
+            //Block block = new Block(type, 0, 0);
 
             IndirectPalette palette = new IndirectPalette()
             {

@@ -13,22 +13,31 @@ namespace SlimeCore.Entity
     {
         /*public byte[] PackedXZCoords { get; set; }
         public short Height { get; set; }*/
-        public BlockType BlockType { get; set; }
+        /*public BlockType BlockType { get; set; }
         public int BitsPerEntry { get; set; }
 
         public int X {  get; set; }
         public int Y {  get; set; }
+        */
 
-        public Block(BlockType type, int x, int y)
+        public string Name { get; set; }
+        public int ID { get; set; }
+
+        public Block()
+        { 
+            
+        }
+
+        /*public Block(BlockType type, int x, int y)
         {
             this.BlockType = type;
             this.BitsPerEntry = GetBitsPerEntry(type);
 
             this.X = x;
             this.Y = y;
-        }
+        }*/
 
-        private int GetBitsPerEntry(BlockType type)
+        /*private int GetBitsPerEntry(BlockType type)
         {
             int bpe = 0;
 
@@ -42,6 +51,6 @@ namespace SlimeCore.Entity
             Console.WriteLine(bits.Count);
 
             return bpe;
-        }
+        }*/
     }
 }
