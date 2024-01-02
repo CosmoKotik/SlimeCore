@@ -486,6 +486,29 @@ namespace SlimeCore.Network
                                 new EntityAnimation(x).Write(_player, (Animations)(arm ? 3 : 0));
                             });
                             break;
+                        case PacketType.PLAYER_ACTION:
+                            PlayerAction pa = new PlayerAction(this).Read(buffer) as PlayerAction;
+
+                            switch ((PlayerActionStatus)pa.Status)
+                            {
+                                case PlayerActionStatus.StartedDigging:
+                                    switch ((Gamemode)_player.Gamemode)
+                                    {
+                                        case Gamemode.Survival:
+                                            break;
+                                        case Gamemode.Creative:
+                                            ServerManager.NetClients.ForEach(x =>
+                                            {
+                                                new BlockUpdate(x).Write(pa.Position, 0);
+                                            });
+                                            break;
+                                    }
+
+                                    break;
+                            }
+
+                            new AcknowledgeBlockChange(this).Write(pa.Sequence);
+                            break;
                     }
 
                     if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
@@ -545,10 +568,11 @@ namespace SlimeCore.Network
                 new SpawnPlayer(this).Write(ueban);*/
             }
 
-            ServerManager.NetClients.ForEach(x =>
+            /*ServerManager.NetClients.ForEach(x =>
             {
-                new SetBlockDestroyStage(x).Write(_player, _player.CurrentPosition - new Position(0, 1, 0), (byte)new Random().Next(0, 9));
-            });
+                //new SetBlockDestroyStage(x).Write(_player, _player.CurrentPosition - new Position(0, 1, 0), (byte)new Random().Next(0, 9));
+                new BlockUpdate(x).Write(_player.CurrentPosition - new Position(0, 1.62, 0), new Random().Next(35, 36));
+            });*/
 
             /*if (_player.Metadata != _player.PreviousTickPlayer.Metadata)
             {

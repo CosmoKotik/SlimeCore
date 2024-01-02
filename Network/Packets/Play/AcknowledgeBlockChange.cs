@@ -1,5 +1,4 @@
-﻿using SlimeCore.Entity;
-using SlimeCore.Enums;
+﻿using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,21 +7,16 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Network.Packets.Play
 {
-    public class PlayerAction : IPacket
+    public class AcknowledgeBlockChange : IPacket
     {
         public Versions Version { get; set; }
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        public int Status { get; set; }
-        public Position Position { get; set; }
-        public byte Face { get; set; }
-        public int Sequence { get; set; }
-
-        public PlayerAction(ClientHandler clientHandler)
+        public AcknowledgeBlockChange(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
-            this.PacketID = PacketHandler.Get(Version, PacketType.PLAYER_ACTION);
+            this.PacketID = PacketHandler.Get(Version, PacketType.ACKNOWLEDGE_BLOCK_CHANGE);
         }
 
         public void Broadcast(bool includeSelf)
@@ -35,25 +29,17 @@ namespace SlimeCore.Network.Packets.Play
             BufferManager bm = new BufferManager();
             bm.SetBytes(bytes);
 
-            this.Status = bm.ReadVarInt();
-            long pos = bm.GetLong();
-
-            double x = pos >> 38;
-            double y = pos << 52 >> 52;
-            double z = pos << 26 >> 38;
-
-            this.Position = new Position(x, y, z);
-
-            this.Face = bm.GetByte();
-            this.Sequence = bm.ReadVarInt();
-
             return this;
         }
 
-        public async void Write()
+        public async void Write() { }
+
+        public async void Write(int sequenceID)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
+
+            bm.AddVarInt(sequenceID);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }

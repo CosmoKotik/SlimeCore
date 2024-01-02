@@ -119,6 +119,10 @@ namespace SlimeCore.Enums
                             return 0x04;
                         case PacketType.SET_BLOCK_DESTROY_STAGE:
                             return 0x07;
+                        case PacketType.BLOCK_UPDATE:
+                            return 0x0A;
+                        case PacketType.ACKNOWLEDGE_BLOCK_CHANGE:
+                            return 0x06;
                     }
                     break;
                 case Versions.BETA_1_7_3:
@@ -256,6 +260,8 @@ namespace SlimeCore.Enums
                             return PacketType.PLAYER_COMMAND;
                         case 0x2F:
                             return PacketType.SWING_ARM;
+                        case 0x1D:
+                            return PacketType.PLAYER_ACTION;
                     }
                     break;
             }

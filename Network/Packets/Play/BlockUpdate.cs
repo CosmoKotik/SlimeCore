@@ -8,21 +8,16 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Network.Packets.Play
 {
-    public class PlayerAction : IPacket
+    public class BlockUpdate : IPacket
     {
         public Versions Version { get; set; }
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        public int Status { get; set; }
-        public Position Position { get; set; }
-        public byte Face { get; set; }
-        public int Sequence { get; set; }
-
-        public PlayerAction(ClientHandler clientHandler)
+        public BlockUpdate(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
-            this.PacketID = PacketHandler.Get(Version, PacketType.PLAYER_ACTION);
+            this.PacketID = PacketHandler.Get(Version, PacketType.BLOCK_UPDATE);
         }
 
         public void Broadcast(bool includeSelf)
@@ -35,25 +30,24 @@ namespace SlimeCore.Network.Packets.Play
             BufferManager bm = new BufferManager();
             bm.SetBytes(bytes);
 
-            this.Status = bm.ReadVarInt();
-            long pos = bm.GetLong();
-
-            double x = pos >> 38;
-            double y = pos << 52 >> 52;
-            double z = pos << 26 >> 38;
-
-            this.Position = new Position(x, y, z);
-
-            this.Face = bm.GetByte();
-            this.Sequence = bm.ReadVarInt();
-
             return this;
         }
 
-        public async void Write()
+        public async void Write() { }
+
+        public async void Write(Position position, int blockID)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
+
+            long x = (long)position.PositionX;
+            long y = (long)position.PositionY;
+            long z = (long)position.PositionZ;
+
+            long pos = ((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF);
+
+            bm.AddLong(pos);
+            bm.AddVarInt(blockID);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }
