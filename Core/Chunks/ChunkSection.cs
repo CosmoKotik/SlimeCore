@@ -24,7 +24,7 @@ namespace SlimeCore.Core.Chunks
 
             IndirectPalette palette = new IndirectPalette()
             {
-                IDs = new int[] { (byte)BlockType.Dirt, (byte)type }
+                IDs = new int[] { (byte)BlockType.Block, (byte)type }
             };
 
             long[] blockEntries = new long[((64 / 4) * 16)];

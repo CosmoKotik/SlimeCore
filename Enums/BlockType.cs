@@ -8,9 +8,19 @@ namespace SlimeCore.Enums
 {
     public enum BlockType
     {
-        Air = 0,
-        Stone = 1,
-        Grass = 2,
-        Dirt = 3
+        Air,
+        Block,
+        Stair,
+        Slab,
+        Fence,
+        Button,
+        Door,
+        Leaves,
+        Log,
+        Planks,
+        Pressure_Plate,
+        Sign,
+        Sapling,
+        Trapdoor,
     }
 }

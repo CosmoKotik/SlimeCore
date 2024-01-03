@@ -32,6 +32,7 @@ namespace SlimeCore.Core
         public int Port { get; set; }
 
         public RegistryManager Registry { get; set; }
+        public List<Block> BlockPlaced { get; set; }
 
         public List<ClientHandler> NetClients { get; set; } = new List<ClientHandler>();
         public List<Player> Players { get; set; } = new List<Player>();
@@ -42,7 +43,9 @@ namespace SlimeCore.Core
             this.IpAddress = ip;
             this.Port = port;
 
-            this.Registry = new RegistryManager();
+            this.BlockPlaced = new List<Block>();
+
+            this.Registry = new RegistryManager(this);
             this.Registry.ParseBlocks("G:\\Dev\\SlimeCore\\Assets\\blocks.json");
             this.Registry.ParseItems("G:\\Dev\\SlimeCore\\Assets\\items.json");
 

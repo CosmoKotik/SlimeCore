@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Enums;
+using SlimeCore.Registry;
 using SlimeCore.Tools.Nbt;
 using System;
 using System.Collections;
@@ -20,12 +21,24 @@ namespace SlimeCore.Entity
         public int Y {  get; set; }
         */
 
-        public string Name { get; set; }
-        public int ID { get; set; }
+        public Position BlockPosition { get; set; }
+        public int BlockID { get; set; }
+        public BlockType Type { get; set; }
+        public Direction Direction { get; set; }
 
-        public Block()
+        public Block(Position pos, int id, BlockType type, Direction direction)
         { 
-            
+            this.BlockID = id;
+            this.BlockPosition = pos;
+            this.Type = type;
+            this.Direction = direction;
+        }
+
+        public Block(Position pos, int id, BlockType type)
+        {
+            this.BlockID = id;
+            this.BlockPosition = pos;
+            this.Type = type;
         }
 
         /*public Block(BlockType type, int x, int y)

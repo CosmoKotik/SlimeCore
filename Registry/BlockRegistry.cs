@@ -1,4 +1,6 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Entity;
+using SlimeCore.Enums;
+using SlimeCore.Registry.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,10 @@ namespace SlimeCore.Registry
         public bool IsDefault { get; set; }
         public Direction Direction { get; set; }
         public Direction Half { get; set; }
+        public ShapeType Shape { get; set; }
         public bool waterlogged { get; set; }
+        public BlockType type { get; set; }
+        //public BlockProperties Properties { get; set; }
     }
 
     internal class PropertiesArray
@@ -47,9 +52,15 @@ namespace SlimeCore.Registry
         public string[] in_wall { get; set; }
     }
 
-    internal class Properties
+    public class BlockProperties
     {
-        public string axis { get; set; }
+        public Direction Direction { get; set; }
+        public Direction Half { get; set; }
+        public ShapeType Shape { get; set; }
+        public bool IsDefault { get; set; }
+        public Position Position { get; set; }
+
+        /*public string axis { get; set; }
         public string stage { get; set; }
         public string type { get; set; }
         public string shape { get; set; }
@@ -74,19 +85,14 @@ namespace SlimeCore.Registry
         public string half { get; set; }
         public string hinge { get; set; }
         public string open { get; set; }
-        public string in_wall { get; set; }
+        public string in_wall { get; set; }*/
     }
 
-    internal class States
+    /*internal class States
     {
         public bool isdefault { get; set; }
         public int id { get; set; }
-        public Properties properties { get; set; }
+        //public Properties properties { get; set; }
     }
-
-    internal class registry
-    {
-        public PropertiesArray properties { get; set; }
-        public States states { get; set; }
-    }
+*/
 }

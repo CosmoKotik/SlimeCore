@@ -6,12 +6,14 @@ using SlimeCore.Network.Packets;
 using SlimeCore.Network.Packets.Login;
 using SlimeCore.Network.Packets.Play;
 using SlimeCore.Network.Packets.Status;
+using SlimeCore.Registry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Sockets;
 using System.Numerics;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -505,6 +507,7 @@ namespace SlimeCore.Network
                                             ServerManager.NetClients.ForEach(x =>
                                             {
                                                 new BlockUpdate(x).Write(pa.Position, 0);
+                                                ServerManager.BlockPlaced.RemoveAll(x => x.BlockPosition.Equals(pa.Position));
                                             });
                                             break;
                                     }
@@ -547,7 +550,22 @@ namespace SlimeCore.Network
                             ServerManager.NetClients.ForEach(x =>
                             {
                                 //new BlockUpdate(x).Write(blockPosition, _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem));
-                                new BlockUpdate(x).Write(blockPosition, ServerManager.Registry.GetBlockId(_player.Inventory.GetItem("hotbar", _player.CurrentHeldItem), _player.LookDirection, _player.HalfDirection));
+                                //new BlockUpdate(x).Write(blockPosition, ServerManager.Registry.GetBlockId(_player.Inventory.GetItem("hotbar", _player.CurrentHeldItem), _player.LookDirection, _player.HalfDirection));
+                                BlockProperties blockProp = new BlockProperties()
+                                {
+                                    Direction = _player.LookDirection,
+                                    Half = _player.HalfDirection,
+                                    Position = blockPosition,
+                                };
+
+                                int itemId = _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem);
+                                int blockId = ServerManager.Registry.GetBlockId(itemId, blockProp);
+
+                                Block block = new Block(blockPosition, blockId, ServerManager.Registry.GetBlockType(itemId), _player.LookDirection);
+
+
+                                ServerManager.BlockPlaced.Add(block);
+                                new BlockUpdate(x).Write(blockPosition, blockId);
                             });
 
                             new AcknowledgeBlockChange(this).Write(item.Sequence);
