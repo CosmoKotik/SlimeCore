@@ -6,3 +6,7 @@ Slimecore is a very lightweight minecraft server written on C# that runs on 1.20
 - [x] Connection between client/server
 - [x] Movement (position, rotation, crouching)
 - [ ] Loading chunks (Partially done, but currently only sending hardcoded packet for a flat world)
+- [ ] Add entity AI
+- [x] Load slime plugins
+- [ ] Load bukkit/spiggot/paper plugins
+- [ ] Load forge/fabric mods
