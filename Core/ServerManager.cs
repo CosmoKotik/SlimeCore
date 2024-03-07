@@ -1,5 +1,5 @@
 ﻿using Delta.Core;
-using SlimeCore.Api;
+using SlimeApi;
 using SlimeCore.Entity;
 using SlimeCore.Network;
 using SlimeCore.Network.Packets.Play;
@@ -85,9 +85,16 @@ namespace SlimeCore.Core
             foreach (string filepath in Directory.GetFileSystemEntries(_pluginsPath))
             {
                 string fullpath = Path.GetFullPath(filepath);
-                var dll = Assembly.LoadFile(fullpath);
+                var dll = Assembly.LoadFrom(fullpath);
 
                 InvokePluginMethod(AddPlugin(dll), PluginMethods.OnInit);
+                
+                //PluginObject objs = InvokePluginMethod(AddPlugin(dll), PluginMethods.AddPlayer);
+
+                /*for (int i = 0; i < objs.returnedObjects.Length; i++)
+                {
+                    Console.WriteLine(objs.returnedObjects[i].ToString());
+                }*/
             }
 
             this.BlockPlaced = new List<Block>();
@@ -119,6 +126,18 @@ namespace SlimeCore.Core
                 lock (NetClients)
                     NetClients.ForEach(async client => { await client.TickUpdate(); });
 
+                PluginObject[] objs = InvokeAllPluginsMethod(PluginMethods.GetPlayers);
+
+                for (int i = 0; i < objs.Length; i++)
+                {
+                    for (int x = 0; x < objs[i].returnedObjects.Length; x++)
+                    {
+                        SlimeApi.Entity.Player[] players = (SlimeApi.Entity.Player[])objs[i].returnedObjects[x];
+                        foreach (SlimeApi.Entity.Player player in players)
+                            Console.WriteLine(player.Username);
+                    }
+                }
+
                 lastTickTime = DateTime.UtcNow.Ticks;
                 await Task.Delay(GetWaitTSPTime());
             }
@@ -133,12 +152,8 @@ namespace SlimeCore.Core
         {
             List<Type> invokedTypes = new List<Type>();
             foreach (var type in dll.GetExportedTypes())
-            {
-                if (!type.Name.Equals(typeof(PluginListener).Name))
-                {
+                if (!type.Name.Equals(typeof(PluginListener).Name) && type.BaseType.Name.Equals(typeof(PluginListener).Name))
                     invokedTypes.Add(type);
-                }
-            }
 
             PluginType plugin = new PluginType()
             {
@@ -149,12 +164,14 @@ namespace SlimeCore.Core
             return plugin;
         }
 
-        public void InvokePluginMethod(PluginType plugin, PluginMethods method)
+        public PluginObject InvokePluginMethod(PluginType plugin, PluginMethods method, object[] args = null)
         {
+            List<object> objs = new List<object>();
             plugin.InvokeTypes.ForEach(t => 
             {
                 var instance = Activator.CreateInstance(t);
-                switch (method)
+                objs.Add(t.InvokeMember(Enum.GetName(typeof(PluginMethods), method), BindingFlags.InvokeMethod, null, instance, args));
+                /*switch (method)
                 {
                     case PluginMethods.OnInit:
                         t.InvokeMember("OnInit", BindingFlags.InvokeMethod, null, instance, null);
@@ -163,33 +180,26 @@ namespace SlimeCore.Core
                         t.InvokeMember("OnStop", BindingFlags.InvokeMethod, null, instance, null);
                         break;
                     case PluginMethods.OnTick:
-                        t.InvokeMember("OnTick", BindingFlags.InvokeMethod, null, instance, null);
+                        t.InvokeMember(Enum.GetName(typeof(PluginMethods), method), BindingFlags.InvokeMethod, null, instance, null);
                         break;
-                }
+                }*/
             });
+
+            return new PluginObject()
+            {
+                returnedObjects = objs.ToArray(),
+                plugin = plugin
+            };
         }
 
-        public void InvokeAllPluginsMethod(PluginMethods method)
+        public PluginObject[] InvokeAllPluginsMethod(PluginMethods method, object[] args = null)
         {
+            List<PluginObject> objs = new List<PluginObject>();
             Plugins.ForEach(t =>
             {
-                t.InvokeTypes.ForEach(t =>
-                {
-                    var instance = Activator.CreateInstance(t);
-                    switch (method)
-                    {
-                        case PluginMethods.OnInit:
-                            t.InvokeMember("OnInit", BindingFlags.InvokeMethod, null, instance, null);
-                            break;
-                        case PluginMethods.OnStop:
-                            t.InvokeMember("OnStop", BindingFlags.InvokeMethod, null, instance, null);
-                            break;
-                        case PluginMethods.OnTick:
-                            t.InvokeMember("OnTick", BindingFlags.InvokeMethod, null, instance, null);
-                            break;
-                    }
-                });
+                objs.Add(InvokePluginMethod(t, method, args));
             });
+            return objs.ToArray();
         }
     }
 }

@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Plugin
 {
-    public enum PluginMethods
+    public class PluginObject
     {
-        OnInit,
-        OnStop,
-        OnTick,
-        AddPlayer,
-        RemovePlayer,
-        UpdatePlayer,
-        GetPlayers
+        public PluginType plugin { get; set; }
+        public object[] returnedObjects { get; set; }
     }
 }
