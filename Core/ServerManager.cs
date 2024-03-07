@@ -1,9 +1,14 @@
-﻿using SlimeCore.Entity;
+﻿using Delta.Core;
+using SlimeCore.Api;
+using SlimeCore.Entity;
 using SlimeCore.Network;
+using SlimeCore.Network.Packets.Play;
+using SlimeCore.Plugin;
 using SlimeCore.Registry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,20 +16,47 @@ namespace SlimeCore.Core
 {
     public class ServerManager
     {
-        public int MaxPlayers = 20;
-        public int CurrentOnline = 0;
-        public int ViewDistance = 8;
-        public int SimulationDistance = 1;
+        public int MaxPlayers { get => _maxPlayers; }
+        private int _maxPlayers = 20;
+        
+        public int CurrentOnline { get => _currentOnline; }
+        private int _currentOnline = 0;
+        
+        public int ViewDistance { get => _viewDistance; }
+        private int _viewDistance = 8;
+        
+        public int SimulationDistance { get => _simulationDistance; }
+        private int _simulationDistance = 1;
 
-        public bool ReducedDebugInfo = false;
-        public bool EnableRespawnScreen = true;
-        public bool IsDebug = false;
-        public bool IsFlat = false;
-        public bool HasDeathLocation = false;
-        public int PortalCooldown = 0;
+        public bool ReducedDebugInfo { get => _reducedDebugInfo; }
+        private bool _reducedDebugInfo = false;
+        
+        public bool EnableRespawnScreen { get => _enableRespawnScreen; }
+        private bool _enableRespawnScreen = true;
+        
+        public bool IsDebug { get => _isDebug; }
+        private bool _isDebug = false;
+        
+        public bool IsFlat { get => _isFlat; }
+        private bool _isFlat = false;
+        
+        public bool HasDeathLocation { get => _hasDeathLocation; }
+        private bool _hasDeathLocation = false;
+        
+        public int PortalCooldown { get => _portalCooldown; }
+        private int _portalCooldown = 0;
+
+        public string PluginsPath { get => _pluginsPath; }
+        private string _pluginsPath = @"plugins";
 
         public int TickPerSecond = 20;
         public float CurrentTPS = 20;
+
+        //public List<Assembly> Plugins { get => _plugins; }
+        //private List<Assembly> _plugins = new List<Assembly>();
+
+        public List<PluginType> Plugins { get => _plugins; }
+        private List<PluginType> _plugins = new List<PluginType>();
 
         public bool IsStarted { get; set; }
 
@@ -43,11 +75,26 @@ namespace SlimeCore.Core
             this.IpAddress = ip;
             this.Port = port;
 
+            if (!Directory.Exists(_pluginsPath))
+            {
+                Logger.Warn("Missing plugins folder...");
+                Logger.Warn("Creating plugin folder.");
+                Directory.CreateDirectory(_pluginsPath);
+            }
+
+            foreach (string filepath in Directory.GetFileSystemEntries(_pluginsPath))
+            {
+                string fullpath = Path.GetFullPath(filepath);
+                var dll = Assembly.LoadFile(fullpath);
+
+                InvokePluginMethod(AddPlugin(dll), PluginMethods.OnInit);
+            }
+
             this.BlockPlaced = new List<Block>();
 
             this.Registry = new RegistryManager(this);
-            this.Registry.ParseBlocks("G:\\Dev\\SlimeCore\\Assets\\blocks.json");
-            this.Registry.ParseItems("G:\\Dev\\SlimeCore\\Assets\\items.json");
+            //this.Registry.ParseBlocks("G:\\Dev\\SlimeCore\\Assets\\blocks.json");
+            //this.Registry.ParseItems("G:\\Dev\\SlimeCore\\Assets\\items.json");
 
             _listener = new NetListener(this);
         }
@@ -80,6 +127,69 @@ namespace SlimeCore.Core
         private int GetWaitTSPTime()
         {
             return 1000 / TickPerSecond;
+        }
+
+        public PluginType AddPlugin(Assembly dll)
+        {
+            List<Type> invokedTypes = new List<Type>();
+            foreach (var type in dll.GetExportedTypes())
+            {
+                if (!type.Name.Equals(typeof(PluginListener).Name))
+                {
+                    invokedTypes.Add(type);
+                }
+            }
+
+            PluginType plugin = new PluginType()
+            {
+                Dll = dll,
+                InvokeTypes = invokedTypes
+            };
+            _plugins.Add(plugin);
+            return plugin;
+        }
+
+        public void InvokePluginMethod(PluginType plugin, PluginMethods method)
+        {
+            plugin.InvokeTypes.ForEach(t => 
+            {
+                var instance = Activator.CreateInstance(t);
+                switch (method)
+                {
+                    case PluginMethods.OnInit:
+                        t.InvokeMember("OnInit", BindingFlags.InvokeMethod, null, instance, null);
+                        break;
+                    case PluginMethods.OnStop:
+                        t.InvokeMember("OnStop", BindingFlags.InvokeMethod, null, instance, null);
+                        break;
+                    case PluginMethods.OnTick:
+                        t.InvokeMember("OnTick", BindingFlags.InvokeMethod, null, instance, null);
+                        break;
+                }
+            });
+        }
+
+        public void InvokeAllPluginsMethod(PluginMethods method)
+        {
+            Plugins.ForEach(t =>
+            {
+                t.InvokeTypes.ForEach(t =>
+                {
+                    var instance = Activator.CreateInstance(t);
+                    switch (method)
+                    {
+                        case PluginMethods.OnInit:
+                            t.InvokeMember("OnInit", BindingFlags.InvokeMethod, null, instance, null);
+                            break;
+                        case PluginMethods.OnStop:
+                            t.InvokeMember("OnStop", BindingFlags.InvokeMethod, null, instance, null);
+                            break;
+                        case PluginMethods.OnTick:
+                            t.InvokeMember("OnTick", BindingFlags.InvokeMethod, null, instance, null);
+                            break;
+                    }
+                });
+            });
         }
     }
 }

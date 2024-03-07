@@ -353,8 +353,9 @@ namespace SlimeCore.Registry
                         break;
                 }
             }
-
+            //
             return 0;
+            //return BlockToItemMap.Find(x => x.ItemID == itemID && x.IsDefault && !x.waterlogged).ID;
         }
 
         private Direction InverseDirection(Direction direction)

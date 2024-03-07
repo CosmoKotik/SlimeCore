@@ -543,6 +543,14 @@ namespace SlimeCore.Network
                                     break;
                             }
 
+                            if ((item.CursorPosX == 0 || item.CursorPosX == 1) || (item.CursorPosZ == 0 || item.CursorPosZ == 1))
+                                if (item.CursorPosY >= 0.5)
+                                    _player.HalfDirection = Direction.Top;
+                                else
+                                    _player.HalfDirection = Direction.Bottom;
+                            else
+                                _player.HalfDirection = Direction.Bottom;
+
 
                             if (_player.CheckIsColliding(blockPosition))
                                 break;
@@ -645,10 +653,10 @@ namespace SlimeCore.Network
             else if (headAngle <= -315 || headAngle > -45)
                 _player.LookDirection = Direction.South;
 
-            if (_player.CurrentPosition.Pitch <= 0)
+            /*if (_player.CurrentPosition.Pitch <= 0)
                 _player.HalfDirection = Direction.Top;
             else
-                _player.HalfDirection = Direction.Bottom;
+                _player.HalfDirection = Direction.Bottom;*/
         }
 
         public async Task TickUpdate()
