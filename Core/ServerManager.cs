@@ -126,6 +126,8 @@ namespace SlimeCore.Core
                 lock (NetClients)
                     NetClients.ForEach(async client => { await client.TickUpdate(); });
 
+                InvokeAllPluginsMethod(PluginMethods.AddPlayer, new object[] { new SlimeApi.Entity.Player() { UUID = new Guid(), Username = "zalupnic" } });
+
                 PluginObject[] objs = InvokeAllPluginsMethod(PluginMethods.GetPlayers);
 
                 for (int i = 0; i < objs.Length; i++)
@@ -171,18 +173,6 @@ namespace SlimeCore.Core
             {
                 var instance = Activator.CreateInstance(t);
                 objs.Add(t.InvokeMember(Enum.GetName(typeof(PluginMethods), method), BindingFlags.InvokeMethod, null, instance, args));
-                /*switch (method)
-                {
-                    case PluginMethods.OnInit:
-                        t.InvokeMember("OnInit", BindingFlags.InvokeMethod, null, instance, null);
-                        break;
-                    case PluginMethods.OnStop:
-                        t.InvokeMember("OnStop", BindingFlags.InvokeMethod, null, instance, null);
-                        break;
-                    case PluginMethods.OnTick:
-                        t.InvokeMember(Enum.GetName(typeof(PluginMethods), method), BindingFlags.InvokeMethod, null, instance, null);
-                        break;
-                }*/
             });
 
             return new PluginObject()
