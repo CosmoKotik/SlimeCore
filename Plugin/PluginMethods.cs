@@ -11,9 +11,23 @@ namespace SlimeCore.Plugin
         OnInit,
         OnStop,
         OnTick,
+
+        OnPlayerJoin,
+        OnPlayerLeave,
+
         AddPlayer,
         RemovePlayer,
         UpdatePlayer,
-        GetPlayers
+
+        AddEntity,
+        RemoveEntity,
+        UpdateEntity,
+
+        AddNpc,
+        RemoveNpc,
+        UpdateNpc,
+
+        GetPlayers,
+        GetEvents
     }
 }

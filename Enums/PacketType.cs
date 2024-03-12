@@ -53,6 +53,9 @@ namespace SlimeCore.Enums
         KEEP_ALIVE,
         PLAYER_ACTION,
         SET_CREATIVE_MODE_SLOT,
-        SET_HELD_ITEM
+        SET_HELD_ITEM,
+        TELEPORT_ENTITY,
+        SPAWN_ENTITY,
+        REMOVE_ENTITIES
     }
 }

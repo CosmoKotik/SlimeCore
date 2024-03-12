@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SlimeCore.Core;
-using SlimeCore.Entity;
+using SlimeCore.Entities;
 using SlimeCore.Enums;
 using SlimeCore.Registry.Enums;
 

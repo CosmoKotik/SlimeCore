@@ -1,4 +1,4 @@
-﻿using SlimeCore.Entity;
+﻿using SlimeCore.Entities;
 using SlimeCore.Enums;
 using SlimeCore.Network.Packets.Nbts;
 using SlimeCore.Tools.Nbt;

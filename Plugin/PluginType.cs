@@ -10,6 +10,9 @@ namespace SlimeCore.Plugin
     public class PluginType
     {
         public Assembly Dll { get; set; }
+
+        public int InvokeLength { get; set; }
         public List<Type> InvokeTypes { get; set; }
+        public List<object> Instances { get; set; }
     }
 }

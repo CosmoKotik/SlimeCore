@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlimeCore.Entity
+namespace SlimeCore.Entities
 {
     public class Block
     {

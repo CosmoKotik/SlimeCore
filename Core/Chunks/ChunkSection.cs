@@ -1,5 +1,5 @@
 ﻿using SlimeCore.Core.Chunks.Palettes;
-using SlimeCore.Entity;
+using SlimeCore.Entities;
 using SlimeCore.Enums;
 using SlimeCore.Network;
 using System;

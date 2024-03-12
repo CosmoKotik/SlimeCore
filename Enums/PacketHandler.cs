@@ -123,6 +123,12 @@ namespace SlimeCore.Enums
                             return 0x0A;
                         case PacketType.ACKNOWLEDGE_BLOCK_CHANGE:
                             return 0x06;
+                        case PacketType.TELEPORT_ENTITY:
+                            return 0x68;
+                        case PacketType.SPAWN_ENTITY:
+                            return 0x01;
+                        case PacketType.REMOVE_ENTITIES:
+                            return 0x3E;
                     }
                     break;
                 case Versions.BETA_1_7_3:

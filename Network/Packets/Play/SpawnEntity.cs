@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Network.Packets.Play
 {
-    public class SetBlockDestroyStage : IPacket
+    internal class SpawnEntity : IPacket
     {
         public Versions Version { get; set; }
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        public SetBlockDestroyStage(ClientHandler clientHandler)
+        public SpawnEntity(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
-            this.PacketID = PacketHandler.Get(Version, PacketType.SET_BLOCK_DESTROY_STAGE);
+            this.PacketID = PacketHandler.Get(Version, PacketType.SPAWN_ENTITY);
         }
 
         public void Broadcast(bool includeSelf)
@@ -35,20 +35,28 @@ namespace SlimeCore.Network.Packets.Play
 
         public async void Write() { }
 
-        public async void Write(Player player, Position position, byte stage)
+        public async void Write(Entity entity)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
-            long x = (long)position.PositionX;
-            long y = (long)position.PositionY;
-            long z = (long)position.PositionZ;
+            int headAngle = (int)(entity.CurrentPosition.Yaw - (360 * (int)(entity.CurrentPosition.Yaw / 360)));
 
-            long pos = ((x & 0x3FFFFFF) << 38) | ((z & 0x3FFFFFF) << 12) | (y & 0xFFF);
+            bm.AddVarInt(entity.EntityID);
+            bm.AddUUID(entity.UUID);
+            bm.AddVarInt((int)entity.EntityType);
+            bm.AddDouble(entity.CurrentPosition.PositionX);
+            bm.AddDouble(entity.CurrentPosition.PositionY);
+            bm.AddDouble(entity.CurrentPosition.PositionZ);
+            bm.AddByte((byte)entity.CurrentPosition.Pitch);
+            bm.AddByte((byte)entity.CurrentPosition.Yaw);
+            bm.AddByte((byte)headAngle);
 
-            bm.AddVarInt(player.EntityID);
-            bm.AddLong(pos);
-            bm.AddByte(stage);
+            bm.AddVarInt(0);
+
+            bm.AddShort(0);
+            bm.AddShort(8000);
+            bm.AddShort(0);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }

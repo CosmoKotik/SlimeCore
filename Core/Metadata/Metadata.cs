@@ -11,6 +11,7 @@ namespace SlimeCore.Core.Metadata
         public string Name { get; set; }
         public MetadataType MetaType { get; set; }
         public MetadataValue MetaValue { get; set; }
+        public object MetaObj { get; set; }
 
         public List<Metadata> Meta { get; set; }
 
@@ -19,13 +20,14 @@ namespace SlimeCore.Core.Metadata
             Meta = new List<Metadata>();
         }
 
-        public Metadata AddMetadata(string name, MetadataType type, MetadataValue value)
+        public Metadata AddMetadata(string name, MetadataType type, MetadataValue value, object obj)
         {
             Metadata metadata = new Metadata()
             { 
                 Name = name,
                 MetaType = type,
-                MetaValue = value
+                MetaValue = value,
+                MetaObj = obj
             };
 
             Meta.Add(metadata);

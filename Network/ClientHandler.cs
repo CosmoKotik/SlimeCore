@@ -1,12 +1,14 @@
-﻿using SlimeCore.Core;
+﻿using Delta.Tools;
+using SlimeCore.Core;
 using SlimeCore.Core.Metadata;
-using SlimeCore.Entity;
+using SlimeCore.Entities;
 using SlimeCore.Enums;
 using SlimeCore.Network.Packets;
 using SlimeCore.Network.Packets.Login;
 using SlimeCore.Network.Packets.Play;
 using SlimeCore.Network.Packets.Status;
 using SlimeCore.Registry;
+using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -58,7 +60,7 @@ namespace SlimeCore.Network
             {
                 //_stream = _client.GetStream();
 
-                Console.WriteLine("Opened");
+                //Console.WriteLine("Opened");
                 int i = 0;
                 byte[] bytes = new byte[1024];
                 BufferManager bm = new BufferManager();
@@ -89,7 +91,7 @@ namespace SlimeCore.Network
                             {
                                 byte[] correcetdBytes = new byte[receivedTask.Result];
                                 Array.Copy(bytes, correcetdBytes, receivedTask.Result);
-                                Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
+                                //Console.WriteLine("zalupa: {0}", BitConverter.ToString(correcetdBytes).Replace("-", " ") + "   " + correcetdBytes.Length);
                                 bm.SetBytes(correcetdBytes);
                                 //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
@@ -137,160 +139,6 @@ namespace SlimeCore.Network
                         await Task.Delay(1);
                     }
                 }
-
-                /*while ((i = await _stream.ReadAsync(bytes, 0, bytes.Length)) != 0)
-                {
-                    //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
-
-                    bm.SetBytes(bytes);
-
-                    //For beta 1.7.3 purposes
-                    if (bytes[0].Equals(0x02) && bytes[1].Equals(0x00))
-                        _isBeta = true;
-
-                    int packetSize = bm.GetPacketSize() - 1;
-                    int packetID = bm.GetPacketId();
-
-                    byte[] buffer = new byte[packetSize];
-                    byte[] bufferRAW = new byte[packetSize + 8];
-                    Array.Copy(bm.GetBytes(), buffer, packetSize);
-                    Array.Copy(bytes, bufferRAW, packetSize + 8);
-
-                    Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
-
-                    switch (_currentState)
-                    {
-                        case ClientState.Handshake:
-                            switch (PacketHandler.Get(packetID, _currentState))
-                            {
-                                case PacketType.HANDSHAKE:
-                                    Handshake handshake = (Handshake)new Handshake(this).Read(buffer);
-                                    this.ClientVersion = (Versions)handshake.ProtocolVersion;
-                                    this._currentState = (ClientState)handshake.NextState;
-
-                                    if (handshake.NextState == (int)ClientState.Status)
-                                        new Status(this).Write();
-                                    */
-                /*else if (handshake.NextState == (int)ClientState.Login)
-                                    {
-                                        switch (PacketHandler.Get(packetID, _currentState))
-                                        {
-                                            case PacketType.LOGIN_START:
-                                                _player = new Login(this).Read(buffer) as Player;
-                                                _player.EntityID = ServerManager.Players.Count + 1;
-                                                ServerManager.Players.Add(_player);
-                                                break;
-                                        }
-
-                                        new LoginSuccess(this).Write(_player);
-                                        new Login(this).Write(_player);
-
-                                        new ChunkDataAndUpdateLight(this).Write();
-
-                                        new SetCenterChunk(this).Write(new Position(0, 0));
-
-                                        new SetDefaultSpawnPosition(this).Write(new Position(5, 0, 5), 0);
-                                        new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
-
-                                        this._currentState = ClientState.Play;
-                                        this._isConnected = true;
-                                    }*/
-                /*
-                                    break;
-                                case PacketType.PING:
-                                    new PingLegacy(this).Write();
-                                    break;
-                            }
-                            break;
-                        case ClientState.Status:
-                            switch (PacketHandler.Get(packetID, _currentState))
-                            {
-                                case PacketType.STATUS:
-                                    new Status(this).Write();
-                                    break;
-                                case PacketType.PING:
-                                    new Ping(this).ReadWrite(bytes);
-                                    break;
-                            }
-                            break;
-                        case ClientState.Login:
-                            switch (PacketHandler.Get(packetID, _currentState))
-                            {
-                                case PacketType.LOGIN_START:
-                                    //new LoginSuccess(this).Write();
-                                    //new SynchronizePlayerPosition(this).Write();
-                                    _player = new Login(this).Read(buffer) as Player;
-                                    _player.EntityID = ServerManager.Players.Count + 1;
-                                    ServerManager.Players.Add(_player);
-
-                                    new LoginSuccess(this).Write(_player);
-                                    new Login(this).Write(_player);
-
-                                    this._currentState = ClientState.Play;
-                                    break;
-                            }
-                            break;
-                        case ClientState.Play:
-                            //new SynchronizePlayerPosition(this).Write();
-                            //FlushData(StringToByteArray("1E 68 CE 03 40 30 5F E3 D1 E0 1E 26 40 3F 07 14 FC E3 66 0E 40 32 40 F3 60 93 5D 30 9F 00 00 04 42 CE 03 6D 09 54 D7 03 00 CE 00 B4 FE EF 0A 2B D7 03 01 62 01 35 FE 30 00"), false);
-
-                            switch (PacketHandler.Get(packetID, _currentState))
-                            {
-                                case PacketType.CLIENT_INFORMATION:
-                                    ClientInformation setting = new ClientInformation(this).Read(buffer) as ClientInformation;
-
-                                    _player.Locale = setting.Locale;
-                                    _player.ViewDistance = setting.ViewDistance;
-                                    _player.ChatMode = setting.ChatMode;
-                                    _player.ChatColored = setting.ChatColored;
-                                    _player.DisplayedSkinParts = setting.DisplayedSkinParts;
-                                    _player.MainHand = setting.DisplayedSkinParts;
-                                    _player.EnableTextFiltering = setting.EnableTextFiltering;
-                                    _player.AllowServerListings = setting.AllowServerListings;
-
-                                    new ChunkDataAndUpdateLight(this).Write();
-
-                                    new SetCenterChunk(this).Write(new Position(0, 0));
-
-                                    new SetDefaultSpawnPosition(this).Write(new Position(5, 0, 5), 0);
-                                    new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
-
-                                    this._currentState = ClientState.Play;
-                                    this._isConnected = true;
-                                    break;
-                                case PacketType.SET_PLAYER_POSITION_AND_ROTATION:
-                                    _player.PreviousPosition = _player.CurrentPosition.Clone();
-
-                                    SetPlayerPositionAndRotation playerPosAndRot = new SetPlayerPositionAndRotation(this).Read(buffer) as SetPlayerPositionAndRotation;
-
-                                    _player.CurrentPosition = new Position(playerPosAndRot.X, playerPosAndRot.FeetY, playerPosAndRot.Z, playerPosAndRot.Yaw, playerPosAndRot.Pitch);
-
-                                    Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
-                                    break;
-                                case PacketType.SET_PLAYER_POSITION:
-                                    _player.PreviousPosition = _player.CurrentPosition.Clone();
-
-                                    SetPlayerPosition playerPos = new SetPlayerPosition(this).Read(buffer) as SetPlayerPosition;
-
-                                    _player.CurrentPosition = new Position(playerPos.X, playerPos.FeetY, playerPos.Z);
-
-                                    Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
-                                    break;
-                            }
-
-                            if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
-                            {
-                                new KeepAlive(this).Write();
-                                //new SynchronizePlayerPosition(this).Write();
-                                _lastKeepAliveMiliseconds = DateTime.UtcNow.Ticks;
-                                //new UpdateEntityPositionAndRotation(this).Write();
-                            }
-
-                            break;
-                    }
-
-                    await Task.Delay(1);
-                }*/
             }
             catch (Exception ex) 
             { 
@@ -304,10 +152,20 @@ namespace SlimeCore.Network
                 {
                     (_client as IDisposable).Dispose();
                     _client = null;
-                    Console.WriteLine("Closed");
+                    //Console.WriteLine("Closed");
 
-                    lock(ServerManager.NetClients)
-                        ServerManager.NetClients.Remove(this);
+                    DLM.TryLock(ref ServerManager.NetClients);
+                    ServerManager.NetClients.Remove(this);
+                    if (_player != null)
+                    {
+                        ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                        {
+                            new RemoveEntities(x).Write(_player);
+                        });
+
+                        ServerManager.RemovePlayer(ref _player);
+                    }
+                    DLM.RemoveLock(ref ServerManager.NetClients);
                 }
             }
             
@@ -377,11 +235,13 @@ namespace SlimeCore.Network
                             //new SynchronizePlayerPosition(this).Write();
                             _player = new Login(this).Read(buffer) as Player;
 
-                            lock (ServerManager.Players)
+                            /*lock (ServerManager.Players)
                             {
-                                _player.EntityID = ServerManager.Players.Count + 1;
-                                ServerManager.Players.Add(_player);
-                            }
+                                //ServerManager.Players.Add(_player);
+                                ServerManager.AddPlayer(ref _player);
+                            }*/
+
+                            ServerManager.AddPlayer(ref _player);
 
                             new LoginSuccess(this).Write(_player);
                             new Login(this).Write(_player);
@@ -394,6 +254,7 @@ namespace SlimeCore.Network
                     //new SynchronizePlayerPosition(this).Write();
                     //FlushData(StringToByteArray("1E 68 CE 03 40 30 5F E3 D1 E0 1E 26 40 3F 07 14 FC E3 66 0E 40 32 40 F3 60 93 5D 30 9F 00 00 04 42 CE 03 6D 09 54 D7 03 00 CE 00 B4 FE EF 0A 2B D7 03 01 62 01 35 FE 30 00"), false);
 
+                    DLM.TryLock(ref ServerManager.NetClients);
                     switch (PacketHandler.Get(packetID, _currentState))
                     {
                         case PacketType.CLIENT_INFORMATION:
@@ -595,6 +456,8 @@ namespace SlimeCore.Network
                             break;
                     }
 
+                    DLM.RemoveLock(ref ServerManager.NetClients);
+
                     if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
                     {
                         new KeepAlive(this).Write();
@@ -614,25 +477,39 @@ namespace SlimeCore.Network
             this._isConnected = true;
 
             //Broadcast to everyone that player joined
-            lock (ServerManager.NetClients)
+            DLM.TryLock(ref ServerManager.NetClients);
+
+            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
             {
-                ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
-                {
-                    //_player.PreviousPosition = _player.CurrentPosition.Clone();
-                    new PlayerInfoUpdate(x).AddPlayer(_player).Write();
-                    new SpawnPlayer(x).Write(_player);
-                    new UpdateEntityPositionAndRotation(x).Write(_player);
-                    new SetHeadRotation(x).Write(_player);
+                //_player.PreviousPosition = _player.CurrentPosition.Clone();
+                new PlayerInfoUpdate(x).AddPlayer(_player).Write();
+                new SpawnPlayer(x).Write(_player);
+                new UpdateEntityPositionAndRotation(x).Write(_player);
+                new SetHeadRotation(x).Write(_player);
 
-                    new PlayerInfoUpdate(this).AddPlayer(x._player).Write();
-                    new SpawnPlayer(this).Write(x._player);
-                    new UpdateEntityPositionAndRotation(this).Write(x._player);
-                    new SetHeadRotation(this).Write(x._player);
-                });
-            }
+                new PlayerInfoUpdate(this).AddPlayer(x._player).Write();
+                new SpawnPlayer(this).Write(x._player);
+                new UpdateEntityPositionAndRotation(this).Write(x._player);
+                new SetHeadRotation(this).Write(x._player);
+            });
 
-            lock (ServerManager.NetClients)
-                ServerManager.NetClients.Add(this);
+            ServerManager.Npcs.ForEach(x => 
+            {
+                new PlayerInfoUpdate(this).AddPlayer(x.BuildPlayer()).Write();
+                new SpawnPlayer(this).Write(x.BuildPlayer());
+            });
+
+            //DLM.TryLock(ref ServerManager.Entities);
+            ServerManager.Entities.ForEach(x =>
+            {
+                new SpawnEntity(this).Write(x);
+                new SetEntityMetadata(this).Write(x, x.Metadata);
+            });
+            //DLM.RemoveLock(ref ServerManager.Entities);
+
+            ServerManager.NetClients.Add(this);
+            
+            DLM.RemoveLock(ref ServerManager.NetClients);
         }
 
         private void UpdatePlayerDirections()
@@ -641,8 +518,6 @@ namespace SlimeCore.Network
 
             if (headAngle > 0)
                 headAngle = headAngle - 360;
-
-            Console.WriteLine(headAngle);
 
             if (headAngle <= -45 && headAngle > -135)
                 _player.LookDirection = Direction.East;

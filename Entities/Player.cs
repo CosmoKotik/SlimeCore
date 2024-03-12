@@ -1,16 +1,17 @@
 ﻿using SlimeCore.Core.Metadata;
 using SlimeCore.Enums;
+using SlimeCore.Network;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlimeCore.Entity
+namespace SlimeCore.Entities
 {
-    public class Player
+    public class Player : Entity
     {
-        public int EntityID { get; set; }
+        //public int EntityID { get; set; }
         public string Username { get; set; }
         public bool IsHardcore { get; set; }
         public byte Gamemode { get; set; }
@@ -27,18 +28,18 @@ namespace SlimeCore.Entity
         public bool EnableTextFiltering { get; set; }
         public bool AllowServerListings { get; set; }
 
-        public bool IsOnGround { get; set; }
+        /*public bool IsOnGround { get; set; }
         public bool IsCrouching { get; set; }
         public bool IsSwimming { get; set; }
-        public bool IsSleeping { get; set; }
+        public bool IsSleeping { get; set; }*/
 
-        public Metadata Metadata { get; set; }
+        public ClientHandler Connection { get; set; }
 
-        public Guid UUID { get; set; }
+        //public Guid UUID { get; set; }
 
-        public Position CurrentPosition { get; set; }
-        public Position PreviousPosition { get; set; }
-        public Position Size { get; set; } = new Position(0.7, 1.62, 0.7);
+        //public Position CurrentPosition { get; set; }
+        //public Position PreviousPosition { get; set; }
+        //public Position Size { get; set; } = new Position(0.7, 1.62, 0.7);
 
         public Direction LookDirection { get; set; } = Direction.North;
         public Direction HalfDirection { get; set; } = Direction.Top;
@@ -57,8 +58,8 @@ namespace SlimeCore.Entity
             PreviousGamemode = 0xFF;
 
             Metadata = new Metadata();
-            Metadata.AddMetadata("IsCrouching", MetadataType.Byte, MetadataValue.IsStanding);
-            Metadata.AddMetadata("IsCrouchingPose", MetadataType.Pose, MetadataValue.IsStanding);
+            Metadata.AddMetadata("IsCrouching", MetadataType.Byte, MetadataValue.IsStanding, false);
+            Metadata.AddMetadata("IsCrouchingPose", MetadataType.Pose, MetadataValue.IsStanding, false);
 
             Inventory = new Inventory();
             Inventory.Add("crafting_output", 0, 0);

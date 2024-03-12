@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Network.Packets.Play
 {
-    public class UpdateEntityRotation : IPacket
+    internal class TeleportEntity : IPacket
     {
         public Versions Version { get; set; }
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        public UpdateEntityRotation(ClientHandler clientHandler)
+        public TeleportEntity(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
-            this.PacketID = PacketHandler.Get(Version, PacketType.UPDATE_ENTITY_ROTATION);
+            this.PacketID = PacketHandler.Get(Version, PacketType.TELEPORT_ENTITY);
         }
 
         public void Broadcast(bool includeSelf)
@@ -27,25 +27,26 @@ namespace SlimeCore.Network.Packets.Play
 
         public object Read(byte[] bytes)
         {
-            throw new NotImplementedException();
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            return this;
         }
 
         public async void Write() { }
 
-        public async void Write(Player player)
+        public async void Write(Entity entity)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
-            //bm.AddString("c4b13b59042c4a82bed5d5eaf124036a");
-            //bm.AddString(GetResponseString("_CosmoKotik_"));
 
-            int angleYaw = (int)((player.CurrentPosition.Yaw / 360) * 256);
-            int anglePitch = (int)((player.CurrentPosition.Pitch / 360) * 256);
-
-            bm.AddVarInt(player.EntityID);
-            bm.AddByte((byte)angleYaw);
-            bm.AddByte((byte)anglePitch);
-            bm.AddBool(player.IsOnGround);
+            bm.AddVarInt(entity.EntityID);
+            bm.AddDouble(entity.CurrentPosition.PositionX);
+            bm.AddDouble(entity.CurrentPosition.PositionY);
+            bm.AddDouble(entity.CurrentPosition.PositionZ);
+            bm.AddByte((byte)entity.CurrentPosition.Yaw);
+            bm.AddByte((byte)entity.CurrentPosition.Pitch);
+            bm.AddBool(entity.IsOnGround);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }

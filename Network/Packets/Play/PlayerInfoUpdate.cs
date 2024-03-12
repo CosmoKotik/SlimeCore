@@ -1,4 +1,4 @@
-﻿using SlimeCore.Entity;
+﻿using SlimeCore.Entities;
 using SlimeCore.Enums;
 using System;
 using System.Collections;
@@ -49,13 +49,18 @@ namespace SlimeCore.Network.Packets.Play
         {
             _bufferManager = new BufferManager();
 
+            //Mask
             _bufferManager.AddByte(0x01);
 
+            //Number of players
             _bufferManager.AddVarInt(1);
 
+            //UUID
             _bufferManager.AddUUID(player.UUID);
+            
+            //Player
             _bufferManager.AddString(player.Username);
-            _bufferManager.AddVarInt(0);
+            _bufferManager.AddVarInt(0);    //Number of properties, fuck that
 
             return this;
         }
