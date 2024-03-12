@@ -311,14 +311,15 @@ namespace SlimeCore.Network
         }
         public string GetString()
         {
-            byte[] result = new byte[_buffer[0]];
+            int len = ReadVarInt();
+            byte[] result = new byte[len];
 
-            for (int i = 1; i < (int)_buffer[0] + 1; i++)
+            for (int i = 0; i < len; i++)
             {
-                result[i - 1] = _buffer[i];
+                result[i] = _buffer[i];
             }
 
-            _buffer.RemoveRange(0, (int)_buffer[0] + 1);
+            _buffer.RemoveRange(0, len);
 
             return Encoding.UTF8.GetString(result);
         }

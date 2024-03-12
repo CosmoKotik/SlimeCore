@@ -268,6 +268,10 @@ namespace SlimeCore.Enums
                             return PacketType.SET_CREATIVE_MODE_SLOT;
                         case 0x28:
                             return PacketType.SET_HELD_ITEM;
+                        case 0x04:
+                            return PacketType.CHAT_COMMAND;
+                        case 0x05:
+                            return PacketType.CHAT_MESSAGE;
                     }
                     break;
             }

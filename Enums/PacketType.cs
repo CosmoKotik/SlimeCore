@@ -57,6 +57,8 @@ namespace SlimeCore.Enums
         TELEPORT_ENTITY,
         SPAWN_ENTITY,
         REMOVE_ENTITIES,
-        SET_ENTITY_VELOCITY
+        SET_ENTITY_VELOCITY,
+        CHAT_COMMAND,
+        CHAT_MESSAGE
     }
 }

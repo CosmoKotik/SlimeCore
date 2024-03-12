@@ -53,8 +53,8 @@ namespace SlimeCore.Core
         public string PluginsPath { get => _pluginsPath; }
         private string _pluginsPath = @"plugins";
 
-        public int TickPerSecond = 50;
-        public float CurrentTPS = 50;
+        public int TickPerSecond = 20;
+        public float CurrentTPS = 20;
 
         //public List<Assembly> Plugins { get => _plugins; }
         //private List<Assembly> _plugins = new List<Assembly>();

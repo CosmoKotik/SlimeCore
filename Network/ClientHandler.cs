@@ -1,4 +1,5 @@
-﻿using Delta.Tools;
+﻿using Delta.Core;
+using Delta.Tools;
 using SlimeCore.Core;
 using SlimeCore.Core.Metadata;
 using SlimeCore.Entities;
@@ -62,7 +63,7 @@ namespace SlimeCore.Network
 
                 //Console.WriteLine("Opened");
                 int i = 0;
-                byte[] bytes = new byte[1024];
+                byte[] bytes = new byte[2097151];
                 BufferManager bm = new BufferManager();
 
                 /*_player = new Player()
@@ -454,6 +455,16 @@ namespace SlimeCore.Network
 
                             _player.CurrentHeldItem = slotIndex;
                             break;
+                        case PacketType.CHAT_COMMAND:
+                            ChatCommand chatCommand = new ChatCommand(this).Read(buffer) as ChatCommand;
+
+                            Logger.Log($"{_player.Username} used command: /{chatCommand.Command}");
+                            break;
+                        case PacketType.CHAT_MESSAGE:
+                            ChatMessage chatMessage = new ChatMessage(this).Read(buffer) as ChatMessage;
+
+                            Logger.Log($"{_player.Username}: {chatMessage.Message}");
+                            break;
                     }
 
                     DLM.RemoveLock(ref ServerManager.NetClients);
@@ -635,6 +646,7 @@ namespace SlimeCore.Network
 
                 try
                 {
+                    /*Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));*/
                     await this._client.SendAsync(bm.GetBytes(), SocketFlags.None, token);
                 }
                 catch (SocketException ex) { }
