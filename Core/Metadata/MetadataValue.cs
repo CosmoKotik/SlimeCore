@@ -29,5 +29,6 @@ namespace SlimeCore.Core.Metadata
         Width,
         Height,
         Scale,
+        Translation
     }
 }

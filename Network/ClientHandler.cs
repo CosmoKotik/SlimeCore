@@ -504,6 +504,7 @@ namespace SlimeCore.Network
             {
                 new SpawnEntity(this).Write(x);
                 new SetEntityMetadata(this).Write(x, x.Metadata);
+                //new UpdateEntityPosition(this).Write(x, x.Velocity);
                 new SetEntityVelocity(this).Write(x, x.Velocity);
             });
             //DLM.RemoveLock(ref ServerManager.Entities);
@@ -539,6 +540,8 @@ namespace SlimeCore.Network
         {
             if (!_isAlive || !_isConnected)
                 return;
+
+            ServerManager.UpdatePlayer(_player);
 
             //Check if player in new chunk
             if ((int)_player.PreviousPosition.PositionZ / 16 != (int)_player.CurrentPosition.PositionZ / 16

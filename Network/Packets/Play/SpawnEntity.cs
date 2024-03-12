@@ -55,7 +55,7 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddVarInt(0);
 
             bm.AddShort(0);
-            bm.AddShort(8000);
+            bm.AddShort(0);
             bm.AddShort(0);
 
             await this.ClientHandler.FlushData(bm.GetBytes());

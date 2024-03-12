@@ -53,8 +53,8 @@ namespace SlimeCore.Core
         public string PluginsPath { get => _pluginsPath; }
         private string _pluginsPath = @"plugins";
 
-        public int TickPerSecond = 20;
-        public float CurrentTPS = 20;
+        public int TickPerSecond = 50;
+        public float CurrentTPS = 50;
 
         //public List<Assembly> Plugins { get => _plugins; }
         //private List<Assembly> _plugins = new List<Assembly>();
@@ -140,7 +140,8 @@ namespace SlimeCore.Core
                 NetClients.ForEach(async client => { await client.TickUpdate(); });
                 DLM.RemoveLock(ref NetClients);
 
-                //InvokeAllPluginsMethod(PluginMethods.AddPlayer, new object[] { new SlimeApi.Entity.Player() { UUID = new Guid(), Username = "zalupnic" } });
+                //Players.ForEach(x => { InvokeAllPluginsMethod(PluginMethods.UpdatePlayer, new object[] { CastOT.CastToApi(x) }); });
+                Entities.ForEach(x => { InvokeAllPluginsMethod(PluginMethods.UpdateEntity, new object[] { CastOT.CastToApi(x) }); });
 
                 /*PluginObject[] objs = InvokeAllPluginsMethod(PluginMethods.GetPlayers);
 
@@ -243,6 +244,16 @@ namespace SlimeCore.Core
             InvokeAllPluginsMethod(PluginMethods.AddPlayer, new object[] { CastOT.CastToApi(player) });
             
             DLM.RemoveLock(ref player);
+        }
+        public void UpdatePlayer(Player player)
+        {
+            DLM.TryLock(ref this.Players);
+
+            int index = this.Players.FindIndex(x => x.EntityID == player.EntityID);
+            this.Players[index] = player;
+            InvokeAllPluginsMethod(PluginMethods.UpdatePlayer, new object[] { CastOT.CastToApi(player) });
+
+            DLM.RemoveLock(ref this.Players);
         }
         public void RemovePlayer(ref Player player)
         {

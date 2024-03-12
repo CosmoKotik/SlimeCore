@@ -70,28 +70,36 @@ namespace SlimeCore.Network.Packets.Play
             switch (value)
             {
                 case MetadataValue.IsStanding:
-                    flag = 0x00;
+                    if ((bool)obj)
+                        flag = 0x00;
                     break;
                 case MetadataValue.IsOnFire:
-                    flag = 0x01;
+                    if ((bool)obj)
+                        flag = 0x01;
                     break;
                 case MetadataValue.IsCrouching:
-                    flag = 0x02;
+                    if ((bool)obj)
+                        flag = 0x02;
                     break;
                 case MetadataValue.IsSprinting:
-                    flag = 0x08;
+                    if ((bool)obj)
+                        flag = 0x08;
                     break;
                 case MetadataValue.IsSwimming:
-                    flag = 0x10;
+                    if ((bool)obj)
+                        flag = 0x10;
                     break;
                 case MetadataValue.IsInvisible:
-                    flag = 0x20;
+                    if ((bool)obj)
+                        flag = 0x20;
                     break;
                 case MetadataValue.HasGlowingEffect:
-                    flag = 0x40;
+                    if ((bool)obj)
+                        flag = 0x40;
                     break;
                 case MetadataValue.IsFlyingWithAnElytra:
-                    flag = 0x80;
+                    if ((bool)obj)
+                        flag = 0x80;
                     break;
 
                 case MetadataValue.CustomName:
@@ -124,6 +132,9 @@ namespace SlimeCore.Network.Packets.Play
                 case MetadataValue.IsSilent:
                     index = 4;
                     break;
+                case MetadataValue.Translation:
+                    index = 10;
+                    break;
                 case MetadataValue.Scale:
                     index = 11;
                     break;
@@ -137,7 +148,6 @@ namespace SlimeCore.Network.Packets.Play
                     index = 22;
                     break;
             }
-
 
             bm.AddByte(index);  //Index
             bm.AddByte((byte)type);  //Type
@@ -210,15 +220,23 @@ namespace SlimeCore.Network.Packets.Play
                     }
                     break;
                 case MetadataType.Vector3:
-                    switch (value)
+                    SlimeApi.Position pos = obj as SlimeApi.Position;
+                    bm.AddFloat((float)pos.PositionX);
+                    bm.AddFloat((float)pos.PositionY);
+                    bm.AddFloat((float)pos.PositionZ);
+                    /*switch (value)
                     {
                         case MetadataValue.Scale:
-                            SlimeApi.Position pos = obj as SlimeApi.Position;
                             bm.AddFloat((float)pos.PositionX);
                             bm.AddFloat((float)pos.PositionY);
                             bm.AddFloat((float)pos.PositionZ);
                             break;
-                    }
+                        case MetadataValue.Translation:
+                            bm.AddFloat((float)pos.PositionX);
+                            bm.AddFloat((float)pos.PositionY);
+                            bm.AddFloat((float)pos.PositionZ);
+                            break;
+                    }*/
                     break;
                 case MetadataType.OptChat:
                     bm.AddBool(true);

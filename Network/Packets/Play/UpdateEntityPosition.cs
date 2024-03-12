@@ -32,18 +32,37 @@ namespace SlimeCore.Network.Packets.Play
 
         public async void Write() { }
 
-        public async void Write(Player player)
+        public async void Write(Entity entity)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
             //bm.AddString("c4b13b59042c4a82bed5d5eaf124036a");
             //bm.AddString(GetResponseString("_CosmoKotik_"));
 
-            bm.AddVarInt(player.EntityID);
-            bm.AddShort((short)((player.CurrentPosition.PositionX * 32 - player.PreviousPosition.PositionX * 32) * 128));
-            bm.AddShort((short)((player.CurrentPosition.PositionY * 32 - player.PreviousPosition.PositionY * 32) * 128));
-            bm.AddShort((short)((player.CurrentPosition.PositionZ * 32 - player.PreviousPosition.PositionZ * 32) * 128));
-            bm.AddBool(player.IsOnGround);
+            bm.AddVarInt(entity.EntityID);
+            bm.AddShort((short)((entity.CurrentPosition.PositionX * 32 - entity.PreviousPosition.PositionX * 32) * 128));
+            bm.AddShort((short)((entity.CurrentPosition.PositionY * 32 - entity.PreviousPosition.PositionY * 32) * 128));
+            bm.AddShort((short)((entity.CurrentPosition.PositionZ * 32 - entity.PreviousPosition.PositionZ * 32) * 128));
+            bm.AddBool(entity.IsOnGround);
+
+            await this.ClientHandler.FlushData(bm.GetBytes());
+        }
+
+        public async void Write(Entity entity, Position velocity)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetPacketId((byte)PacketID);
+            //bm.AddString("c4b13b59042c4a82bed5d5eaf124036a");
+            //bm.AddString(GetResponseString("_CosmoKotik_"));
+
+            bm.AddVarInt(entity.EntityID);
+            /*bm.AddShort((short)velocity.PositionX);
+            bm.AddShort((short)velocity.PositionY);
+            bm.AddShort((short)velocity.PositionZ);*/
+            bm.AddShort((short)((entity.CurrentPosition.PositionX * 32 - (entity.CurrentPosition.PositionX - velocity.PositionX) * 32) * 128));
+            bm.AddShort((short)((entity.CurrentPosition.PositionY * 32 - (entity.CurrentPosition.PositionY - velocity.PositionY) * 32) * 128));
+            bm.AddShort((short)((entity.CurrentPosition.PositionZ * 32 - (entity.CurrentPosition.PositionZ - velocity.PositionZ) * 32) * 128));
+            bm.AddBool(entity.IsOnGround);
 
             await this.ClientHandler.FlushData(bm.GetBytes());
         }

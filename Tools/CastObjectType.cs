@@ -38,6 +38,44 @@ namespace SlimeCore.Tools
                         PreviousGamemode = player.PreviousGamemode,
                         Username = player.Username,
                         ViewDistance = player.ViewDistance,
+                        EntityType = (SlimeApi.Enums.EntityType)(player.EntityType),
+                        AirTicks = player.AirTicks,
+                        BlockDisplay = player.BlockDisplay,
+                        CurrentHeldItem = player.CurrentHeldItem,
+                        CustomName = player.CustomName,
+                        HalfDirection = (SlimeApi.Enums.Direction)player.HalfDirection,
+                        HasNoGravity = player.HasNoGravity,
+                        Metadata = CastToApi(player.Metadata) as SlimeApi.Metadata,
+                        Velocity = CastToApi(player.Velocity) as SlimeApi.Position,
+                        isNpc = player.isNpc,
+                        IsSilent = player.IsSilent,
+                        IsSleeping = player.IsSleeping,
+                        IsSwimming = player.IsSwimming,
+                        IsCustomNameVisible = player.IsCustomNameVisible,
+                        LookDirection = (SlimeApi.Enums.Direction)player.LookDirection
+                    };
+                case Entities.Entity:
+                    Entities.Entity entity = obj as Entities.Entity;
+                    return new SlimeApi.Entities.Entity()
+                    {
+                        UUID = entity.UUID,
+                        CurrentPosition = CastToApi(entity.CurrentPosition) as SlimeApi.Position,
+                        PreviousPosition = CastToApi(entity.PreviousPosition) as SlimeApi.Position,
+                        EntityID = entity.EntityID,
+                        IsCrouching = entity.IsCrouching,
+                        IsOnGround = entity.IsOnGround,
+                        AirTicks = entity.AirTicks,
+                        CustomName = entity.CustomName,
+                        EntityType = (SlimeApi.Enums.EntityType)entity.EntityType,
+                        HasNoGravity = entity.HasNoGravity,
+                        IsCustomNameVisible = entity.IsCustomNameVisible,
+                        isNpc = entity.isNpc,
+                        IsSilent = entity.IsSilent,
+                        IsSleeping = entity.IsSleeping,
+                        IsSwimming = entity.IsSwimming,
+                        BlockDisplay = entity.BlockDisplay,
+                        Metadata = CastToApi(entity.Metadata) as SlimeApi.Metadata,
+                        Velocity = CastToApi(entity.Velocity) as SlimeApi.Position
                     };
                 case Position:
                     Position pos = obj as Position;
@@ -48,6 +86,21 @@ namespace SlimeCore.Tools
                         PositionZ = pos.PositionZ,
                         Pitch = pos.Pitch,
                         Yaw = pos.Yaw,
+                    };
+                case Core.Metadata.Metadata:
+                    Core.Metadata.Metadata meta = obj as Core.Metadata.Metadata;
+                    List<SlimeApi.Metadata> metadatas = new List<SlimeApi.Metadata>();
+                    meta.Meta.ForEach(x =>
+                    {
+                        metadatas.Add(CastToApi(x) as SlimeApi.Metadata);
+                    });
+                    return new SlimeApi.Metadata()
+                    {
+                        Meta = metadatas,
+                        MetaObj = meta.MetaObj,
+                        MetaType = (SlimeApi.MetadataType)meta.MetaType,
+                        MetaValue = (SlimeApi.MetadataValue)meta.MetaValue,
+                        Name = meta.Name
                     };
             }
             return null;

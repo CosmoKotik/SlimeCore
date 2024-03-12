@@ -114,7 +114,8 @@ namespace SlimeCore.Plugin
 
                             netclients.ForEach(x =>
                             {
-                                new SetEntityVelocity(x).Write((Entities.Entity)CastOT.CastToCore(entity), (Entities.Position)CastOT.CastToCore(entity.Velocity));
+                                new UpdateEntityPosition(x).Write((Entities.Entity)CastOT.CastToCore(entity), (Entities.Position)CastOT.CastToCore(entity.Velocity));
+                                //new SetEntityVelocity(x).Write((Entities.Entity)CastOT.CastToCore(entity), (Entities.Position)CastOT.CastToCore(entity.Velocity));
                             });
 
                             //manager.Entities.Find(x => x.EntityID.Equals(entity.EntityID)).CurrentPosition = (Entities.Position)CastOT.CastToCore(entity.CurrentPosition);
