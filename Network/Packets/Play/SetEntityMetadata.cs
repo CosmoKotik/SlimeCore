@@ -121,6 +121,18 @@ namespace SlimeCore.Network.Packets.Play
                 case MetadataValue.IsCustomNameVisible:
                     index = 0x03;
                     break;
+                case MetadataValue.IsSilent:
+                    index = 4;
+                    break;
+                case MetadataValue.Scale:
+                    index = 11;
+                    break;
+                case MetadataValue.Width:
+                    index = 19;
+                    break;
+                case MetadataValue.Height:
+                    index = 20;
+                    break;
                 case MetadataValue.BlockDisplay:
                     index = 22;
                     break;
@@ -152,13 +164,20 @@ namespace SlimeCore.Network.Packets.Play
                     switch (value)
                     {
                         case MetadataValue.IsCustomNameVisible:
-                            bm.AddBool(true);
+                            bm.AddBool((bool)obj);
+                            break;
+                        case MetadataValue.HasNoGravity:
+                            bm.AddBool((bool)obj);
+                            break;
+                        case MetadataValue.IsSilent:
+                            bm.AddBool((bool)obj);
                             break;
                     }
                     break;
                 case MetadataType.VarInt:
                     switch(value)
                     {
+                        
                         default:
                             bm.AddVarInt((int)value);
                             break;

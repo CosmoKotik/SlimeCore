@@ -107,6 +107,18 @@ namespace SlimeCore.Plugin
 
                             manager.Entities.Find(x => x.EntityID.Equals(entity.EntityID)).CurrentPosition = (Entities.Position)CastOT.CastToCore(entity.CurrentPosition);
                             break;
+                        case "setvelocity":
+                            entity = pevent.EventObject as Entity;
+                            //entity = (pevent.EventObject as object[])[0] as Entity;
+                            //Position velocity = (pevent.EventObject as object[])[1] as Position;
+
+                            netclients.ForEach(x =>
+                            {
+                                new SetEntityVelocity(x).Write((Entities.Entity)CastOT.CastToCore(entity), (Entities.Position)CastOT.CastToCore(entity.Velocity));
+                            });
+
+                            //manager.Entities.Find(x => x.EntityID.Equals(entity.EntityID)).CurrentPosition = (Entities.Position)CastOT.CastToCore(entity.CurrentPosition);
+                            break;
                     }
                     break;
                 case "npc":

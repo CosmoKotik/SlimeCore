@@ -13,6 +13,7 @@ namespace SlimeCore.Entities
         public int EntityID { get; set; }
         public Guid UUID { get; set; }
         public EntityType EntityType { get; set; }
+        public Position Velocity { get; set; }
         public Position CurrentPosition { get; set; }
         public Position PreviousPosition { get; set; }
         public Position Size { get; set; } = new Position(0.7, 1.62, 0.7);

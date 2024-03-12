@@ -56,6 +56,7 @@ namespace SlimeCore.Enums
         SET_HELD_ITEM,
         TELEPORT_ENTITY,
         SPAWN_ENTITY,
-        REMOVE_ENTITIES
+        REMOVE_ENTITIES,
+        SET_ENTITY_VELOCITY
     }
 }

@@ -116,7 +116,8 @@ namespace SlimeCore.Tools
                         IsSleeping = entity.IsSleeping,
                         IsSwimming = entity.IsSwimming,
                         BlockDisplay = entity.BlockDisplay,
-                        Metadata = CastToCore(entity.Metadata) as Core.Metadata.Metadata
+                        Metadata = CastToCore(entity.Metadata) as Core.Metadata.Metadata,
+                        Velocity = CastToCore(entity.Velocity) as Entities.Position
                     };
                 case SlimeApi.Position:
                     SlimeApi.Position pos = obj as SlimeApi.Position;

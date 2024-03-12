@@ -504,6 +504,7 @@ namespace SlimeCore.Network
             {
                 new SpawnEntity(this).Write(x);
                 new SetEntityMetadata(this).Write(x, x.Metadata);
+                new SetEntityVelocity(this).Write(x, x.Velocity);
             });
             //DLM.RemoveLock(ref ServerManager.Entities);
 

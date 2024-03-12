@@ -129,6 +129,8 @@ namespace SlimeCore.Enums
                             return 0x01;
                         case PacketType.REMOVE_ENTITIES:
                             return 0x3E;
+                        case PacketType.SET_ENTITY_VELOCITY:
+                            return 0x54;
                     }
                     break;
                 case Versions.BETA_1_7_3:
