@@ -30,7 +30,7 @@ namespace SlimeCore.Network.Packets.Play
             this.PacketID = PacketHandler.Get(Version, PacketType.USE_ITEM_ON);
         }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }

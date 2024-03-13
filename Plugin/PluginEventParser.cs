@@ -29,9 +29,9 @@ namespace SlimeCore.Plugin
             NPC npc;
             SlimeCore.Entities.Player player;
 
-            DLM.TryLock(ref manager.NetClients);
+            //DLM.TryLock(ref manager.NetClients);
             List<ClientHandler> netclients = new List<ClientHandler>(manager.NetClients);
-            DLM.RemoveLock(ref manager.NetClients);
+            //DLM.RemoveLock(ref manager.NetClients);
 
             switch (eventPath[0])
             {
@@ -71,16 +71,19 @@ namespace SlimeCore.Plugin
 
                             /*Core.Metadata.Metadata mdata = new Core.Metadata.Metadata();
                             mdata.AddMetadata("BlockDisplay", Core.Metadata.MetadataType.BlockID, Core.Metadata.MetadataValue.BlockDisplay, 9);*/
-                            
-                            
+
+
                             /*mdata.AddMetadata("Width", Core.Metadata.MetadataType.Float, Core.Metadata.MetadataValue.Width);
                             mdata.AddMetadata("Height", Core.Metadata.MetadataType.Float, Core.Metadata.MetadataValue.Height);*/
 
-                            netclients.ForEach(x =>
+                            new SpawnEntity(new ClientHandler()).Broadcast(false).Write((Entities.Entity)CastOT.CastToCore(entity));
+                            new SetEntityMetadata(new ClientHandler()).Broadcast(false).Write((Entities.Entity)CastOT.CastToCore(entity), (Core.Metadata.Metadata)CastOT.CastToCore(entity.Metadata));
+
+                            /*netclients.ForEach(x =>
                             {
                                 new SpawnEntity(x).Write((Entities.Entity)CastOT.CastToCore(entity));
                                 new SetEntityMetadata(x).Write((Entities.Entity)CastOT.CastToCore(entity), (Core.Metadata.Metadata)CastOT.CastToCore(entity.Metadata));
-                            });
+                            });*/
 
                             manager.InvokeAllPluginsMethod(PluginMethods.AddEntity, new object[] { entity });
                             break;
@@ -89,21 +92,26 @@ namespace SlimeCore.Plugin
 
                             manager.InvokeAllPluginsMethod(PluginMethods.RemoveEntity, new object[] { coreEntity });
 
-                            netclients.ForEach(x =>
+                            Logger.Error("Remove entity");
+                            new RemoveEntities(new ClientHandler()).Broadcast(false).Write(coreEntity);
+
+                            /*netclients.ForEach(x =>
                             {
                                 Logger.Error("Remove entity");
                                 new RemoveEntities(x).Write(coreEntity);
-                            });
+                            });*/
 
                             manager.Entities.Remove(coreEntity);
                             break;
                         case "setposition":
                             entity = pevent.EventObject as SlimeApi.Entities.Entity;
 
-                            netclients.ForEach(x =>
+                            new TeleportEntity(new ClientHandler()).Broadcast(false).Write((Entities.Entity)CastOT.CastToCore(entity));
+
+                            /*netclients.ForEach(x =>
                             {
                                 new TeleportEntity(x).Write((Entities.Entity)CastOT.CastToCore(entity));
-                            });
+                            });*/
 
                             manager.Entities.Find(x => x.EntityID.Equals(entity.EntityID)).CurrentPosition = (Entities.Position)CastOT.CastToCore(entity.CurrentPosition);
                             break;
@@ -112,11 +120,13 @@ namespace SlimeCore.Plugin
                             //entity = (pevent.EventObject as object[])[0] as Entity;
                             //Position velocity = (pevent.EventObject as object[])[1] as Position;
 
-                            netclients.ForEach(x =>
+                            new UpdateEntityPosition(new ClientHandler()).Broadcast(false).Write((Entities.Entity)CastOT.CastToCore(entity), (Entities.Position)CastOT.CastToCore(entity.Velocity));
+
+                            /*netclients.ForEach(x =>
                             {
                                 new UpdateEntityPosition(x).Write((Entities.Entity)CastOT.CastToCore(entity), (Entities.Position)CastOT.CastToCore(entity.Velocity));
                                 //new SetEntityVelocity(x).Write((Entities.Entity)CastOT.CastToCore(entity), (Entities.Position)CastOT.CastToCore(entity.Velocity));
-                            });
+                            });*/
 
                             //manager.Entities.Find(x => x.EntityID.Equals(entity.EntityID)).CurrentPosition = (Entities.Position)CastOT.CastToCore(entity.CurrentPosition);
                             break;
@@ -136,11 +146,14 @@ namespace SlimeCore.Plugin
                             manager.InvokeAllPluginsMethod(PluginMethods.AddNpc, new object[] { npc });
 
                             //DLM.TryLock(ref manager.NetClients);
-                            netclients.ForEach(x =>
+
+                            new PlayerInfoUpdate(new ClientHandler()).Broadcast(false).AddPlayer(player).Write();
+                            new SpawnPlayer(new ClientHandler()).Broadcast(false).Write(player);
+                            /*netclients.ForEach(x =>
                             {
                                 new PlayerInfoUpdate(x).AddPlayer(player).Write();
                                 new SpawnPlayer(x).Write(player);
-                            });
+                            });*/
                             //DLM.RemoveLock(ref manager.NetClients);
                             break;
                         case "remove":
@@ -165,10 +178,12 @@ namespace SlimeCore.Plugin
                             npc = pevent.EventObject as SlimeApi.Entities.NPC;
                             player = (SlimeCore.Entities.Player)CastOT.CastToCore(npc.BuildPlayer());
 
-                            netclients.ForEach(x =>
+                            new TeleportEntity(new ClientHandler()).Broadcast(false).Write(player);
+
+                            /*netclients.ForEach(x =>
                             {
                                 new TeleportEntity(x).Write(player);
-                            });
+                            });*/
 
                             manager.Npcs.Find(x => x.EntityID.Equals(npc.EntityID)).CurrentPosition = (Entities.Position)CastOT.CastToCore(npc.CurrentPosition);
                             break;

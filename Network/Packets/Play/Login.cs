@@ -1,6 +1,7 @@
 ﻿using SlimeCore.Entities;
 using SlimeCore.Enums;
 using SlimeCore.Network.Packets.Nbts;
+using SlimeCore.Network.Packets.Queue;
 using SlimeCore.Tools.Nbt;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace SlimeCore.Network.Packets.Play
             this.PacketID = PacketHandler.Get(Version, PacketType.LOGIN_PLAY);
         }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }
@@ -37,16 +38,15 @@ namespace SlimeCore.Network.Packets.Play
             {
                 Username = bm.GetString(),
                 CurrentPosition = new Position(5, -60, 5),
-                PreviousPosition = new Position(5, -60, 5)
+                PreviousPosition = new Position(5, -60, 5),
+                EntityID = new Random().Next()
             };
 
             if (bm.GetBool())
                 p.UUID = bm.GetUUID();
 
-            Console.WriteLine(p.Username + "asdluasgdksd");
-
             //p.Username = $"player{new Random().Next(291, 893)}";
-            p.UUID = Guid.Parse("1d257980-20f0-354d-8c20-0ceb4b4e6c2d");
+            //p.UUID = Guid.Parse("1d257980-20f0-354d-8c20-0ceb4b4e6c2d");
 
             return p;
         }
@@ -96,8 +96,8 @@ namespace SlimeCore.Network.Packets.Play
             //bm.AddVarInt(0);
 
             //Console.WriteLine(BitConverter.ToString(GetRegistryCodec()).Replace("-", " ") + "   " + GetRegistryCodec().Length);
-
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
         //FUCK ME SIDEWAYS

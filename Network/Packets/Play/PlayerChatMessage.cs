@@ -1,6 +1,7 @@
 ﻿using SlimeCore.Entities;
 using SlimeCore.Entities.Chat;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,15 +17,21 @@ namespace SlimeCore.Network.Packets.Play
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
+        private bool _broadcast = false;
+        private bool _includeSelf = false;
+
         public PlayerChatMessage(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
             this.PacketID = PacketHandler.Get(Version, PacketType.PLAYER_CHAT_MESSAGE);
         }
 
-        public void Broadcast(bool includeSelf)
+        public PlayerChatMessage Broadcast(bool includeSelf)
         {
-            throw new NotImplementedException();
+            _includeSelf = includeSelf;
+            _broadcast = true;
+
+            return this;
         }
 
         public object Read(byte[] bytes)
@@ -49,7 +56,7 @@ namespace SlimeCore.Network.Packets.Play
 
             //Body
             bm.AddString(message);                  //Message
-            bm.AddLong(timestamp);   //Timestamp
+            bm.AddLong(DateTimeOffset.Now.ToUnixTimeMilliseconds());   //Timestamp
             bm.AddLong(0);                          //Salt, fuck knows what that is
 
             //Previous messages
@@ -71,9 +78,10 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddString(netowrkName.BuildJson());
             bm.AddBool(false);
 
-            Console.WriteLine("zalupa: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " ") + "   " + bm.GetBytes().Length);
+            //Console.WriteLine("zalupa: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " ") + "   " + bm.GetBytes().Length);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
         public static double ConvertToUnixTimestamp(DateTime date)
@@ -81,6 +89,11 @@ namespace SlimeCore.Network.Packets.Play
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan diff = date.ToUniversalTime() - origin;
             return Math.Floor(diff.TotalSeconds);
+        }
+
+        object IPacket.Broadcast(bool includeSelf)
+        {
+            throw new NotImplementedException();
         }
     }
 }

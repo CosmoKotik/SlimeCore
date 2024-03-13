@@ -1,6 +1,7 @@
 ﻿using SlimeCore.Core.Metadata;
 using SlimeCore.Entities;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using SlimeCore.Tools.Nbt;
 using System;
 using System.Collections.Generic;
@@ -17,16 +18,20 @@ namespace SlimeCore.Network.Packets.Play
         public Versions Version { get; set; }
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
-
+        private bool _broadcast = false;
+        private bool _includeSelf = false;
         public SetEntityMetadata(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
             this.PacketID = PacketHandler.Get(Version, PacketType.SET_ENTITY_METADATA);
         }
 
-        public void Broadcast(bool includeSelf)
+        public SetEntityMetadata Broadcast(bool includeSelf)
         {
-            throw new NotImplementedException();
+            _includeSelf = includeSelf;
+            _broadcast = true;
+
+            return this;
         }
 
         public object Read(byte[] bytes)
@@ -51,7 +56,8 @@ namespace SlimeCore.Network.Packets.Play
 
             bm.AddByte(0xFF);   //End
             //Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
         public byte[] HandleMetadata(MetadataType type, MetadataValue value, object obj)
@@ -246,6 +252,11 @@ namespace SlimeCore.Network.Packets.Play
             //bm.AddByte(player.IsCrouching ? (byte)5 : (byte)0);   //Value
 
             return bm.GetBytes();
+        }
+
+        object IPacket.Broadcast(bool includeSelf)
+        {
+            throw new NotImplementedException();
         }
     }
 }

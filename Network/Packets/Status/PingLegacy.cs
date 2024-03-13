@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace SlimeCore.Network.Packets.Status
             this.PacketID = 0xff;
         }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }
@@ -79,7 +80,8 @@ namespace SlimeCore.Network.Packets.Status
             bm.AddByte(0x00);
             bm.AddByte(BitConverter.GetBytes('9')[0]);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
     }
 }

@@ -26,7 +26,7 @@ namespace SlimeCore.Network.Packets.Play
             this.PacketID = PacketHandler.Get(Version, PacketType.SET_CREATIVE_MODE_SLOT);
         }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }

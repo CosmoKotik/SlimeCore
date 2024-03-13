@@ -9,12 +9,12 @@ namespace SlimeCore.Enums
 {
     public interface IPacket
     {
-        Versions Version { get; set; }
-        int PacketID { get; set; }
-        ClientHandler ClientHandler { get; set; }
+        public Versions Version { get; set; }
+        public int PacketID { get; set; }
+        public ClientHandler ClientHandler { get; set; }
 
         void Write();
         object Read(byte[] bytes);
-        void Broadcast(bool includeSelf);
+        object Broadcast(bool includeSelf);
     }
 }

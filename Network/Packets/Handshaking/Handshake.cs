@@ -22,7 +22,7 @@ namespace SlimeCore.Network.Packets
             //PacketID = PacketHandler.Get(Version, PacketType.HANDSHAKE);
         }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }

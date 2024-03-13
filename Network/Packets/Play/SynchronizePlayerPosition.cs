@@ -1,5 +1,6 @@
 ﻿using SlimeCore.Entities;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace SlimeCore.Network.Packets.Play
             this.PacketID = PacketHandler.Get(Version, PacketType.SYNCHRONIZE_PLAYER_POSITION);
         }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }
@@ -48,7 +49,8 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddVarInt(1);
             //bm.AddBool(false);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
         public async void Write(Position position)
@@ -68,7 +70,8 @@ namespace SlimeCore.Network.Packets.Play
             //Set teleportation id (for now its 1)
             bm.AddVarInt(1);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
     }
 

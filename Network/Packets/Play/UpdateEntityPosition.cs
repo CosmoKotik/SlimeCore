@@ -1,5 +1,6 @@
 ﻿using SlimeCore.Entities;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +15,21 @@ namespace SlimeCore.Network.Packets.Play
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
+        private bool _broadcast = false;
+        private bool _includeSelf = false;
+
         public UpdateEntityPosition(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
             this.PacketID = PacketHandler.Get(Version, PacketType.UPDATE_ENTITY_POSITION);
         }
 
-        public void Broadcast(bool includeSelf)
+        public UpdateEntityPosition Broadcast(bool includeSelf)
         {
-            throw new NotImplementedException();
+            _includeSelf = includeSelf;
+            _broadcast = true;
+
+            return this;
         }
 
         public object Read(byte[] bytes)
@@ -45,7 +52,7 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddShort((short)((entity.CurrentPosition.PositionZ * 32 - entity.PreviousPosition.PositionZ * 32) * 128));
             bm.AddBool(entity.IsOnGround);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
         }
 
         public async void Write(Entity entity, Position velocity)
@@ -64,7 +71,13 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddShort((short)((entity.CurrentPosition.PositionZ * 32 - (entity.CurrentPosition.PositionZ - velocity.PositionZ) * 32) * 128));
             bm.AddBool(entity.IsOnGround);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
+        }
+
+        object IPacket.Broadcast(bool includeSelf)
+        {
+            throw new NotImplementedException();
         }
     }
 }

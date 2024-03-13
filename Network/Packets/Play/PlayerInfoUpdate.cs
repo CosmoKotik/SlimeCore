@@ -1,5 +1,6 @@
 ﻿using SlimeCore.Entities;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,15 +18,21 @@ namespace SlimeCore.Network.Packets.Play
 
         private BufferManager _bufferManager = new BufferManager();
 
+        private bool _broadcast = false;
+        private bool _includeSelf = false;
+
         public PlayerInfoUpdate(ClientHandler clientHandler)
         {
             this.ClientHandler = clientHandler;
             this.PacketID = PacketHandler.Get(Version, PacketType.PLAYER_INFO_UPDATE);
         }
 
-        public void Broadcast(bool includeSelf)
+        public PlayerInfoUpdate Broadcast(bool includeSelf)
         {
-            throw new NotImplementedException();
+            _includeSelf = includeSelf;
+            _broadcast = true;
+
+            return this;
         }
 
         public object Read(byte[] bytes)
@@ -41,8 +48,9 @@ namespace SlimeCore.Network.Packets.Play
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
             bm.AddBytes(_bufferManager.GetBytes(), false);
-            
-            await this.ClientHandler.FlushData(bm.GetBytes());
+
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
         public PlayerInfoUpdate AddPlayer(Player player)
@@ -100,6 +108,11 @@ namespace SlimeCore.Network.Packets.Play
             _bufferManager.AddVarInt(player.Gamemode);
 
             return this;
+        }
+
+        object IPacket.Broadcast(bool includeSelf)
+        {
+            throw new NotImplementedException();
         }
     }
 }

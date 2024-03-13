@@ -4,6 +4,7 @@ using SlimeApi;
 using SlimeCore.Entities;
 using SlimeCore.Network;
 using SlimeCore.Network.Packets.Play;
+using SlimeCore.Network.Packets.Queue;
 using SlimeCore.Plugin;
 using SlimeCore.Registry;
 using SlimeCore.Tools;
@@ -60,7 +61,6 @@ namespace SlimeCore.Core
         //private List<Assembly> _plugins = new List<Assembly>();
 
         public List<PluginType> Plugins { get => _plugins; }
-        public PluginHandler PluginsHandler { get; set; }
         private List<PluginType> _plugins = new List<PluginType>();
 
         public bool IsStarted { get; set; }
@@ -68,11 +68,19 @@ namespace SlimeCore.Core
         public string IpAddress { get; set; }
         public int Port { get; set; }
 
+        public PluginHandler PluginsHandler { get; set; }
         public RegistryManager Registry { get; set; }
+        public QueueHandler PacketQueueHandler { get; set; }
+
         public List<Block> BlockPlaced { get; set; }
 
         public List<ClientHandler> NetClients = new List<ClientHandler>();
-        public List<Player> Players = new List<Player>();
+        public List<ClientObject> ClientObjects { get; set; }
+        public object ClientObjectsLocker = new object();
+
+        public List<Player> Players { get; set; } = new List<Player>();
+        public object PlayersObjectsLocker = new object();
+
         public List<NPC> Npcs = new List<NPC>();
         //private List<Player> _players = new List<Player>();
 
@@ -93,15 +101,19 @@ namespace SlimeCore.Core
                 Directory.CreateDirectory(_pluginsPath);
             }
 
-            /*foreach (string filepath in Directory.GetFileSystemEntries(_pluginsPath))
+            foreach (string filepath in Directory.GetFileSystemEntries(_pluginsPath))
             {
                 string fullpath = Path.GetFullPath(filepath);
                 var dll = Assembly.LoadFrom(fullpath);
 
                 InvokePluginMethod(AddPlugin(dll), PluginMethods.OnInit);
-            }*/
+            }
+
+            this.ClientObjects = new List<ClientObject>();
 
             this.PluginsHandler = new PluginHandler(this);
+
+            this.PacketQueueHandler = new QueueHandler(this);
 
             this.BlockPlaced = new List<Block>();
 
@@ -129,9 +141,10 @@ namespace SlimeCore.Core
             {
                 CurrentTPS = DateTime.UtcNow.Ticks - lastTickTime;
                 //Console.WriteLine(CurrentTPS);
-                DLM.TryLock(ref NetClients);
-                NetClients.ForEach(async client => { await client.TickUpdate(); });
-                DLM.RemoveLock(ref NetClients);
+                //DLM.TryLock(ref NetClients);
+                //NetClients.ForEach(async client => { await client.TickUpdate(); });
+                ClientObjects.ForEach(async x => await x.Handler.TickUpdate() );
+                //DLM.RemoveLock(ref NetClients);
 
                 //Players.ForEach(x => { InvokeAllPluginsMethod(PluginMethods.UpdatePlayer, new object[] { CastOT.CastToApi(x) }); });
                 Entities.ForEach(x => { InvokeAllPluginsMethod(PluginMethods.UpdateEntity, new object[] { CastOT.CastToApi(x) }); });
@@ -225,40 +238,86 @@ namespace SlimeCore.Core
             return objs.ToArray();
         }
 
-        public void AddPlayer(ref Player player, ClientHandler ch = null)
+        public void AddPlayer(Player player, ClientHandler ch = null)
         {
-            DLM.TryLock(ref player);
+            //DLM.TryLock(ref player);
 
-            player.EntityID = Players.Count + 1;
             player.Connection = ch;
-            Players.Add(player);
+            
+            lock (PlayersObjectsLocker)
+            {
+                //player.EntityID = Players.Count + 1;
+                Players.Add(player);
+            }
             InvokeAllPluginsMethod(PluginMethods.OnPlayerJoin, new object[] { CastOT.CastToApi(player) });
             InvokeAllPluginsMethod(PluginMethods.AddPlayer, new object[] { CastOT.CastToApi(player) });
             
-            DLM.RemoveLock(ref player);
+            //DLM.RemoveLock(ref player);
         }
         public void UpdatePlayer(Player player)
         {
-            DLM.TryLock(ref this.Players);
+            //DLM.TryLock(ref player);
+
+            Console.WriteLine(player.EntityID);
 
             int index = this.Players.FindIndex(x => x.EntityID == player.EntityID);
             this.Players[index] = player;
             InvokeAllPluginsMethod(PluginMethods.UpdatePlayer, new object[] { CastOT.CastToApi(player) });
 
-            DLM.RemoveLock(ref this.Players);
+            //DLM.RemoveLock(ref player);
         }
-        public void RemovePlayer(ref Player player)
+        public void RemovePlayer(Player player)
         {
-            DLM.TryLock(ref player);
+            //DLM.TryLock(ref player);
+
+            Console.WriteLine("removing");
 
             InvokeAllPluginsMethod(PluginMethods.OnPlayerLeave, new object[] { CastOT.CastToApi(player) });
             InvokeAllPluginsMethod(PluginMethods.RemovePlayer, new object[] { CastOT.CastToApi(player) });
 
-            Guid uuid = player.UUID;
-            int index = Players.FindIndex(x => x.UUID == uuid);
-            Players[index] = player;
+            //Guid uuid = player.UUID;
+
+            lock (PlayersObjectsLocker)
+            {
+                int index = Players.FindIndex(x => x.EntityID.Equals(player.EntityID));
+                Players[index] = player;
+            }
             
-            DLM.RemoveLock(ref player);
+            //DLM.RemoveLock(ref player);
+        }
+
+        public void AddClient(ref ClientHandler handler, out int ClientID)
+        {
+            ClientObject obj = new ClientObject()
+            {
+                Handler = handler,
+                ClientID = new Random().Next()
+            };
+
+            ClientID = obj.ClientID;
+
+            lock (ClientObjectsLocker)
+                ClientObjects.Add(obj);
+        }
+
+        public ClientHandler? GetClient(int ClientID)
+        {
+            lock (ClientObjectsLocker)
+                return ClientObjects.Find(x => x.ClientID.Equals(ClientID))?.Handler;
+        }
+        public ClientHandler[] GetAllClients()
+        {
+            List<ClientHandler> handlers = new List<ClientHandler>();
+            lock (ClientObjectsLocker)
+                ClientObjects.ForEach(x => handlers.Add(x.Handler));
+
+            return handlers.ToArray();
+        }
+
+        public void RemoveClient(int ClientID)
+        {
+            lock (ClientObjectsLocker)
+                ClientObjects.RemoveAll(x => x.ClientID.Equals(ClientID));
         }
     }
 }

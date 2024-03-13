@@ -7,6 +7,7 @@ using SlimeCore.Enums;
 using SlimeCore.Network.Packets;
 using SlimeCore.Network.Packets.Login;
 using SlimeCore.Network.Packets.Play;
+using SlimeCore.Network.Packets.Queue;
 using SlimeCore.Network.Packets.Status;
 using SlimeCore.Registry;
 using SlimeCore.Tools;
@@ -27,6 +28,8 @@ namespace SlimeCore.Network
         public ServerManager ServerManager { get; set; }
         public Versions ClientVersion { get; set; }
 
+        public int ClientID;
+
         public int KickTimeout { get; set; } = 10000;
 
         private Socket _client;
@@ -36,7 +39,7 @@ namespace SlimeCore.Network
         private long _lastKeepAliveMiliseconds = 0;
 
         private Player _player;
-        
+
         private bool _isBeta = false;
 
         private bool _isAlive = true;
@@ -46,6 +49,11 @@ namespace SlimeCore.Network
         private long _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
         private CancellationTokenSource _cancellationToken;
+
+        public ClientHandler() 
+        {
+            ClientID = 0;
+        }
 
         public ClientHandler(Socket client, ServerManager serverManager)
         {
@@ -81,6 +89,9 @@ namespace SlimeCore.Network
 
                 using (this._client)
                 {
+                    var thisClass = this;
+                    ServerManager.AddClient(ref thisClass, out ClientID);
+
                     while (_isAlive && this._client.Connected)
                     {
                         if (this._client.Available > 0)
@@ -155,6 +166,8 @@ namespace SlimeCore.Network
                     _client = null;
                     //Console.WriteLine("Closed");
 
+                    ServerManager.RemoveClient(ClientID);
+
                     DLM.TryLock(ref ServerManager.NetClients);
                     ServerManager.NetClients.Remove(this);
                     if (_player != null)
@@ -164,7 +177,7 @@ namespace SlimeCore.Network
                             new RemoveEntities(x).Write(_player);
                         });
 
-                        ServerManager.RemovePlayer(ref _player);
+                        ServerManager.RemovePlayer(_player);
                     }
                     DLM.RemoveLock(ref ServerManager.NetClients);
                 }
@@ -235,14 +248,13 @@ namespace SlimeCore.Network
                             //new LoginSuccess(this).Write();
                             //new SynchronizePlayerPosition(this).Write();
                             _player = new Login(this).Read(buffer) as Player;
-
+                            Console.WriteLine(_player.EntityID);
                             /*lock (ServerManager.Players)
                             {
                                 //ServerManager.Players.Add(_player);
                                 ServerManager.AddPlayer(ref _player);
                             }*/
 
-                            ServerManager.AddPlayer(ref _player);
 
                             new LoginSuccess(this).Write(_player);
                             new Login(this).Write(_player);
@@ -255,7 +267,6 @@ namespace SlimeCore.Network
                     //new SynchronizePlayerPosition(this).Write();
                     //FlushData(StringToByteArray("1E 68 CE 03 40 30 5F E3 D1 E0 1E 26 40 3F 07 14 FC E3 66 0E 40 32 40 F3 60 93 5D 30 9F 00 00 04 42 CE 03 6D 09 54 D7 03 00 CE 00 B4 FE EF 0A 2B D7 03 01 62 01 35 FE 30 00"), false);
 
-                    DLM.TryLock(ref ServerManager.NetClients);
                     switch (PacketHandler.Get(packetID, _currentState))
                     {
                         case PacketType.CLIENT_INFORMATION:
@@ -280,7 +291,7 @@ namespace SlimeCore.Network
 
                                 new SetDefaultSpawnPosition(this).Write(new Position(5, -60, 5), 0);
 
-                                new PlayerInfoUpdate(this).InitializeChat(_player).Write();
+                                /*new PlayerInfoUpdate(this).InitializeChat(_player).Write();*/
 
                                 this._currentState = ClientState.Play;
                                 OnLoadedWorld().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -297,11 +308,14 @@ namespace SlimeCore.Network
 
                             UpdatePlayerDirections();
 
-                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            new UpdateEntityPositionAndRotation(this).Broadcast(false).Write(_player);
+                            new SetHeadRotation(this).Broadcast(false).Write(_player);
+
+                            /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
                                 new UpdateEntityPositionAndRotation(x).Write(_player);
                                 new SetHeadRotation(x).Write(_player);
-                            });
+                            });*/
 
                             //Console.WriteLine($"X: {playerPosAndRot.X} Y: {playerPosAndRot.X} Z: {playerPosAndRot.X} Yaw: {playerPosAndRot.Yaw} Pitch: {playerPosAndRot.Pitch}");
                             break;
@@ -314,10 +328,12 @@ namespace SlimeCore.Network
 
                             _player.IsOnGround = playerPos.OnGround;
 
-                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            new UpdateEntityPosition(this).Broadcast(false).Write(_player);
+
+                            /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
                                 new UpdateEntityPosition(x).Write(_player);
-                            });
+                            });*/
 
                             //Console.WriteLine($"X: {playerPos.X} Y: {playerPos.X} Z: {playerPos.X}");
                             break;
@@ -335,27 +351,34 @@ namespace SlimeCore.Network
 
                             UpdatePlayerDirections();
 
-                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            new UpdateEntityRotation(this).Broadcast(false).Write(_player);
+                            new SetHeadRotation(this).Broadcast(false).Write(_player);
+
+                            /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
                                 new UpdateEntityRotation(x).Write(_player);
                                 new SetHeadRotation(x).Write(_player);
-                            });
+                            });*/
                             break;
                         case PacketType.PLAYER_COMMAND:
                             new PlayerCommand(this).Read(buffer);
-                            
-                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+
+                            new SetEntityMetadata(this).Broadcast(false).Write(_player, _player.Metadata);
+
+                            /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
                                 new SetEntityMetadata(x).Write(_player, _player.Metadata);
-                            });
+                            });*/
                             break;
                         case PacketType.SWING_ARM:
                             bool arm = (bool)new SwingArm(this).Read(buffer);
 
-                            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+                            new EntityAnimation(this).Broadcast(false).Write(_player, (Animations)(arm ? 3 : 0));
+
+                            /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
                                 new EntityAnimation(x).Write(_player, (Animations)(arm ? 3 : 0));
-                            });
+                            });*/
                             break;
                         case PacketType.PLAYER_ACTION:
                             PlayerAction pa = new PlayerAction(this).Read(buffer) as PlayerAction;
@@ -368,11 +391,13 @@ namespace SlimeCore.Network
                                         case Gamemode.Survival:
                                             break;
                                         case Gamemode.Creative:
-                                            ServerManager.NetClients.ForEach(x =>
+                                            new BlockUpdate(this).Broadcast(true).Write(pa.Position, 0);
+                                            ServerManager.BlockPlaced.RemoveAll(x => x.BlockPosition.Equals(pa.Position));
+                                            /*ServerManager.NetClients.ForEach(x =>
                                             {
                                                 new BlockUpdate(x).Write(pa.Position, 0);
                                                 ServerManager.BlockPlaced.RemoveAll(x => x.BlockPosition.Equals(pa.Position));
-                                            });
+                                            });*/
                                             break;
                                     }
 
@@ -406,7 +431,7 @@ namespace SlimeCore.Network
                                     blockPosition += new Position(1, 0, 0);
                                     break;
                             }
-
+                            
                             if ((item.CursorPosX == 0 || item.CursorPosX == 1) || (item.CursorPosZ == 0 || item.CursorPosZ == 1))
                                 if (item.CursorPosY >= 0.5)
                                     _player.HalfDirection = Direction.Top;
@@ -419,7 +444,23 @@ namespace SlimeCore.Network
                             if (_player.CheckIsColliding(blockPosition))
                                 break;
 
-                            ServerManager.NetClients.ForEach(x =>
+                            BlockProperties blockProp = new BlockProperties()
+                            {
+                                Direction = _player.LookDirection,
+                                Half = _player.HalfDirection,
+                                Position = blockPosition,
+                            };
+
+                            int itemId = _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem);
+                            int blockId = ServerManager.Registry.GetBlockId(itemId, blockProp);
+
+                            Block block = new Block(blockPosition, blockId, ServerManager.Registry.GetBlockType(itemId), _player.LookDirection);
+
+
+                            ServerManager.BlockPlaced.Add(block);
+                            new BlockUpdate(this).Broadcast(true).Write(blockPosition, blockId);
+
+                            /*ServerManager.NetClients.ForEach(x =>
                             {
                                 //new BlockUpdate(x).Write(blockPosition, _player.Inventory.GetItem("hotbar", _player.CurrentHeldItem));
                                 //new BlockUpdate(x).Write(blockPosition, ServerManager.Registry.GetBlockId(_player.Inventory.GetItem("hotbar", _player.CurrentHeldItem), _player.LookDirection, _player.HalfDirection));
@@ -438,7 +479,7 @@ namespace SlimeCore.Network
 
                                 ServerManager.BlockPlaced.Add(block);
                                 new BlockUpdate(x).Write(blockPosition, blockId);
-                            });
+                            });*/
 
                             new AcknowledgeBlockChange(this).Write(item.Sequence);
                             break;
@@ -467,15 +508,14 @@ namespace SlimeCore.Network
 
                             Logger.Log($"{_player.Username}: {chatMessage.Message}");
 
-                            ServerManager.NetClients.ForEach(x =>
+                            /*ServerManager.NetClients.ForEach(x =>
                             {
                                 new PlayerChatMessage(x).Write(_player, chatMessage.Message, chatMessage.Timestamp, chatMessage.Salt);
                                 //new SystemChatMessage(x).Write(_player, chatMessage.Message);
-                            });
+                            });*/
+                            new PlayerChatMessage(this).Broadcast(false).Write(_player, chatMessage.Message, chatMessage.Timestamp, chatMessage.Salt);
                             break;
                     }
-
-                    DLM.RemoveLock(ref ServerManager.NetClients);
 
                     if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
                     {
@@ -493,18 +533,19 @@ namespace SlimeCore.Network
         {
             _player.PreviousTickPlayer = _player.Clone();
 
-            this._isConnected = true;
-
             //Broadcast to everyone that player joined
-            DLM.TryLock(ref ServerManager.NetClients);
+            new PlayerInfoUpdate(this).Broadcast(false).AddPlayer(_player).Write();
+            new SpawnPlayer(this).Broadcast(false).Write(_player);
+            new UpdateEntityPositionAndRotation(this).Broadcast(false).Broadcast(false).Write(_player);
+            new SetHeadRotation(this).Broadcast(false).Write(_player);
 
             ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
             {
                 //_player.PreviousPosition = _player.CurrentPosition.Clone();
-                new PlayerInfoUpdate(x).AddPlayer(_player).Write();
+                /*new PlayerInfoUpdate(x).AddPlayer(_player).Write();
                 new SpawnPlayer(x).Write(_player);
                 new UpdateEntityPositionAndRotation(x).Write(_player);
-                new SetHeadRotation(x).Write(_player);
+                new SetHeadRotation(x).Write(_player);*/
 
                 new PlayerInfoUpdate(this).AddPlayer(x._player).Write();
                 new SpawnPlayer(this).Write(x._player);
@@ -528,9 +569,10 @@ namespace SlimeCore.Network
             });
             //DLM.RemoveLock(ref ServerManager.Entities);
 
+            ServerManager.AddPlayer(_player);
             ServerManager.NetClients.Add(this);
-            
-            DLM.RemoveLock(ref ServerManager.NetClients);
+
+            this._isConnected = true;
         }
 
         private void UpdatePlayerDirections()
@@ -559,6 +601,8 @@ namespace SlimeCore.Network
         {
             if (!_isAlive || !_isConnected)
                 return;
+
+            //Console.WriteLine(_player.EntityID);
 
             ServerManager.UpdatePlayer(_player);
 
@@ -656,6 +700,7 @@ namespace SlimeCore.Network
                     //Console.WriteLine("zaasdasdlupa: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " ") + "   " + bm.GetBytes().Length);
                     /*Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));*/
                     await this._client.SendAsync(bm.GetBytes(), SocketFlags.None, token);
+                    //this._client.Send(bm.GetBytes());
                 }
                 catch (SocketException ex) { }
                 finally { source.Cancel(); }

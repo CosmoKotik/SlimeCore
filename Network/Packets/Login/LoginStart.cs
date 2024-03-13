@@ -13,7 +13,7 @@ namespace SlimeCore.Network.Packets.Login
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,7 +23,7 @@ namespace SlimeCore.Network.Packets.Status
             PacketID = PacketHandler.Get(Version, PacketType.STATUS);
         }
 
-        public void Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }
@@ -49,7 +50,8 @@ namespace SlimeCore.Network.Packets.Status
 
             bm.AddString(JsonConvert.SerializeObject(sr));
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
 
