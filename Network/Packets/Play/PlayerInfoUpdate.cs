@@ -70,6 +70,13 @@ namespace SlimeCore.Network.Packets.Play
             _bufferManager = new BufferManager();
 
             _bufferManager.AddByte(0x02);
+            
+            //Number of players
+            _bufferManager.AddVarInt(1);
+
+            //UUID
+            _bufferManager.AddUUID(player.UUID);
+
             _bufferManager.AddBool(false);
 
             return this;

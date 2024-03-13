@@ -93,20 +93,13 @@ namespace SlimeCore.Core
                 Directory.CreateDirectory(_pluginsPath);
             }
 
-            foreach (string filepath in Directory.GetFileSystemEntries(_pluginsPath))
+            /*foreach (string filepath in Directory.GetFileSystemEntries(_pluginsPath))
             {
                 string fullpath = Path.GetFullPath(filepath);
                 var dll = Assembly.LoadFrom(fullpath);
 
                 InvokePluginMethod(AddPlugin(dll), PluginMethods.OnInit);
-
-                //PluginObject objs = InvokePluginMethod(AddPlugin(dll), PluginMethods.AddPlayer);
-
-                /*for (int i = 0; i < objs.returnedObjects.Length; i++)
-                {
-                    Console.WriteLine(objs.returnedObjects[i].ToString());
-                }*/
-            }
+            }*/
 
             this.PluginsHandler = new PluginHandler(this);
 
@@ -182,7 +175,6 @@ namespace SlimeCore.Core
                     var instance = Activator.CreateInstance(type);
                     invokedTypes.Add(type);
                     instances.Add(instance);
-                    Logger.Warn(type.Name);
                 }
                 //if (!type.Name.Equals(typeof(PluginListener).Name) && type.IsAbstract)
             }

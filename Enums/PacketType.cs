@@ -59,6 +59,8 @@ namespace SlimeCore.Enums
         REMOVE_ENTITIES,
         SET_ENTITY_VELOCITY,
         CHAT_COMMAND,
-        CHAT_MESSAGE
+        CHAT_MESSAGE,
+        PLAYER_CHAT_MESSAGE,
+        SYSTEM_CHAT_MESSAGE
     }
 }

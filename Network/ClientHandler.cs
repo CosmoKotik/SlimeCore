@@ -280,6 +280,8 @@ namespace SlimeCore.Network
 
                                 new SetDefaultSpawnPosition(this).Write(new Position(5, -60, 5), 0);
 
+                                new PlayerInfoUpdate(this).InitializeChat(_player).Write();
+
                                 this._currentState = ClientState.Play;
                                 OnLoadedWorld().ConfigureAwait(false).GetAwaiter().GetResult();
                             }
@@ -464,6 +466,12 @@ namespace SlimeCore.Network
                             ChatMessage chatMessage = new ChatMessage(this).Read(buffer) as ChatMessage;
 
                             Logger.Log($"{_player.Username}: {chatMessage.Message}");
+
+                            ServerManager.NetClients.ForEach(x =>
+                            {
+                                new PlayerChatMessage(x).Write(_player, chatMessage.Message, chatMessage.Timestamp, chatMessage.Salt);
+                                //new SystemChatMessage(x).Write(_player, chatMessage.Message);
+                            });
                             break;
                     }
 
@@ -639,13 +647,13 @@ namespace SlimeCore.Network
             bm.InsertBytes(bytes);
 
             //_stream.Write(bm.GetBytes(), 0, bm.GetBytes().Length);
-
             using (CancellationTokenSource source = new CancellationTokenSource())
             {
                 CancellationToken token = source.Token;
 
                 try
                 {
+                    //Console.WriteLine("zaasdasdlupa: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " ") + "   " + bm.GetBytes().Length);
                     /*Console.WriteLine("Sent: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " "));*/
                     await this._client.SendAsync(bm.GetBytes(), SocketFlags.None, token);
                 }

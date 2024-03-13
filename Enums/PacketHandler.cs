@@ -131,6 +131,10 @@ namespace SlimeCore.Enums
                             return 0x3E;
                         case PacketType.SET_ENTITY_VELOCITY:
                             return 0x54;
+                        case PacketType.PLAYER_CHAT_MESSAGE:
+                            return 0x35;
+                        case PacketType.SYSTEM_CHAT_MESSAGE:
+                            return 0x64;
                     }
                     break;
                 case Versions.BETA_1_7_3:

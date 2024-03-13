@@ -43,8 +43,10 @@ namespace SlimeCore.Network.Packets.Play
             if (bm.GetBool())
                 p.UUID = bm.GetUUID();
 
-            p.Username = $"player{new Random().Next(291, 893)}";
-            p.UUID = Guid.NewGuid();
+            Console.WriteLine(p.Username + "asdluasgdksd");
+
+            //p.Username = $"player{new Random().Next(291, 893)}";
+            p.UUID = Guid.Parse("1d257980-20f0-354d-8c20-0ceb4b4e6c2d");
 
             return p;
         }
