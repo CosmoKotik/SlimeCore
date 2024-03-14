@@ -51,10 +51,10 @@ namespace SlimeCore.Network.Packets.Play
             return p;
         }
 
-        public async void Write() { }
+        public async Task Write() { }
 
         //FUCK MOJANG!!!!!!!!!!!!!!!!
-        public async void Write(Player player)
+        public async Task Write(Player player)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -96,7 +96,7 @@ namespace SlimeCore.Network.Packets.Play
             //bm.AddVarInt(0);
 
             //Console.WriteLine(BitConverter.ToString(GetRegistryCodec()).Replace("-", " ") + "   " + GetRegistryCodec().Length);
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 

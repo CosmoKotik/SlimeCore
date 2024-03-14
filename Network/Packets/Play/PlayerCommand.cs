@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using Delta.Tools;
+using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,6 +33,13 @@ namespace SlimeCore.Network.Packets.Play
             int eid = bm.ReadVarInt();
             int actionId = bm.ReadVarInt();
             int jumpBoost = bm.ReadVarInt();
+            
+            DLM.TryLock(() => ClientHandler.ServerManager.Players);
+            if (ClientHandler.ServerManager.Players.Any(x => x.EntityID.Equals(eid)))
+            {
+                DLM.RemoveLock(() => ClientHandler.ServerManager.Players);
+                return null;
+            }
 
             switch (actionId)
             {
@@ -46,11 +54,12 @@ namespace SlimeCore.Network.Packets.Play
                     ClientHandler.ServerManager.Players.Find(x => x.EntityID.Equals(eid)).Metadata.UpdateMetadata("IsCrouching", Core.Metadata.MetadataValue.IsStanding);
                     break;
             }
+            DLM.RemoveLock(() => ClientHandler.ServerManager.Players);
 
             return this;
         }
 
-        public async void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);

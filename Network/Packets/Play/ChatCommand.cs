@@ -65,7 +65,7 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);

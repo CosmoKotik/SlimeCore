@@ -33,7 +33,7 @@ namespace SlimeCore.Network.Packets.Status
             throw new NotImplementedException();
         }
 
-        public async void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);

@@ -27,7 +27,7 @@ namespace SlimeCore.Network.Packets.Login
             return new NotImplementedException();
         }
 
-        public void Write()
+        public async Task Write()
         {
             throw new NotImplementedException();
         }

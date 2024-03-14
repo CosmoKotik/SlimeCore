@@ -35,9 +35,9 @@ namespace SlimeCore.Network.Packets.Login
             throw new NotImplementedException();
         }
 
-        public async void Write() { }
+        public async Task Write() { }
 
-        public async void Write(Player player)
+        public async Task Write(Player player)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);

@@ -30,14 +30,14 @@ namespace SlimeCore.Network.Packets.Play
             throw new NotImplementedException();
         }
 
-        public async void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
             bm.AddLong(new Random().NextInt64());
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
     }

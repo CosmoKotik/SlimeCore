@@ -35,7 +35,7 @@ namespace SlimeCore.Network.Packets.Status
             return bm.GetLong();
         }
 
-        public async void ReadWrite(byte[] bytes)
+        public async Task ReadWrite(byte[] bytes)
         {
             BufferManager bm = new BufferManager();
             bm.SetBytes(bytes);
@@ -49,7 +49,7 @@ namespace SlimeCore.Network.Packets.Status
             //await this.ClientHandler.FlushData(bytes, false);
         }
 
-        public void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
 

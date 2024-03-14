@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.JavaScript;
 using System.Text;
 using System.Threading;
@@ -30,31 +32,35 @@ namespace Delta.Tools
             LockObject lockObject = new LockObject()
             {
                 IsLocked = true,
-                Locker = new object() { },
+                Locker = new object(),
                 CancellationTokenSource = taskCTS
             };
 
-            lockObject.LockTask = new Task(() => LockTask(lockObject), taskCTS.Token);
+            //lockObject.LockTask = new Task(() => LockTask(lockObject), taskCTS.Token);
 
             lock (_lock)
             {
-                if (!_lockHashcodes.ContainsKey(name))
-                    _lockHashcodes.Add(name, lockObject);
-                else
-                    hasObject = true;
-            }
+                hasObject = _lockHashcodes.ContainsKey(name);
 
-            if (!hasObject)
-                lockObject.LockTask.Start();
+                if (!hasObject)
+                { 
+                    _lockHashcodes.Add(name, lockObject);
+                    lockObject.LockTask.Start();
+                }
+            }
         }
 
         private static async void LockTask(LockObject obj)
         {
-            lock (obj.Locker)
+           lock (obj.Locker)
             {
                 while (!obj.CancellationTokenSource.IsCancellationRequested)
-                { }
+                {
+                    Task.Delay(1);
+                }
             }
+
+            //Console.WriteLine("canceleled");
         }
 
         public static void RemoveLock<T>(ref T obj, int threadId = -1)
@@ -73,24 +79,22 @@ namespace Delta.Tools
             }
         }*/
 
-        public static void TryLock<T>(ref T obj, int threadId = -1)
+        public static void TryLock<T>(Expression<Func<T>> obj, int threadId = -1)
         {
             if (threadId == -1)
                 threadId = Thread.CurrentThread.ManagedThreadId;
 
-            Console.WriteLine($"{obj.GetType().BaseType}.{nameof(obj)}");
+            string name = $"{GetCaller()}.{((MemberExpression)obj.Body).Member.Name}";
 
-            //string name = $"{obj.GetType().BaseType}.{nameof(obj)}";
-            string name = $"{GetCaller()}.{nameof(obj)}";
             //int hashcode = nameof(obj).GetHashCode() + GetCaller().GetHashCode();
             bool hasObject = false;
 
             lock (_lock)
             {
-                if (!_lockHashcodes.ContainsKey(name))
+                hasObject = _lockHashcodes.ContainsKey(name);
+
+                if (!hasObject)
                     _lockHashcodes.Add(name, threadId);
-                else
-                    hasObject = true;
             }
 
             if (!hasObject)
@@ -100,15 +104,13 @@ namespace Delta.Tools
                 Thread.Sleep(1);
         }
 
-        public static void RemoveLock<T>(ref T obj, int threadId = -1)
+        public static void RemoveLock<T>(Expression<Func<T>> obj, int threadId = -1)
         {
             if (threadId == -1)
                 threadId = Thread.CurrentThread.ManagedThreadId;
 
-            //string name = $"{obj.GetType().BaseType}.{nameof(obj)}";
-            string name = $"{GetCaller()}.{nameof(obj)}";
+            string name = $"{GetCaller()}.{((MemberExpression)obj.Body).Member.Name}";
             //int hashcode = nameof(obj).GetHashCode() + GetCaller().GetHashCode();
-
             lock (_lock)
             {
                 if (_lockHashcodes.ContainsKey(name) &&
@@ -122,8 +124,15 @@ namespace Delta.Tools
             var trace = new StackTrace(2);
             var frame = trace.GetFrame(0);
             var caller = frame.GetMethod();
-            var callingClass = caller.DeclaringType.BaseType.Name;
+            //var callingClass = caller.DeclaringType.Name;
+            //var callingClass = caller.DeclaringType.BaseType.Name;
             //var callingClass = caller.DeclaringType.FullName.Split("+")[0];
+            var callingClass = "";
+
+            if (caller.DeclaringType.IsPrimitive)
+                callingClass = caller.DeclaringType.FullName;
+            else
+                callingClass = caller.DeclaringType.FullName.Split("+")[0];
 
             return callingClass;
         }

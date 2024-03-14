@@ -33,16 +33,16 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write() { }
+        public async Task Write() { }
 
-        public async void Write(int sequenceID)
+        public async Task Write(int sequenceID)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
 
             bm.AddVarInt(sequenceID);
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
     }

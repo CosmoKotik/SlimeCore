@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -61,7 +62,7 @@ namespace SlimeCore.Network.Packets.Play
 
             bm.AddBool(false);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
         }
     }
 }

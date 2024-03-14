@@ -76,6 +76,8 @@ namespace SlimeCore.Plugin
                             /*mdata.AddMetadata("Width", Core.Metadata.MetadataType.Float, Core.Metadata.MetadataValue.Width);
                             mdata.AddMetadata("Height", Core.Metadata.MetadataType.Float, Core.Metadata.MetadataValue.Height);*/
 
+                            Logger.Log("Spawniong entity");
+
                             new SpawnEntity(new ClientHandler()).Broadcast(false).Write((Entities.Entity)CastOT.CastToCore(entity));
                             new SetEntityMetadata(new ClientHandler()).Broadcast(false).Write((Entities.Entity)CastOT.CastToCore(entity), (Core.Metadata.Metadata)CastOT.CastToCore(entity.Metadata));
 

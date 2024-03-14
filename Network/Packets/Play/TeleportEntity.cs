@@ -40,9 +40,9 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write() { }
+        public async Task Write() { }
 
-        public async void Write(Entity entity)
+        public async Task Write(Entity entity)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -55,7 +55,7 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddByte((byte)entity.CurrentPosition.Pitch);
             bm.AddBool(entity.IsOnGround);
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
         }
 
         object IPacket.Broadcast(bool includeSelf)

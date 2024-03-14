@@ -27,7 +27,7 @@ namespace SlimeCore.Network.Packets
             throw new NotImplementedException();
         }
 
-        public void Write()
+        public Task Write()
         {
             throw new NotImplementedException();
         }

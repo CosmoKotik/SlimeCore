@@ -43,13 +43,13 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
             bm.AddBytes(_bufferManager.GetBytes(), false);
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
@@ -95,17 +95,31 @@ namespace SlimeCore.Network.Packets.Play
             _bufferManager = new BufferManager();
 
             _bufferManager.AddByte(0x04);
+
+            //Number of players
+            _bufferManager.AddVarInt(1);
+
+            //UUID
+            _bufferManager.AddUUID(player.UUID);
+
             _bufferManager.AddVarInt(player.Gamemode);
 
             return this;
         }
 
-        public PlayerInfoUpdate UpdateListed(Player player)
+        public PlayerInfoUpdate UpdateListed(Player player, bool isListed)
         {
             _bufferManager = new BufferManager();
 
-            _bufferManager.AddByte(0x04);
-            _bufferManager.AddVarInt(player.Gamemode);
+            _bufferManager.AddByte(0x08);
+
+            //Number of players
+            _bufferManager.AddVarInt(1);
+
+            //UUID
+            _bufferManager.AddUUID(player.UUID);
+
+            _bufferManager.AddBool(isListed);
 
             return this;
         }

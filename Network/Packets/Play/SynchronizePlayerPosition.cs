@@ -32,7 +32,7 @@ namespace SlimeCore.Network.Packets.Play
             throw new NotImplementedException();
         }
 
-        public async void Write()
+        public async Task Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -49,11 +49,11 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddVarInt(1);
             //bm.AddBool(false);
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
-        public async void Write(Position position)
+        public async Task Write(Position position)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -70,7 +70,7 @@ namespace SlimeCore.Network.Packets.Play
             //Set teleportation id (for now its 1)
             bm.AddVarInt(1);
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
     }

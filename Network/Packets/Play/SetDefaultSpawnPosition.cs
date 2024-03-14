@@ -32,7 +32,7 @@ namespace SlimeCore.Network.Packets.Play
             throw new NotImplementedException();
         }
 
-        public async void Write(Position position, float angle)
+        public async Task Write(Position position, float angle)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -46,11 +46,11 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddLong(pos);
             bm.AddFloat(angle);
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 
-        public void Write()
+        public async Task Write()
         {
             throw new NotImplementedException();
         }

@@ -31,8 +31,10 @@ namespace SlimeCore.Plugin
                 {
                     foreach (Player player in players)
                     {
-                        int index = _serverManager.Players.FindIndex(x => x.UUID == player.UUID);
+                        DLM.TryLock(() => _serverManager.Players);
+                        int index = _serverManager.Players.FindIndex(x => x.EntityID == player.EntityID);
                         _serverManager.Players[index] = (SlimeCore.Entities.Player)CastOT.CastToCore(player);
+                        DLM.RemoveLock(() => _serverManager.Players);
                     }
                 }
             }

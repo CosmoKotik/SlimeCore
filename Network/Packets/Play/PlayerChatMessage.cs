@@ -28,8 +28,8 @@ namespace SlimeCore.Network.Packets.Play
 
         public PlayerChatMessage Broadcast(bool includeSelf)
         {
-            _includeSelf = includeSelf;
             _broadcast = true;
+            _includeSelf = includeSelf;
 
             return this;
         }
@@ -42,9 +42,9 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write() { }
+        public async Task Write() { }
 
-        public async void Write(Player player, string message, long timestamp, long salt)
+        public async Task Write(Player player, string message, long timestamp, long salt)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -80,7 +80,7 @@ namespace SlimeCore.Network.Packets.Play
 
             //Console.WriteLine("zalupa: {0}", BitConverter.ToString(bm.GetBytes()).Replace("-", " ") + "   " + bm.GetBytes().Length);
 
-            QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).SetBroadcast(_broadcast, _includeSelf).Build());
             //await this.ClientHandler.FlushData(bm.GetBytes());
         }
 

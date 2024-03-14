@@ -14,6 +14,7 @@ using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Net.Sockets;
 using System.Numerics;
@@ -31,6 +32,8 @@ namespace SlimeCore.Network
         public int ClientID;
 
         public int KickTimeout { get; set; } = 10000;
+
+        public bool IsDisposed { get; set; } = false; 
 
         private Socket _client;
         //private NetworkStream _stream;
@@ -122,7 +125,7 @@ namespace SlimeCore.Network
                                 Array.Copy(bm.GetBytes(), buffer, packetSize);
                                 //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
 
-                                HandleBytes(buffer, correcetdBytes, packetID);
+                                HandleBytesAsync(buffer, correcetdBytes, packetID);
 
                                 //Check if there is more shit in the bytes after the first packet
                                 if (bm.GetBytes().Length > packetSize)
@@ -138,7 +141,7 @@ namespace SlimeCore.Network
                                         Array.Copy(bm.GetBytes(), buffer, packetSize);
                                         //Console.WriteLine("Received: {0}", BitConverter.ToString(buffer).Replace("-", " ") + "   " + buffer.Length);
 
-                                        HandleBytes(buffer, correcetdBytes, packetID);
+                                        HandleBytesAsync(buffer, correcetdBytes, packetID);
                                     }
                                     catch { }
                                 }
@@ -162,31 +165,35 @@ namespace SlimeCore.Network
 
                 if (_client != null)
                 {
-                    (_client as IDisposable).Dispose();
-                    _client = null;
+                    _client.Close();
+                    _client.Dispose();
+
+                    DLM.TryLock(() => IsDisposed);
+                    IsDisposed = true;
+                    DLM.RemoveLock(() => IsDisposed);
+                    //_client = null;
                     //Console.WriteLine("Closed");
 
                     ServerManager.RemoveClient(ClientID);
 
-                    DLM.TryLock(ref ServerManager.NetClients);
+                    DLM.TryLock(() => ServerManager.NetClients);
                     ServerManager.NetClients.Remove(this);
+                    DLM.RemoveLock(() => ServerManager.NetClients);
                     if (_player != null)
                     {
-                        ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
-                        {
-                            new RemoveEntities(x).Write(_player);
-                        });
+                        Task.Run(() => new RemoveEntities(this).Broadcast(false).Write(_player)).Wait();
+                        Task.Run(() => new PlayerInfoUpdate(this).Broadcast(false).UpdateListed(_player, false).Write()).Wait();
 
+                        //ServerManager.InvokeMethod("RemovePlayer", new object[] { _player });
                         ServerManager.RemovePlayer(_player);
                     }
-                    DLM.RemoveLock(ref ServerManager.NetClients);
                 }
             }
             
             token.Cancel();
         }
 
-        private void HandleBytes(byte[] buffer, byte[] bytes, int packetID)
+        private async Task HandleBytesAsync(byte[] buffer, byte[] bytes, int packetID)
         {
             switch (_currentState)
             {
@@ -199,7 +206,7 @@ namespace SlimeCore.Network
                             this._currentState = (ClientState)handshake.NextState;
 
                             if (handshake.NextState == (int)ClientState.Status)
-                                new Status(this).Write();
+                                Task.Run(() => new Status(this).Write()).Wait();
                             /*else if (handshake.NextState == (int)ClientState.Login)
                             {
                                 switch (PacketHandler.Get(packetID, _currentState))
@@ -226,7 +233,7 @@ namespace SlimeCore.Network
                             }*/
                             break;
                         case PacketType.PING:
-                            new PingLegacy(this).Write();
+                            await new PingLegacy(this).Write();
                             break;
                     }
                     break;
@@ -234,10 +241,10 @@ namespace SlimeCore.Network
                     switch (PacketHandler.Get(packetID, _currentState))
                     {
                         case PacketType.STATUS:
-                            new Status(this).Write();
+                            Task.Run(() => new Status(this).Write()).Wait();
                             break;
                         case PacketType.PING:
-                            new Ping(this).ReadWrite(bytes);
+                            Task.Run(() => new Ping(this).ReadWrite(bytes)).Wait();
                             break;
                     }
                     break;
@@ -256,8 +263,8 @@ namespace SlimeCore.Network
                             }*/
 
 
-                            new LoginSuccess(this).Write(_player);
-                            new Login(this).Write(_player);
+                            Task.Run(() => new LoginSuccess(this).Write(_player)).Wait();
+                            Task.Run(() => new Login(this).Write(_player)).Wait();
 
                             this._currentState = ClientState.Play;
                             break;
@@ -283,15 +290,15 @@ namespace SlimeCore.Network
 
                             if (!_isConnected)
                             {
-                                new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5));
+                                Task.Run(() => new SynchronizePlayerPosition(this).Write(new Position(5, -60, 5))).Wait();
 
-                                new ChunkDataAndUpdateLight(this).Write();
+                                Task.Run(() => new ChunkDataAndUpdateLight(this).Write()).Wait();
 
-                                new SetCenterChunk(this).Write(new Position(0, 0));
+                                Task.Run(() => new SetCenterChunk(this).Write(new Position(0, 0))).Wait();
 
-                                new SetDefaultSpawnPosition(this).Write(new Position(5, -60, 5), 0);
+                                Task.Run(() => new SetDefaultSpawnPosition(this).Write(new Position(5, -60, 5), 0)).Wait();
 
-                                /*new PlayerInfoUpdate(this).InitializeChat(_player).Write();*/
+                                /*Task.Run(() => new PlayerInfoUpdate(this).InitializeChat(_player).Write()).Wait();*/
 
                                 this._currentState = ClientState.Play;
                                 OnLoadedWorld().ConfigureAwait(false).GetAwaiter().GetResult();
@@ -308,8 +315,8 @@ namespace SlimeCore.Network
 
                             UpdatePlayerDirections();
 
-                            new UpdateEntityPositionAndRotation(this).Broadcast(false).Write(_player);
-                            new SetHeadRotation(this).Broadcast(false).Write(_player);
+                            Task.Run(() => new UpdateEntityPositionAndRotation(this).Broadcast(false).Write(_player)).Wait();
+                            Task.Run(() => new SetHeadRotation(this).Broadcast(false).Write(_player)).Wait();
 
                             /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
@@ -328,7 +335,7 @@ namespace SlimeCore.Network
 
                             _player.IsOnGround = playerPos.OnGround;
 
-                            new UpdateEntityPosition(this).Broadcast(false).Write(_player);
+                            Task.Run(() => new UpdateEntityPosition(this).Broadcast(false).Write(_player)).Wait();
 
                             /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
@@ -351,8 +358,8 @@ namespace SlimeCore.Network
 
                             UpdatePlayerDirections();
 
-                            new UpdateEntityRotation(this).Broadcast(false).Write(_player);
-                            new SetHeadRotation(this).Broadcast(false).Write(_player);
+                            Task.Run(() => new UpdateEntityRotation(this).Broadcast(false).Write(_player)).Wait();
+                            Task.Run(() => new SetHeadRotation(this).Broadcast(false).Write(_player)).Wait();
 
                             /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
@@ -363,7 +370,7 @@ namespace SlimeCore.Network
                         case PacketType.PLAYER_COMMAND:
                             new PlayerCommand(this).Read(buffer);
 
-                            new SetEntityMetadata(this).Broadcast(false).Write(_player, _player.Metadata);
+                            Task.Run(() => new SetEntityMetadata(this).Broadcast(false).Write(_player, _player.Metadata)).Wait();
 
                             /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
@@ -373,7 +380,7 @@ namespace SlimeCore.Network
                         case PacketType.SWING_ARM:
                             bool arm = (bool)new SwingArm(this).Read(buffer);
 
-                            new EntityAnimation(this).Broadcast(false).Write(_player, (Animations)(arm ? 3 : 0));
+                            Task.Run(() => new EntityAnimation(this).Broadcast(false).Write(_player, (Animations)(arm ? 3 : 0))).Wait();
 
                             /*ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
                             {
@@ -391,7 +398,7 @@ namespace SlimeCore.Network
                                         case Gamemode.Survival:
                                             break;
                                         case Gamemode.Creative:
-                                            new BlockUpdate(this).Broadcast(true).Write(pa.Position, 0);
+                                            Task.Run(() => new BlockUpdate(this).Broadcast(true).Write(pa.Position, 0)).Wait();
                                             ServerManager.BlockPlaced.RemoveAll(x => x.BlockPosition.Equals(pa.Position));
                                             /*ServerManager.NetClients.ForEach(x =>
                                             {
@@ -404,7 +411,7 @@ namespace SlimeCore.Network
                                     break;
                             }
 
-                            new AcknowledgeBlockChange(this).Write(pa.Sequence);
+                            Task.Run(() => new AcknowledgeBlockChange(this).Write(pa.Sequence)).Wait();
                             break;
                         case PacketType.USE_ITEM_ON:
                             UseItemOn item = new UseItemOn(this).Read(buffer) as UseItemOn;
@@ -458,7 +465,7 @@ namespace SlimeCore.Network
 
 
                             ServerManager.BlockPlaced.Add(block);
-                            new BlockUpdate(this).Broadcast(true).Write(blockPosition, blockId);
+                            Task.Run(() => new BlockUpdate(this).Broadcast(true).Write(blockPosition, blockId)).Wait();
 
                             /*ServerManager.NetClients.ForEach(x =>
                             {
@@ -481,7 +488,7 @@ namespace SlimeCore.Network
                                 new BlockUpdate(x).Write(blockPosition, blockId);
                             });*/
 
-                            new AcknowledgeBlockChange(this).Write(item.Sequence);
+                            await new AcknowledgeBlockChange(this).Write(item.Sequence);
                             break;
                         case PacketType.SET_CREATIVE_MODE_SLOT:
                             SetCreativeModeSlot slot = new SetCreativeModeSlot(this).Read(buffer) as SetCreativeModeSlot;
@@ -513,13 +520,13 @@ namespace SlimeCore.Network
                                 new PlayerChatMessage(x).Write(_player, chatMessage.Message, chatMessage.Timestamp, chatMessage.Salt);
                                 //new SystemChatMessage(x).Write(_player, chatMessage.Message);
                             });*/
-                            new PlayerChatMessage(this).Broadcast(false).Write(_player, chatMessage.Message, chatMessage.Timestamp, chatMessage.Salt);
+                            Task.Run(() => new PlayerChatMessage(this).Broadcast(true).Write(_player, chatMessage.Message, chatMessage.Timestamp, chatMessage.Salt)).Wait();
                             break;
                     }
 
                     if (_lastKeepAliveMiliseconds + 50000000 < DateTime.UtcNow.Ticks)
                     {
-                        new KeepAlive(this).Write();
+                        await new KeepAlive(this).Write();
                         //new SynchronizePlayerPosition(this).Write();
                         _lastKeepAliveMiliseconds = DateTime.UtcNow.Ticks;
                         //new UpdateEntityPositionAndRotation(this).Write();
@@ -532,44 +539,50 @@ namespace SlimeCore.Network
         public async Task OnLoadedWorld()
         {
             _player.PreviousTickPlayer = _player.Clone();
-
+            
             //Broadcast to everyone that player joined
-            new PlayerInfoUpdate(this).Broadcast(false).AddPlayer(_player).Write();
-            new SpawnPlayer(this).Broadcast(false).Write(_player);
-            new UpdateEntityPositionAndRotation(this).Broadcast(false).Broadcast(false).Write(_player);
-            new SetHeadRotation(this).Broadcast(false).Write(_player);
+            Task.Run(() => new PlayerInfoUpdate(this).Broadcast(true).AddPlayer(_player).Write()).Wait();
+            Task.Run(() => new PlayerInfoUpdate(this).Broadcast(true).UpdateListed(_player, true).Write()).Wait();
+            Task.Run(() => new PlayerInfoUpdate(this).Broadcast(true).InitializeChat(_player).Write()).Wait();
+            Task.Run(() => new SpawnPlayer(this).Broadcast(false).Write(_player)).Wait();
+            Task.Run(() => new UpdateEntityPositionAndRotation(this).Broadcast(false).Broadcast(false).Write(_player)).Wait();
+            Task.Run(() => new SetHeadRotation(this).Broadcast(false).Write(_player)).Wait();
 
-            ServerManager.NetClients.FindAll(x => x != this).ForEach(x =>
+            DLM.TryLock(() => ServerManager.NetClients);
+            ServerManager.NetClients.FindAll(x => x != this).ForEach(async x =>
             {
-                //_player.PreviousPosition = _player.CurrentPosition.Clone();
-                /*new PlayerInfoUpdate(x).AddPlayer(_player).Write();
-                new SpawnPlayer(x).Write(_player);
-                new UpdateEntityPositionAndRotation(x).Write(_player);
-                new SetHeadRotation(x).Write(_player);*/
-
-                new PlayerInfoUpdate(this).AddPlayer(x._player).Write();
-                new SpawnPlayer(this).Write(x._player);
-                new UpdateEntityPositionAndRotation(this).Write(x._player);
-                new SetHeadRotation(this).Write(x._player);
+                Task.Run(() => new PlayerInfoUpdate(this).AddPlayer(x._player).Write()).Wait();
+                Task.Run(() => new PlayerInfoUpdate(this).UpdateListed(x._player, true).Write()).Wait();
+                Task.Run(() => new PlayerInfoUpdate(this).InitializeChat(x._player).Write()).Wait();
+                Task.Run(() => new SpawnPlayer(this).Write(x._player)).Wait();
+                Task.Run(() => new UpdateEntityPositionAndRotation(this).Write(x._player)).Wait();
+                Task.Run(() => new SetHeadRotation(this).Write(x._player)).Wait();
             });
+            DLM.RemoveLock(() => ServerManager.NetClients);
 
-            ServerManager.Npcs.ForEach(x => 
+            DLM.TryLock(() => ServerManager.Npcs);
+            ServerManager.Npcs.ForEach(async x => 
             {
-                new PlayerInfoUpdate(this).AddPlayer(x.BuildPlayer()).Write();
-                new SpawnPlayer(this).Write(x.BuildPlayer());
+                Task.Run(() => new PlayerInfoUpdate(this).AddPlayer(x.BuildPlayer()).Write()).Wait();
+                Task.Run(() => new SpawnPlayer(this).Write(x.BuildPlayer())).Wait();
             });
+            DLM.RemoveLock(() => ServerManager.Npcs);
 
-            //DLM.TryLock(ref ServerManager.Entities);
-            ServerManager.Entities.ForEach(x =>
+            DLM.TryLock(() => ServerManager.Entities);
+            ServerManager.Entities.ForEach(async x =>
             {
-                new SpawnEntity(this).Write(x);
-                new SetEntityMetadata(this).Write(x, x.Metadata);
+                Logger.Warn("Sending enttiies");
+                Task.Run(() => new SpawnEntity(this).Write(x)).Wait();
+                Task.Run(() => new SetEntityMetadata(this).Write(x, x.Metadata)).Wait();
+                Task.Run(() => new SetEntityVelocity(this).Write(x, x.Velocity)).Wait();
+                
                 //new UpdateEntityPosition(this).Write(x, x.Velocity);
-                new SetEntityVelocity(this).Write(x, x.Velocity);
+                Logger.Warn("Entities sent");
             });
-            //DLM.RemoveLock(ref ServerManager.Entities);
+            DLM.RemoveLock(() => ServerManager.Entities);
 
-            ServerManager.AddPlayer(_player);
+            ServerManager.InvokeMethod("AddPlayer", new object[] { _player, this });
+            //ServerManager.AddPlayer(_player);
             ServerManager.NetClients.Add(this);
 
             this._isConnected = true;
@@ -604,13 +617,14 @@ namespace SlimeCore.Network
 
             //Console.WriteLine(_player.EntityID);
 
-            ServerManager.UpdatePlayer(_player);
+            ServerManager.InvokeMethod("UpdatePlayer", new object[] { _player });
+            //ServerManager.UpdatePlayer(_player);
 
             //Check if player in new chunk
             if ((int)_player.PreviousPosition.PositionZ / 16 != (int)_player.CurrentPosition.PositionZ / 16
                 || (int)_player.PreviousPosition.PositionX / 16 != (int)_player.CurrentPosition.PositionX / 16)
             {
-                new SetCenterChunk(this).Write(new Position((int)_player.CurrentPosition.PositionX / 16, (int)_player.CurrentPosition.PositionZ / 16));
+                await new SetCenterChunk(this).Write(new Position((int)_player.CurrentPosition.PositionX / 16, (int)_player.CurrentPosition.PositionZ / 16));
 
                 /*Player ueban = new Player() { Username = $"CUM{new Random().Next(273914, 918534)}", UUID = Guid.NewGuid(), EntityID = new Random().Next(), CurrentPosition = new Position(new Random().Next(0, 16), -60, new Random().Next(0, 16)) };
 
@@ -681,8 +695,16 @@ namespace SlimeCore.Network
             lock (__lastPacketTimeLock)
                 _lastPacketTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-            if (_client == null)
+            DLM.TryLock(() => IsDisposed);
+
+            if (_client == null || IsDisposed)
+            {
+                Logger.Warn("IsDisposed");
+                DLM.RemoveLock(() => IsDisposed);
                 return;
+            }
+
+            DLM.RemoveLock(() => IsDisposed);
 
             BufferManager bm = new BufferManager();
             if (includeSize)

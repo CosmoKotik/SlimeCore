@@ -33,9 +33,9 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write() { }
+        public async Task Write() { }
 
-        public async void Write(Player player, Position position, byte stage)
+        public async Task Write(Player player, Position position, byte stage)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);

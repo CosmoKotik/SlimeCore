@@ -13,7 +13,7 @@ namespace SlimeCore.Enums
         public int PacketID { get; set; }
         public ClientHandler ClientHandler { get; set; }
 
-        void Write();
+        Task Write();
         object Read(byte[] bytes);
         object Broadcast(bool includeSelf);
     }

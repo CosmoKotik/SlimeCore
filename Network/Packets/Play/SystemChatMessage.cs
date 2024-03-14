@@ -1,6 +1,7 @@
 ﻿using SlimeCore.Entities;
 using SlimeCore.Entities.Chat;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Queue;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,9 +35,9 @@ namespace SlimeCore.Network.Packets.Play
             return this;
         }
 
-        public async void Write() { }
+        public async Task Write() { }
 
-        public async void Write(Player player, string message)
+        public async Task Write(Player player, string message)
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)PacketID);
@@ -50,7 +51,7 @@ namespace SlimeCore.Network.Packets.Play
             bm.AddString(netowrkName.BuildJson());
             bm.AddBool(false);
 
-            await this.ClientHandler.FlushData(bm.GetBytes());
+            await QueueHandler.AddPacket(new QueueFactory().SetClientID(ClientHandler.ClientID).SetBytes(bm.GetBytes()).Build());
         }
     }
 }
