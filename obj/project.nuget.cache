@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "dgSpecHash": "qTdtpE4Eg1ozJj1TKVrA3CsniQK0DhKVnP7lD4BKqs2tZV0hyT+c+uUTryWxrNBMAgqzfGwflLFFHpmnhyktKQ==",
+  "success": true,
+  "projectFilePath": "G:\\Dev\\SlimeCore\\SlimeCore.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netframework.referenceassemblies\\1.0.2\\microsoft.netframework.referenceassemblies.1.0.2.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net461\\1.0.2\\microsoft.netframework.referenceassemblies.net461.1.0.2.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\tommy\\3.1.2\\tommy.3.1.2.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.15\\microsoft.windowsdesktop.app.ref.7.0.15.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.15\\microsoft.netcore.app.ref.7.0.15.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.15\\microsoft.aspnetcore.app.ref.7.0.15.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\7.0.15\\microsoft.netcore.app.host.win-x64.7.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}

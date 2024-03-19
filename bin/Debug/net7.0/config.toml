@@ -1,0 +1,17 @@
+[Info]
+Version = "1.0"
+AutoUpdateAPI = true
+DebugMode = true
+
+[Main]
+MaxPlayers = 20
+Motd = "A slimecore server"
+IP = "10.0.0.3"
+Port = 11000
+OnlineMode = false
+
+[Connection]
+ConnectionTimeout = 30000
+
+[Security]
+EnforceSecureChat = false
