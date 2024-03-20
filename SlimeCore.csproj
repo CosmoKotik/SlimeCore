@@ -11,8 +11,4 @@
     <PackageReference Include="Tommy" Version="3.1.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Network\Packets\" />
-  </ItemGroup>
-
 </Project>
