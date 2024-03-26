@@ -1,4 +1,7 @@
-﻿using SlimeCore.Network;
+﻿using SlimeCore.Enums;
+using SlimeCore.Network;
+using SlimeCore.Network.Queue;
+using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,17 +15,22 @@ namespace SlimeCore.Core
     {
         public Socket Client { get; set; }
 
+        public Versions ClientVersion { get; set; }
+
         public bool IsDisposed { get => _isDisposed; }
         private bool _isDisposed = false;
 
         public bool IsAlive { get => _isAlive; }
         private bool _isAlive = true;
 
-        private ServerManager _serverManager;
+        public ServerManager ServerManager;
 
-        public ClientHandler(ServerManager serverManager) 
+        public QueueHandler QueueHandler;
+
+        public ClientHandler(ServerManager serverManager)
         {
-            this._serverManager = serverManager;
+            this.ServerManager = serverManager;
+            this.QueueHandler = new QueueHandler(this);
         }
 
         public async Task HandleClient(Socket client)
@@ -30,7 +38,7 @@ namespace SlimeCore.Core
             this.Client = client;
 
             using (this.Client)
-            { 
+            {
                 this.Client.NoDelay = true;
 
                 byte[] buffer = new byte[2097151];
@@ -52,7 +60,7 @@ namespace SlimeCore.Core
 
                             byte[] packetBytes = new byte[packetSize];
                             Array.Copy(bm.GetBytes(), packetBytes, packetSize);
-                            new PacketByteHandler(_serverManager).HandleBytes(packetBytes); ;
+                            new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes(packetBytes);
 
                             while (bm.GetBytes().Length > packetSize)
                             {
@@ -63,13 +71,38 @@ namespace SlimeCore.Core
 
                                 packetBytes = new byte[packetSize];
                                 Array.Copy(bm.GetBytes(), packetBytes, packetSize);
-                                new PacketByteHandler(_serverManager).HandleBytes(packetBytes);
+                                new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes(packetBytes);
                             }
                         }
 
                         await Task.Delay(1);
                     }
                 }
+            }
+        }
+
+        public async void SendAsync(byte[] bytes, bool includeSize = true)
+        {
+            if (_isDisposed)
+            {
+                Logger.Warn("Disposed");
+                return;
+            }
+
+            BufferManager bm = new BufferManager();
+            if (includeSize)
+                bm.WriteVarInt(bytes.Length);
+
+            bm.InsertBytes(bytes);
+
+            Socket? client;
+
+            lock (this.Client)
+                client = this.Client;
+
+            using (client) 
+            {
+                await client.SendAsync(bytes);
             }
         }
     }

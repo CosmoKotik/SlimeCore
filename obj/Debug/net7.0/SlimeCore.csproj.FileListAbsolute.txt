@@ -16,3 +16,4 @@ G:\Dev\SlimeCore\obj\Debug\net7.0\refint\SlimeCore.dll
 G:\Dev\SlimeCore\obj\Debug\net7.0\SlimeCore.pdb
 G:\Dev\SlimeCore\obj\Debug\net7.0\SlimeCore.genruntimeconfig.cache
 G:\Dev\SlimeCore\obj\Debug\net7.0\ref\SlimeCore.dll
+G:\Dev\SlimeCore\bin\Debug\net7.0\Newtonsoft.Json.dll
