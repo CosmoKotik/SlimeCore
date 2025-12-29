@@ -9,18 +9,19 @@ namespace SlimeCore.Enums
     public enum PacketType
     {
         //Handshake
-        HANDSHAKE,
+        HANDSHAKE = 0x00,
+        HANDSHAKE_LEGACY = 0xFE,
 
         //Status-Ping
         STATUS,
         PING,
 
         //Login
-        DISCONNECT,
+        DISCONNECT_LOGIN,
         LOGIN_START,
         ENCRYPTION,
         SET_COMPRESSION,
-        LOGIN_PLUGIN_REQUEST,
+        LOGIN_PLUGIN_REQUEST ,
         LOGIN_PLUGIN_RESPONSE,
         LOGIN_SUCCESS,
 

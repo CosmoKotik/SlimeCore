@@ -26,6 +26,7 @@ namespace SlimeCore.Enums
         RELEASE_1_16_2 = 751,
         RELEASE_1_16_1 = 736,
         RELEASE_1_16 = 735,
+        RELEASE_1_12_2 = 340,
         BETA_1_7_3 = 14
     }
 }

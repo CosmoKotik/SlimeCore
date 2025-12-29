@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "1UNIsMVVdgMk0g8x0dIYR82nQnKUC6KqPcegfUxBEH0aZvQw0UKG4UloUEV5E7Ao4xA+TBVCX37e4Lda6uLAMw==",
+  "dgSpecHash": "YS/ev+gmB714md2c2rsw+UFYdN2cC4DLUFKpL0iXJxRQjze2Y2RYO9X0sQcAdpaXDSaoBMwOXMlLOwjydXPcrw==",
   "success": true,
   "projectFilePath": "G:\\Dev\\SlimeCore\\SlimeCore.csproj",
   "expectedPackageFiles": [
@@ -8,10 +8,10 @@
     "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netframework.referenceassemblies.net461\\1.0.2\\microsoft.netframework.referenceassemblies.net461.1.0.2.nupkg.sha512",
     "C:\\Users\\CosmoKotik\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\CosmoKotik\\.nuget\\packages\\tommy\\3.1.2\\tommy.3.1.2.nupkg.sha512",
-    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.15\\microsoft.windowsdesktop.app.ref.7.0.15.nupkg.sha512",
-    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.15\\microsoft.netcore.app.ref.7.0.15.nupkg.sha512",
-    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.15\\microsoft.aspnetcore.app.ref.7.0.15.nupkg.sha512",
-    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\7.0.15\\microsoft.netcore.app.host.win-x64.7.0.15.nupkg.sha512"
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.20\\microsoft.windowsdesktop.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.20\\microsoft.netcore.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.20\\microsoft.aspnetcore.app.ref.7.0.20.nupkg.sha512",
+    "C:\\Users\\CosmoKotik\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\7.0.20\\microsoft.netcore.app.host.win-x64.7.0.20.nupkg.sha512"
   ],
   "logs": []
 }

@@ -14,6 +14,7 @@ namespace SlimeCore.Core
     public class ClientHandler
     {
         public Socket Client { get; set; }
+        private object _clientLock = new object();
 
         public Versions ClientVersion { get; set; }
 
@@ -26,6 +27,8 @@ namespace SlimeCore.Core
         public ServerManager ServerManager;
 
         public QueueHandler QueueHandler;
+
+        public ClientState State { get; set; }
 
         public ClientHandler(ServerManager serverManager)
         {
@@ -52,32 +55,27 @@ namespace SlimeCore.Core
                         {
                             byte[] bytes = new byte[received.Result];
                             Array.Copy(buffer, bytes, received.Result);
+                            Console.WriteLine("Received==: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
                             bm.SetBytes(bytes);
 
-                            int packetSize = bm.GetPacketSize() - 1;
-                            int packetID = bm.GetPacketId();
-
-                            byte[] packetBytes = new byte[packetSize];
-                            Array.Copy(bm.GetBytes(), packetBytes, packetSize);
-                            new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes(packetBytes);
-
-                            while (bm.GetBytes().Length > packetSize)
+                            while (bm.GetBytes().Length > 0) 
                             {
-                                bm.RemoveRangeByte(packetSize);
+                                int packetSize = bm.GetPacketSize();
+                                int packetID = bm.GetPacketId();
 
-                                packetSize = bm.GetPacketSize() - 1;
-                                packetID = bm.GetPacketId();
-
-                                packetBytes = new byte[packetSize];
+                                byte[] packetBytes = new byte[packetSize];
                                 Array.Copy(bm.GetBytes(), packetBytes, packetSize);
-                                new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes(packetBytes);
+                                new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes((byte)packetID, packetBytes);
+
+                                bm.RemoveRangeByte(packetSize);
                             }
                         }
-
-                        await Task.Delay(1);
                     }
+                    await Task.Delay(1);
                 }
+
+                Console.WriteLine("end");
             }
         }
 
@@ -97,13 +95,22 @@ namespace SlimeCore.Core
 
             Socket? client;
 
-            lock (this.Client)
+            lock (_clientLock)
                 client = this.Client;
 
-            using (client) 
-            {
+            Console.WriteLine("Sent: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
+
+            if (client.Connected)
                 await client.SendAsync(bytes);
-            }
+        }
+
+        public void Dispose()
+        {
+            _isDisposed = true;
+
+            this.Client?.Dispose();
+
+            Logger.Warn("Connection disposed.", true);
         }
     }
 }

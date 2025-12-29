@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SlimeCore.Core;
+using SlimeCore.Enums.Clientbound;
 using SlimeCore.Network.Queue;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace SlimeCore.Network.Packets.Status
 {
     public class Status : IClientboundPacket, IPacket
     {
-        public int Id { get; set; } = 0x00;
+        public int Id { get; set; } = (int)CB_StatusPacketType.STATUS_RESPONSE;
         public Version Version { get; set; }
 
         private ClientHandler _handler;
@@ -48,7 +49,7 @@ namespace SlimeCore.Network.Packets.Status
 
             bm.WriteString(JsonConvert.SerializeObject(sr));
 
-            _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytes()).Build());
+            _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 
             return this;
         }

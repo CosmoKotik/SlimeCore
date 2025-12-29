@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlimeCore.Structs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -184,9 +185,8 @@ namespace SlimeCore.Network
         {
             if (_buffer.Count > 0)
             {
-                int size = ReadVarInt();
-                //_buffer.RemoveAt(0);
-                return size;
+                varint size = ReadVarInt();
+                return size - size.Length;
             }
             return -1;
         }
@@ -194,14 +194,35 @@ namespace SlimeCore.Network
         {
             if (_buffer.Count > 0)
             {
-                int id = _buffer[0];
-                _buffer.RemoveAt(0);
+                varint id = ReadVarInt();
+
+                //int id = _buffer[0];
+                //_buffer.RemoveAt(0);
                 return id;
             }
             return -1;
         }
 
-        public int ReadVarInt()
+        /*public int ReadVarInt()
+        {
+            var value = 0;
+            var size = 0;
+            int i = 0;
+            int b;
+            while (((b = _buffer[0]) & 0x80) == 0x80)
+            {
+                value |= (b & 0x7F) << (size++ * 7);
+                if (size > 5)
+                {
+                    throw new IOException("VarInt too long. fuck you");
+                }
+                i++;
+                _buffer.RemoveAt(0);
+            }
+            _buffer.RemoveAt(0);
+            return value | ((b & 0x7F) << (size * 7));
+        }*/
+        public varint ReadVarInt()
         {
             var value = 0;
             var size = 0;
@@ -368,6 +389,18 @@ namespace SlimeCore.Network
         public byte[] GetBytes()
         {
             return _buffer.ToArray();
+        }
+        public byte[] GetBytesWithLength()
+        {
+            byte[] size = varint.ToBytes(_buffer.Count);
+            
+            _buffer.InsertRange(0, size);
+            
+            byte[] result = _buffer.ToArray();
+
+            _buffer.RemoveRange(0, size.Length);
+
+            return result;
         }
         public void RemoveRangeByte(int range)
         {

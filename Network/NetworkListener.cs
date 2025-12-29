@@ -2,6 +2,7 @@
 using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -52,7 +53,7 @@ namespace SlimeCore.Network
                         while (!_disposed)
                         {
                             Socket client = await listener.AcceptAsync(token);
-
+                            
                             Task.Run(async () => { await new ClientHandler(_serverManager).HandleClient(client); });
 
                         }

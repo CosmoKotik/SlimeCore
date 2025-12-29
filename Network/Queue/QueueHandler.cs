@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Core;
+using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace SlimeCore.Network.Queue
         private int _poolSize = 50;
         private ClientHandler _handler;
 
+        private int _poolSizeThreshold = 30;
+
         public QueueHandler(ClientHandler client) 
         {
             this._handler = client;
@@ -29,6 +32,8 @@ namespace SlimeCore.Network.Queue
                 while (true)
                 {
                     await HandleBytes();
+
+                    await Task.Delay(1);
                 }
             });
 
@@ -45,23 +50,33 @@ namespace SlimeCore.Network.Queue
         {
             int size = 0;
 
+            int index = 0;
+            QueueObject obj = new QueueObject();
+
             lock (QueueLockObject)
             {
+                if (QueueCount < 1)
+                    return;
+
                 size = QueueCount;
                 QueueCount--;
+
+                index = QueuePool.First(x => x.IsUsed).QueueID;
+                obj = QueuePool[index];
+                QueuePool.RemoveAt(index);
+
+                if (QueuePool.Count <= _poolSizeThreshold)
+                    for (int i = 0; QueuePool.Count < _poolSize; i++)
+                        QueuePool.Add(new QueueFactory().SetQueueID(QueuePool.Count - 1).SetUsedState(false).Build());
+
+                //Logger.Warn(QueuePool.Count.ToString(), true);
+                //QueuePool.Add(new QueueFactory().SetQueueID(QueuePool.Count - 1).SetUsedState(false).Build());
             }
 
             if (size < 1)
                 return;
 
-            QueueObject obj = new QueueObject();
-
-            lock (QueueLockObject)
-            {
-                obj = QueuePool.First(x => x.IsUsed);
-                _handler.SendAsync(obj.Bytes);
-                QueuePool.First(x => !x.IsUsed).IsUsed = false;
-            }
+            _handler.SendAsync(obj.Bytes);
         }
 
         public void AddPacket(QueueObject obj)
@@ -72,6 +87,7 @@ namespace SlimeCore.Network.Queue
                 int index = QueuePool.First(x => !x.IsUsed).QueueID;
                 QueuePool[index] = obj;
                 QueuePool[index].QueueID = index;
+                QueuePool[index].IsUsed = true;
             }
         }
 
