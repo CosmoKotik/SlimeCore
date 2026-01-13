@@ -62,8 +62,8 @@ namespace SlimeCore.Network.Queue
                 QueueCount--;
 
                 index = QueuePool.First(x => x.IsUsed).QueueID;
-                obj = QueuePool[index];
-                QueuePool.RemoveAt(index);
+                obj = QueuePool.First(x => x.QueueID.Equals(index));
+                QueuePool.RemoveAll(x => x.QueueID.Equals(index));
 
                 if (QueuePool.Count <= _poolSizeThreshold)
                     for (int i = 0; QueuePool.Count < _poolSize; i++)
@@ -84,10 +84,15 @@ namespace SlimeCore.Network.Queue
             lock (QueueLockObject)
             {
                 QueueCount++;
+                /*QueueObject? bufObj = QueuePool.First(x => !x.IsUsed);
+                if (bufObj == null) return;*/
+
                 int index = QueuePool.First(x => !x.IsUsed).QueueID;
-                QueuePool[index] = obj;
-                QueuePool[index].QueueID = index;
-                QueuePool[index].IsUsed = true;
+
+                obj.QueueID = index;
+                obj.IsUsed = true;
+
+                QueuePool.First(x => x.QueueID.Equals(index)).CopyFrom(obj);
             }
         }
 

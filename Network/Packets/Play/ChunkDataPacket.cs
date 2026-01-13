@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Core;
+using SlimeCore.Core.Chunks;
 using SlimeCore.Enums.Clientbound;
 using SlimeCore.Network.Queue;
 using System;
@@ -7,16 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlimeCore.Network.Packets
+namespace SlimeCore.Network.Packets.Play
 {
-    public class Template : IClientboundPacket, IPacket
+    public class ChunkDataPacket : IClientboundPacket, IPacket
     {
-        public int Id { get; set; } = (int)CB_PlayPacketType.PLAYER_POSITION_AND_LOOK;
+        public int Id { get; set; } = (int)CB_PlayPacketType.CHUNK_DATA;
         public Version Version { get; set; }
 
         private ClientHandler _handler;
 
-        public Template(ClientHandler handler)
+        public ChunkDataPacket(ClientHandler handler)
         {
             this._handler = handler;
         }
@@ -28,17 +29,21 @@ namespace SlimeCore.Network.Packets
 
         public object Write(object obj)
         {
-            throw new NotImplementedException();
-        }
-
-        public object Write()
-        {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)Id);
+
+            Chunk chunk = (Chunk)obj;
+
+            bm.WriteBytes(chunk.GetBytes(), false);
 
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 
             return this;
+        }
+
+        public object Write()
+        {
+            throw new NotImplementedException();
         }
     }
 }

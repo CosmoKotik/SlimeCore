@@ -242,6 +242,8 @@ namespace SlimeCore.Network
             return value | ((b & 0x7F) << (size * 7));
         }
 
+        
+
         public int ReadInt(bool isReversed = true)
         {
             byte[] result = new byte[4];

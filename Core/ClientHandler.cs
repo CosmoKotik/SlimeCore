@@ -1,5 +1,6 @@
 ﻿using SlimeCore.Enums;
 using SlimeCore.Network;
+using SlimeCore.Network.Packets.Play;
 using SlimeCore.Network.Queue;
 using SlimeCore.Tools;
 using System;
@@ -28,6 +29,8 @@ namespace SlimeCore.Core
 
         public QueueHandler QueueHandler;
 
+        public MinecraftClient MC_Client;
+
         public ClientState State { get; set; }
 
         public ClientHandler(ServerManager serverManager)
@@ -49,27 +52,30 @@ namespace SlimeCore.Core
 
                 while (IsAlive && !IsDisposed)
                 {
-                    if (this.Client.Available > 0)
+                    using (var received = this.Client.ReceiveAsync(buffer, SocketFlags.None))
                     {
-                        using (var received = this.Client.ReceiveAsync(buffer, SocketFlags.None))
+                        if (received.Result == 0)
                         {
-                            byte[] bytes = new byte[received.Result];
-                            Array.Copy(buffer, bytes, received.Result);
-                            Console.WriteLine("Received==: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
+                            Logger.Error("Player has lost connection with the server.");
+                            this.Dispose();
+                        }
 
-                            bm.SetBytes(bytes);
+                        byte[] bytes = new byte[received.Result];
+                        Array.Copy(buffer, bytes, received.Result);
+                        Console.WriteLine("Received==: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
-                            while (bm.GetBytes().Length > 0) 
-                            {
-                                int packetSize = bm.GetPacketSize();
-                                int packetID = bm.GetPacketId();
+                        bm.SetBytes(bytes);
 
-                                byte[] packetBytes = new byte[packetSize];
-                                Array.Copy(bm.GetBytes(), packetBytes, packetSize);
-                                new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes((byte)packetID, packetBytes);
+                        while (bm.GetBytes().Length > 0)
+                        {
+                            int packetSize = bm.GetPacketSize();
+                            int packetID = bm.GetPacketId();
 
-                                bm.RemoveRangeByte(packetSize);
-                            }
+                            byte[] packetBytes = new byte[packetSize];
+                            Array.Copy(bm.GetBytes(), packetBytes, packetSize);
+                            new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes((byte)packetID, packetBytes);
+
+                            bm.RemoveRangeByte(packetSize);
                         }
                     }
                     await Task.Delay(1);
@@ -79,17 +85,26 @@ namespace SlimeCore.Core
             }
         }
 
-        public async void SendAsync(byte[] bytes, bool includeSize = true)
+        public async Task KeepAlive()
+        {
+            while (IsAlive && !IsDisposed)
+            {
+                long KeepAliveID = new Random().NextInt64(long.MaxValue);
+                new KeepAlivePacket(this).Write(KeepAliveID);
+
+                await Task.Delay(5000);
+            }
+        }
+
+        public async void SendAsync(byte[] bytes)
         {
             if (_isDisposed)
             {
-                Logger.Warn("Disposed");
+                Logger.Warn("Disposed", true);
                 return;
             }
 
             BufferManager bm = new BufferManager();
-            if (includeSize)
-                bm.WriteVarInt(bytes.Length);
 
             bm.InsertBytes(bytes);
 
@@ -98,7 +113,7 @@ namespace SlimeCore.Core
             lock (_clientLock)
                 client = this.Client;
 
-            Console.WriteLine("Sent: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
+            //Console.WriteLine("Sent: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
             if (client.Connected)
                 await client.SendAsync(bytes);
@@ -107,8 +122,13 @@ namespace SlimeCore.Core
         public void Dispose()
         {
             _isDisposed = true;
+            _isAlive = false;
 
-            this.Client?.Dispose();
+            try
+            {
+                this.Client?.Dispose();
+            }
+            catch { }
 
             Logger.Warn("Connection disposed.", true);
         }

@@ -1,10 +1,13 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Core.Chunks;
+using SlimeCore.Enums;
 using SlimeCore.Enums.Serverbound;
 using SlimeCore.Network;
 using SlimeCore.Network.Packets.Handshake;
 using SlimeCore.Network.Packets.Login;
+using SlimeCore.Network.Packets.Play;
 using SlimeCore.Network.Packets.Status;
 using SlimeCore.Network.Queue;
+using SlimeCore.Structs;
 using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
@@ -44,6 +47,9 @@ namespace SlimeCore.Core
                     return;
                 case ClientState.Login:
                     HandleLogin((SB_LoginPacketType)packetID, bytes);
+                    return;
+                case ClientState.Play:
+                    HandlePlay((SB_PlayPacketType)packetID, bytes);
                     return;
             }
         }
@@ -97,6 +103,72 @@ namespace SlimeCore.Core
                     new LoginStartPacket(_clientHandler).Write(username);
 
                     _clientHandler.State = ClientState.Play;
+
+                    new JoinGamePacket(_clientHandler, _configs).Write();
+
+                    Position spawnPos = new Position(2, 32, 1);
+
+                    new SpawnPositionPacket(_clientHandler).Write(spawnPos);
+                    Task.Run(async () => { await _clientHandler.KeepAlive(); });
+                    break;
+            }
+        }
+        private void HandlePlay(SB_PlayPacketType packetType, byte[] bytes)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            switch (packetType)
+            {
+                case SB_PlayPacketType.CLIENT_STATUS:
+                    Logger.Warn("Client Status");
+                    break;
+                case SB_PlayPacketType.CLIENT_SETTINGS:
+                    MinecraftClient mc_client = new MinecraftClient()
+                    { 
+                        Locale = bm.ReadString(),
+                        ViewDistance = bm.ReadByte(),
+                        ChatMode = bm.ReadVarInt(),
+                        ChatColors = bm.ReadBool(),
+                        DisplayedSkinParts = bm.ReadByte(),
+                        MainHand = bm.ReadVarInt()
+                    };
+
+                    _clientHandler.MC_Client = mc_client;
+
+                    Position spawnPos = new Position(1, 128, 2);
+                    new PlayerPositionAndLookPacket(_clientHandler).Write(spawnPos);
+
+                    int areaX = 4;
+                    int areaZ = 4;
+
+                    int i = 1;
+                    for (int x = 0; x < areaX; x++)
+                    {
+                        for (int z = 0; z < areaZ; z++)
+                        {
+                            Chunk chunk = new Chunk();
+                            chunk.Build(x, z, true, i);
+
+                            new ChunkDataPacket(_clientHandler).Write(chunk);
+                            i++;
+                        }
+                    }
+
+                    Border border = new Border(new int[2] { 0, 2 })
+                    { 
+                        Diameter = areaX * 16
+                    };
+
+                    //new WorldBorderPacket(_clientHandler).Write(border);
+
+                    break;
+                case SB_PlayPacketType.TELEPORT_CONFIRM:
+                    
+                    break;
+                case SB_PlayPacketType.KEEP_ALIVE:
+                    /*long keepAliveID = bm.ReadLong();
+                    new KeepAlivePacket(_clientHandler).Write(keepAliveID);*/
                     break;
             }
         }

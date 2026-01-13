@@ -1,22 +1,23 @@
 ﻿using SlimeCore.Core;
 using SlimeCore.Enums.Clientbound;
 using SlimeCore.Network.Queue;
+using SlimeCore.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlimeCore.Network.Packets
+namespace SlimeCore.Network.Packets.Play
 {
-    public class Template : IClientboundPacket, IPacket
+    public class SpawnPositionPacket : IClientboundPacket, IPacket
     {
-        public int Id { get; set; } = (int)CB_PlayPacketType.PLAYER_POSITION_AND_LOOK;
+        public int Id { get; set; } = (int)CB_PlayPacketType.SPAWN_POSITION;
         public Version Version { get; set; }
 
         private ClientHandler _handler;
 
-        public Template(ClientHandler handler)
+        public SpawnPositionPacket(ClientHandler handler)
         {
             this._handler = handler;
         }
@@ -28,13 +29,24 @@ namespace SlimeCore.Network.Packets
 
         public object Write(object obj)
         {
-            throw new NotImplementedException();
+            BufferManager bm = new BufferManager();
+            bm.SetPacketId((byte)Id);
+
+            bm.WriteLong((Position)obj);
+
+            _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
+
+            return this;
         }
 
         public object Write()
         {
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)Id);
+
+            Position pos = new Position(0, 0, 0);
+
+            bm.WriteLong(pos);
 
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 
