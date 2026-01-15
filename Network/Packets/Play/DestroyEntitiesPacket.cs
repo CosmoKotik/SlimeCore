@@ -53,9 +53,13 @@ namespace SlimeCore.Network.Packets.Play
 
         public object Write(object obj)
         {
+            Type objType = obj.GetType();
             IEntity[] entities;
 
-            if (obj.GetType().Equals(typeof(IEntity)))
+            if (!objType.IsArray && !objType.GetInterfaces().Any(x => x.Equals(typeof(IEntity))))
+                return this;
+
+            if (!objType.IsArray)
                 entities = new IEntity[1] { (IEntity)obj };
             else
                 entities = (IEntity[])obj;
