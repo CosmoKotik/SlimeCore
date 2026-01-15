@@ -16,7 +16,7 @@ namespace SlimeCore.Network.Queue
         public int QueueCount { get; set; }
         public object QueueLockObject = new object();
 
-        private int _poolSize = 50;
+        private int _poolSize = 200;
         private ClientHandler _handler;
 
         private int _poolSizeThreshold = 30;
@@ -66,8 +66,11 @@ namespace SlimeCore.Network.Queue
                 QueuePool.RemoveAll(x => x.QueueID.Equals(index));
 
                 if (QueuePool.Count <= _poolSizeThreshold)
+                {
+                    Logger.Warn($"Pool lower than set threshold: {QueuePool.Count}");
                     for (int i = 0; QueuePool.Count < _poolSize; i++)
                         QueuePool.Add(new QueueFactory().SetQueueID(QueuePool.Count - 1).SetUsedState(false).Build());
+                }
 
                 //Logger.Warn(QueuePool.Count.ToString(), true);
                 //QueuePool.Add(new QueueFactory().SetQueueID(QueuePool.Count - 1).SetUsedState(false).Build());
@@ -79,7 +82,7 @@ namespace SlimeCore.Network.Queue
             _handler.SendAsync(obj.Bytes);
         }
 
-        public void AddPacket(QueueObject obj)
+        public async void AddPacket(QueueObject obj)
         {
             lock (QueueLockObject)
             {
@@ -96,18 +99,18 @@ namespace SlimeCore.Network.Queue
             }
         }
 
-        public static Task AddBroadcastPacket(QueueObject obj)
+        public async void AddBroadcastPacket(QueueObject obj, bool includeSelf = false)
         {
-            return Task.Run(() => 
-            {
-                List<QueueHandler> handlers;
+            List<QueueHandler> handlers;
 
-                lock (QueueHandlers)
-                    handlers = QueueHandlers;
+            lock (QueueHandlers)
+                handlers = QueueHandlers.ToList();
 
-                foreach (QueueHandler handler in handlers)
-                    handler.AddPacket(obj);
-            });
+            if (!includeSelf)
+                handlers.Remove(this);
+
+            foreach (QueueHandler handler in handlers)
+                handler.AddPacket(obj);
         }
     }
 }

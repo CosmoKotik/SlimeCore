@@ -22,7 +22,7 @@ namespace SlimeCore.Network.Packets.Login
             this._handler = handler;
         }
 
-        public IClientboundPacket Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf = false)
         {
             throw new NotImplementedException();
         }
@@ -32,11 +32,14 @@ namespace SlimeCore.Network.Packets.Login
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)Id);
 
-            string uuid = Guid.NewGuid().ToString();
-            
+            MinecraftClient client = (MinecraftClient)obj;
+
+            string uuid = client.UUID.ToString();
+            string username = client.Username;
+
             bm.WriteString(uuid);
 
-            bm.WriteString((string)obj);
+            bm.WriteString(username);
 
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 
@@ -44,6 +47,11 @@ namespace SlimeCore.Network.Packets.Login
         }
 
         public object Write()
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Broadcast(object obj = null, bool includeSelf = false)
         {
             throw new NotImplementedException();
         }

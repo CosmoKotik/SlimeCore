@@ -21,11 +21,6 @@ namespace SlimeCore.Network.Packets.Status
             this._handler = handler;
         }
 
-        public IClientboundPacket Broadcast(bool includeSelf)
-        {
-            throw new NotImplementedException();
-        }
-
         public object Write(object obj)
         {
             BufferManager bm = new BufferManager();
@@ -39,6 +34,16 @@ namespace SlimeCore.Network.Packets.Status
         }
 
         public object Write()
+        {
+            throw new NotImplementedException();
+        }
+
+        object IClientboundPacket.Broadcast(bool includeSelf)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Broadcast(object obj = null, bool includeSelf = false)
         {
             throw new NotImplementedException();
         }

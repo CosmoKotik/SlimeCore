@@ -13,6 +13,13 @@ namespace SlimeCore.Enums.Clientbound
         PLAYER_POSITION_AND_LOOK = 0x2F,
         CHUNK_DATA = 0x20,
         KEEP_ALIVE = 0x1F,
-        WORLD_BORDER = 0x38
+        WORLD_BORDER = 0x38,
+        SPAWN_PLAYER = 0x05,
+        PLAYER_LIST_ITEM = 0x2E,
+        ENTITY_RELATIVE_MOVE = 0x26,
+        ENTITY_LOOK_AND_RELATIVE_MOVE = 0x27,
+        ENTITY_LOOK = 0x28,
+        ENTITY_HEAD_LOOK = 0x36,
+        DESTROY_ENTITIES = 0x32
     }
 }

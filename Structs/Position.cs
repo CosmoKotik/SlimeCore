@@ -8,9 +8,9 @@ namespace SlimeCore.Structs
 {
     public struct Position
     {
-        public readonly int X;
-        public readonly int Y;
-        public readonly int Z;
+        public readonly double X;
+        public readonly double Y;
+        public readonly double Z;
 
         public Position(int x, int y, int z)
         { 
@@ -18,10 +18,16 @@ namespace SlimeCore.Structs
             this.Y = y;
             this.Z = z;
         }
+        public Position(double x, double y, double z)
+        {
+            this.X = x;
+            this.Y = y;
+            this.Z = z;
+        }
 
         public static long Encode(Position pos)
         {
-            return ((pos.X & 0x3FFFFFF) << 38) | ((pos.Y & 0xFFF) << 26) | (pos.Z & 0x3FFFFFF);
+            return (((int)pos.X & 0x3FFFFFF) << 38) | (((int)pos.Y & 0xFFF) << 26) | ((int)pos.Z & 0x3FFFFFF);
         }
         public static Position Decode(long value)
         {
@@ -33,5 +39,6 @@ namespace SlimeCore.Structs
         }
 
         public static implicit operator long(Position pos) => Encode(pos);
+        public static implicit operator string(Position pos) => $"X: {pos.X} Y: {pos.Y} Z: {pos.Z}";
     }
 }

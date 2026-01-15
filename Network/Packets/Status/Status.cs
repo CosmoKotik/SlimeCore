@@ -22,11 +22,6 @@ namespace SlimeCore.Network.Packets.Status
             this._handler = handler;
         }
 
-        public IClientboundPacket Broadcast(bool includeSelf)
-        {
-            throw new NotImplementedException();
-        }
-
         public object Write(object obj)
         {
             throw new NotImplementedException();
@@ -52,6 +47,16 @@ namespace SlimeCore.Network.Packets.Status
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 
             return this;
+        }
+
+        object IClientboundPacket.Broadcast(bool includeSelf)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Broadcast(object obj = null, bool includeSelf = false)
+        {
+            throw new NotImplementedException();
         }
 
         private class StatusResponse

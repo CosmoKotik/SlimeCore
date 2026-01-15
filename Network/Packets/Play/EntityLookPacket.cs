@@ -7,16 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlimeCore.Network.Packets
+namespace SlimeCore.Network.Packets.Play
 {
-    public class Template : IClientboundPacket, IPacket
+    public class EntityLookPacket : IClientboundPacket, IPacket
     {
-        public int Id { get; set; } = (int)CB_PlayPacketType.PLAYER_POSITION_AND_LOOK;
+        public int Id { get; set; } = (int)CB_PlayPacketType.ENTITY_LOOK;
         public Version Version { get; set; }
 
         private ClientHandler _handler;
 
-        public Template(ClientHandler handler)
+        public EntityLookPacket(ClientHandler handler)
         {
             this._handler = handler;
         }
@@ -27,7 +27,18 @@ namespace SlimeCore.Network.Packets
         }
         public object Broadcast(object obj = null, bool includeSelf = false)
         {
-            throw new NotImplementedException();
+            MinecraftClient client = (MinecraftClient)obj;
+
+            BufferManager bm = new BufferManager();
+            bm.SetPacketId((byte)Id);
+
+            bm.WriteVarInt(client.EntityID);
+            bm.WriteByte(client.Yaw);   //Angle (byte)
+            bm.WriteByte(client.Pitch);   //Angle (byte)
+            bm.WriteBool(client.IsOnGround);
+
+            _handler.QueueHandler.AddBroadcastPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build(), includeSelf);
+            return this;
         }
 
         public object Write(object obj)
@@ -53,3 +64,4 @@ namespace SlimeCore.Network.Packets
         }
     }
 }
+

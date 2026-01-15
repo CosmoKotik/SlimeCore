@@ -25,7 +25,7 @@ namespace SlimeCore.Network.Packets.Play
             this._config = config;
         }
 
-        public IClientboundPacket Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf)
         {
             throw new NotImplementedException();
         }
@@ -33,6 +33,25 @@ namespace SlimeCore.Network.Packets.Play
         public object Write(object obj)
         {
             throw new NotImplementedException();
+        }
+
+        public object Write(MinecraftClient client)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetPacketId((byte)Id);
+
+            //int uid = new Random().Next(int.MaxValue);
+            bm.WriteInt(client.EntityID);   //Player Entity ID
+            bm.WriteByte(client.Gamemode);    //Gamemode
+            bm.WriteInt(client.WorldDimension);     //Dimension
+            bm.WriteByte(0);    //Difficulty
+            bm.WriteByte(0);    //Max Players, in modern minecraft its ignored(at least in 1.12.2)
+            bm.WriteString("default"); //level type
+            bm.WriteBool(false);    //debug shit
+
+            _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
+
+            return this;
         }
 
         public object Write()
@@ -52,6 +71,11 @@ namespace SlimeCore.Network.Packets.Play
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 
             return this;
+        }
+
+        public object Broadcast(object obj = null, bool includeSelf = false)
+        {
+            throw new NotImplementedException();
         }
     }
 }

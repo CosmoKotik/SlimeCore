@@ -47,5 +47,15 @@ namespace SlimeCore.Network.Packets.Play
         {
             throw new NotImplementedException();
         }
+
+        object IClientboundPacket.Broadcast(bool includeSelf)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Broadcast(object obj = null, bool includeSelf = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

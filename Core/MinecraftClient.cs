@@ -1,18 +1,105 @@
-﻿using System;
+﻿using SlimeCore.Structs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SlimeCore.Core
 {
-    public class MinecraftClient
+    public class MinecraftClient : IEntity
     {
+        public int EntityID { get; set; } = new Random().Next(int.MaxValue);
+        public string Username { get; set; } = string.Empty;
+        public Guid UUID { get; set; } = Guid.NewGuid();
+
+        public ClientHandler? ClientHandler { get; set; }
+        public Position WorldPosition { get => _worldPosition;
+            set
+            {
+                _previousWorldPosition = _worldPosition;
+                _worldPosition = value;
+                _chunkPosition = new Position(Math.Ceiling(value.X / 16), Math.Ceiling(value.Y / 16), Math.Ceiling(value.Z / 16));
+            }
+        }
+        private Position _worldPosition;
+        public Position PreviousWorldPosition { get => _previousWorldPosition; }
+        private Position _previousWorldPosition;
+        public Position ChunkPosition { get => _chunkPosition; }
+        private Position _chunkPosition;
+        
+        public bool IsOnGround { get; set; }
+
+        public int WorldDimension { get; set; }
+
+        public byte Yaw { get; set; }
+        public byte Pitch { get; set; }
+
+        public bool IsConnected { get; set; } = true;
+        public int Ping { get; set; }
+
+        public byte Gamemode { get; set; } = 1;
+
         public string Locale { get; set; } = string.Empty;          //Language
         public byte ViewDistance { get; set; }                      //Client-side render distance, in chunks
         public int ChatMode { get; set; }                           //0: enabled, 1: commands only, 2: hidden 
         public bool ChatColors { get; set; }                        //cum
         public byte DisplayedSkinParts { get; set; }
         public int MainHand { get; set; }                           //0: Left, 1: Right
+
+
+        public MinecraftClient SetLocale(string locale)
+        {
+            this.Locale = locale;
+            return this;
+        }
+        public MinecraftClient SetViewDistance(byte viewDistance)
+        {
+            this.ViewDistance = viewDistance;
+            return this;
+        }
+        public MinecraftClient SetChatMode(int chatMode)
+        {
+            this.ChatMode = chatMode;
+            return this;
+        }
+        public MinecraftClient SetChatColors(bool chatColors)
+        {
+            this.ChatColors = chatColors;
+            return this;
+        }
+        public MinecraftClient SetDisplayedSkinParts(byte displayedSkinParts)
+        {
+            this.DisplayedSkinParts = displayedSkinParts;
+            return this;
+        }
+        public MinecraftClient SetMainHand(int mainHand)
+        {
+            this.MainHand = mainHand;
+            return this;
+        }
+
+        public MinecraftClient SetWorldPosition(Position pos)
+        { 
+            this.WorldPosition = pos;
+            return this;
+        }
+        public MinecraftClient SetYaw(float yaw)
+        {
+            float angle = (yaw / 360) * 256;
+            this.Yaw = (byte)angle;
+            return this;
+        }
+        public MinecraftClient SetPitch(float pitch)
+        {
+            this.Pitch = (byte)pitch;
+            return this;
+        }
+        public MinecraftClient SetIsOnGround(bool value)
+        {
+            this.IsOnGround = value;
+            return this;
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Core.Classes;
+using SlimeCore.Enums;
 using SlimeCore.Network;
 using SlimeCore.Network.Packets.Play;
 using SlimeCore.Network.Queue;
@@ -28,15 +29,25 @@ namespace SlimeCore.Core
         public ServerManager ServerManager;
 
         public QueueHandler QueueHandler;
+        public NetworkListener NetworkListener;
 
         public MinecraftClient MC_Client;
 
         public ClientState State { get; set; }
 
-        public ClientHandler(ServerManager serverManager)
+        public ClientHandler(ref ServerManager serverManager, NetworkListener networkListener)
         {
             this.ServerManager = serverManager;
+            this.NetworkListener = networkListener;
             this.QueueHandler = new QueueHandler(this);
+
+            this.MC_Client = new MinecraftClient();
+            this.MC_Client.ClientHandler = this;
+
+
+            this.NetworkListener.AddClientHandler(this);
+            //this.ServerManager.AddPlayer(this.MC_Client);     //Now in PacketByteHandler in Play state in Client Settings, makes more sense and just better cuz fuck you
+            //this.NetworkListener.AddQueueHandler(ref this.QueueHandler);
         }
 
         public async Task HandleClient(Socket client)
@@ -57,12 +68,13 @@ namespace SlimeCore.Core
                         if (received.Result == 0)
                         {
                             Logger.Error("Player has lost connection with the server.");
+                            HandleDisconnect();
                             this.Dispose();
                         }
 
                         byte[] bytes = new byte[received.Result];
                         Array.Copy(buffer, bytes, received.Result);
-                        Console.WriteLine("Received==: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
+                        //Console.WriteLine("Received==: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
                         bm.SetBytes(bytes);
 
@@ -73,7 +85,7 @@ namespace SlimeCore.Core
 
                             byte[] packetBytes = new byte[packetSize];
                             Array.Copy(bm.GetBytes(), packetBytes, packetSize);
-                            new PacketByteHandler(ServerManager, this, QueueHandler).HandleBytes((byte)packetID, packetBytes);
+                            new PacketByteHandler(ServerManager, this, QueueHandler, MC_Client).HandleBytes((byte)packetID, packetBytes);
 
                             bm.RemoveRangeByte(packetSize);
                         }
@@ -82,6 +94,7 @@ namespace SlimeCore.Core
                 }
 
                 Console.WriteLine("end");
+                this.ServerManager.RemovePlayer(this.MC_Client);
             }
         }
 
@@ -117,6 +130,23 @@ namespace SlimeCore.Core
 
             if (client.Connected)
                 await client.SendAsync(bytes);
+        }
+
+        public MinecraftClient[] GetAllPlayers()
+        {
+            return ServerManager.GetAllPlayers();
+        }
+        public void HandleDisconnect()
+        {
+            PlayerListItem playerListItem = new PlayerListItem().SetAction(PlayerListItemAction.REMOVE_PLAYER).SetFromMinecraftClient(this.MC_Client);
+
+            new PlayerListItemPacket(this).Broadcast(playerListItem, false);
+            new DestroyEntitiesPacket(this).Broadcast(this.MC_Client, false);
+        }
+
+        public void UpdateMinecraftClient(MinecraftClient client)
+        { 
+            this.MC_Client = client;
         }
 
         public void Dispose()

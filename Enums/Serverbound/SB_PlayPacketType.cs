@@ -11,6 +11,10 @@ namespace SlimeCore.Enums.Serverbound
         CLIENT_STATUS = 0x03,
         CLIENT_SETTINGS = 0x04,
         TELEPORT_CONFIRM = 0x00,
-        KEEP_ALIVE = 0x0B
+        KEEP_ALIVE = 0x0B,
+        PLAYER = 0x0C,
+        PLAYER_POSITION = 0x0D,
+        PLAYER_POSITION_AND_LOOK = 0x0E,
+        PLAYER_LOOK = 0x0F
     }
 }

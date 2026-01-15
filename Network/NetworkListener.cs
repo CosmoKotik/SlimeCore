@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Core;
+using SlimeCore.Network.Queue;
 using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,16 @@ namespace SlimeCore.Network
 
         private bool _disposed;
 
+        public List<ClientHandler> ClientHandlers { get; private set; }
+        public List<QueueHandler> QueueHandlers { get; private set; }
+
         public NetworkListener(ServerManager serverManager)
         {
             _serverManager = serverManager;
             _config = _serverManager.Config;
+
+            this.ClientHandlers = new List<ClientHandler>();
+            this.QueueHandlers = new List<QueueHandler>();
         }
 
         public NetworkListener Start()
@@ -53,8 +60,8 @@ namespace SlimeCore.Network
                         while (!_disposed)
                         {
                             Socket client = await listener.AcceptAsync(token);
-                            
-                            Task.Run(async () => { await new ClientHandler(_serverManager).HandleClient(client); });
+
+                            Task.Run(async () => { await new ClientHandler(ref _serverManager, this).HandleClient(client); });
 
                         }
                     }
@@ -77,5 +84,17 @@ namespace SlimeCore.Network
             _cancellation.Cancel();
             _disposed = true;
         }
+
+        protected internal NetworkListener AddClientHandler(ClientHandler handler)
+        {
+            ClientHandlers.Add(handler);
+            return this;
+        }
+        protected internal NetworkListener AddQueueHandler(ref QueueHandler handler)
+        {
+            QueueHandlers.Add(handler);
+            return this;
+        }
+        protected internal List<QueueHandler> GetAllQueueHandlers() => QueueHandlers;
     }
 }

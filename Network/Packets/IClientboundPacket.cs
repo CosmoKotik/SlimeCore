@@ -8,7 +8,8 @@ namespace SlimeCore.Network.Packets
 {
     public interface IClientboundPacket : IPacket
     {
-        public IClientboundPacket Broadcast(bool includeSelf);
+        public object Broadcast(bool includeSelf = false);
+        public object Broadcast(object obj = null, bool includeSelf = false);
 
         public object Write(object obj);
         public object Write();

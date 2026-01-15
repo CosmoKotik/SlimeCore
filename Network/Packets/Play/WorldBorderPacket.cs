@@ -21,11 +21,6 @@ namespace SlimeCore.Network.Packets.Play
             this._handler = handler;
         }
 
-        public IClientboundPacket Broadcast(bool includeSelf)
-        {
-            throw new NotImplementedException();
-        }
-
         public object Write(object obj)
         {   
             Border border = (Border)obj;
@@ -55,6 +50,16 @@ namespace SlimeCore.Network.Packets.Play
         }
 
         public object Write()
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Broadcast(bool includeSelf = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Broadcast(object obj = null, bool includeSelf = false)
         {
             throw new NotImplementedException();
         }

@@ -7,16 +7,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SlimeCore.Network.Packets
+namespace SlimeCore.Network.Packets.Play
 {
-    public class Template : IClientboundPacket, IPacket
+    public class EntityRelativeMovePacket : IClientboundPacket, IPacket
     {
-        public int Id { get; set; } = (int)CB_PlayPacketType.PLAYER_POSITION_AND_LOOK;
+        public int Id { get; set; } = (int)CB_PlayPacketType.ENTITY_RELATIVE_MOVE;
         public Version Version { get; set; }
 
         private ClientHandler _handler;
 
-        public Template(ClientHandler handler)
+        public EntityRelativeMovePacket(ClientHandler handler)
         {
             this._handler = handler;
         }
@@ -27,7 +27,19 @@ namespace SlimeCore.Network.Packets
         }
         public object Broadcast(object obj = null, bool includeSelf = false)
         {
-            throw new NotImplementedException();
+            MinecraftClient client = (MinecraftClient)obj;
+
+            BufferManager bm = new BufferManager();
+            bm.SetPacketId((byte)Id);
+
+            bm.WriteVarInt(client.EntityID);
+            bm.WriteShort((short)(((client.WorldPosition.X * 32) - (client.PreviousWorldPosition.X * 32)) * 128));    //Change in X, Delta shit
+            bm.WriteShort((short)(((client.WorldPosition.Y * 32) - (client.PreviousWorldPosition.Y * 32)) * 128));    //Change in Y, Delta shit
+            bm.WriteShort((short)(((client.WorldPosition.Z * 32) - (client.PreviousWorldPosition.Z * 32)) * 128));    //Change in Z, Delta shit
+            bm.WriteBool(client.IsOnGround);
+
+            _handler.QueueHandler.AddBroadcastPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build(), includeSelf);
+            return this;
         }
 
         public object Write(object obj)

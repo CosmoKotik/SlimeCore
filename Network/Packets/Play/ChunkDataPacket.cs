@@ -22,7 +22,7 @@ namespace SlimeCore.Network.Packets.Play
             this._handler = handler;
         }
 
-        public IClientboundPacket Broadcast(bool includeSelf)
+        public object Broadcast(bool includeSelf = false)
         {
             throw new NotImplementedException();
         }
@@ -42,6 +42,11 @@ namespace SlimeCore.Network.Packets.Play
         }
 
         public object Write()
+        {
+            throw new NotImplementedException();
+        }
+
+        public object Broadcast(object obj = null, bool includeSelf = false)
         {
             throw new NotImplementedException();
         }
