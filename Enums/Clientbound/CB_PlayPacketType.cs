@@ -25,6 +25,7 @@ namespace SlimeCore.Enums.Clientbound
         CHAT_MESSAGE = 0x0F,
         BLOCK_BREAK_ANIMATION = 0x08,
         BLOCK_CHANGE = 0x0B,
-        PARTICLE = 0x22
+        PARTICLE = 0x22,
+        EFFECT = 0x21
     }
 }

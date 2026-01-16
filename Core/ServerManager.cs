@@ -1,4 +1,8 @@
-﻿using SlimeCore.Network;
+﻿using SlimeCore.Core.Classes;
+using SlimeCore.Enums;
+using SlimeCore.Network;
+using SlimeCore.Network.Packets.Play;
+using SlimeCore.Structs;
 using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
@@ -142,9 +146,17 @@ namespace SlimeCore.Core
                 List<MinecraftClient> players;
                 lock (_players_lock)
                     players = Players.ToList();
-/*
+
                 if (players.Count > 0)
-                    Logger.Warn(players[0].WorldPosition);*/
+                {
+                    /*Effect break_effect = new Effect()
+                                .SetEffectID(EffectType.ENDER_DRAGON_GROWL)
+                                .SetLocation(players[0].WorldPosition)
+                                .SetData(0)
+                                .SetDisableRelativeVolume(false);
+                    new EffectPacket(players[0].ClientHandler).Broadcast(break_effect, true);*/
+                    new BlockChangePacket(players[0].ClientHandler).Broadcast(new Block().SetPosition(players[0].WorldPosition - new Position(0, 1, 0)).SetBlockType(BlockType.Stone), true);
+                }
 
                 await Task.Delay(delay);
             }

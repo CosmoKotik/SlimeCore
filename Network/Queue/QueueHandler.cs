@@ -2,6 +2,7 @@
 using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,8 @@ namespace SlimeCore.Network.Queue
         private int _poolSize = 1000;
         private ClientHandler _handler;
 
-        private int _poolSizeThreshold = 30;
+        private int _poolSizeThreshold = 200;
+        private int _burstThreshold = 10;
 
         private CancellationTokenSource _cancellation;
 
@@ -39,7 +41,16 @@ namespace SlimeCore.Network.Queue
                     {
                         await HandleBytes();
 
-                        await Task.Delay(1);
+                        /*await Task.Delay(1);*/
+
+                        int queueCount = 0;
+                        lock (QueueLockObject)
+                            queueCount = this.QueueCount;
+
+                        if (queueCount > _burstThreshold)
+                            await this.Delay(1);
+                        else
+                            await Task.Delay(1);
                     }
                 }, token);
             }
@@ -125,6 +136,16 @@ namespace SlimeCore.Network.Queue
             lock (QueueHandlers)
                 QueueHandlers.Remove(this);
             _cancellation.Cancel();
+        }
+
+        private async Task Delay(int microseconds)
+        {
+            if (microseconds > 1000)
+                await Task.Delay(microseconds / 1000);
+
+            long ticks = (long)(microseconds % 1000) * Stopwatch.Frequency / 1_000_000;
+            var sw = Stopwatch.StartNew();
+            while (sw.ElapsedTicks < ticks) ;
         }
     }
 }

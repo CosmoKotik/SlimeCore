@@ -41,7 +41,7 @@ namespace SlimeCore.Core
 
         public void HandleBytes(byte packetID, byte[] bytes)
         {
-            Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length + "   packet: " + packetID.ToString("X"));
+            //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length + "   packet: " + packetID.ToString("X"));
 
             switch (_clientHandler.State)
             {
@@ -302,7 +302,14 @@ namespace SlimeCore.Core
                         if (_minecraftClient.Gamemode.Equals(Gamemode.CREATIVE))
                         {
                             new BlockChangePacket(_clientHandler).Broadcast(new Block().SetPosition(location).SetBlockType(BlockType.Air), true);
+                            Effect break_effect = new Effect()
+                                .SetEffectID(EffectType.BLOCK_BREAK)
+                                .SetLocation(location)
+                                .SetData(1)
+                                .SetDisableRelativeVolume(false);
                             
+                            for (int i = 0; i < 100; i++)
+                                new EffectPacket(_clientHandler).Broadcast(break_effect, true);
                         }
                         break;
                     }
