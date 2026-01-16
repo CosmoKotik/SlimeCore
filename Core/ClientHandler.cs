@@ -157,6 +157,7 @@ namespace SlimeCore.Core
             try
             {
                 this.Client?.Dispose();
+                this.QueueHandler?.Dispose();
             }
             catch { }
 

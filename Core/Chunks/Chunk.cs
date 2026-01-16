@@ -32,7 +32,7 @@ namespace SlimeCore.Core.Chunks
             for (int y = 0; y < 8; y++)
             {
                 mask |= (1 << y);
-                ChunkSection section = ChunkSection.GenerateFill(block_id + y, true);
+                ChunkSection section = ChunkSection.GenerateFill(block_id, false);
                 bm.WriteBytes(ChunkSection.GetBytes(section), false);
             }
 

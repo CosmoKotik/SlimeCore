@@ -15,6 +15,10 @@ namespace SlimeCore.Enums.Serverbound
         PLAYER = 0x0C,
         PLAYER_POSITION = 0x0D,
         PLAYER_POSITION_AND_LOOK = 0x0E,
-        PLAYER_LOOK = 0x0F
+        PLAYER_LOOK = 0x0F,
+        ANIMATION = 0x1D,
+        CHAT_MESSAGE = 0x02,
+        PLAYER_DIGGING = 0x14,
+        PLAYER_BLOCK_PLACEMENT = 0x1F
     }
 }

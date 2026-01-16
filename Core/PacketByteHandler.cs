@@ -1,4 +1,6 @@
-﻿using SlimeCore.Core.Chunks;
+﻿using Newtonsoft.Json;
+using SlimeCore.Core.Chat;
+using SlimeCore.Core.Chunks;
 using SlimeCore.Core.Classes;
 using SlimeCore.Enums;
 using SlimeCore.Enums.Serverbound;
@@ -28,7 +30,7 @@ namespace SlimeCore.Core
 
         private MinecraftClient _minecraftClient;
 
-        public PacketByteHandler(ServerManager serverManager, ClientHandler clientHandler, QueueHandler queueHandler, MinecraftClient minecraftClient) 
+        public PacketByteHandler(ServerManager serverManager, ClientHandler clientHandler, QueueHandler queueHandler, MinecraftClient minecraftClient)
         {
             this._serverManager = serverManager;
             this._configs = serverManager.Config;
@@ -42,7 +44,7 @@ namespace SlimeCore.Core
             //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length + "   packet: " + packetID);
 
             switch (_clientHandler.State)
-            { 
+            {
                 case ClientState.Handshake:
                     HandleHandshake((HandshakePacketType)packetID, bytes);
                     return;
@@ -144,8 +146,8 @@ namespace SlimeCore.Core
 
                     new PlayerPositionAndLookPacket(_clientHandler).Write(spawnPos);
 
-                    int areaX = 4;
-                    int areaZ = 4;
+                    int areaX = 12;
+                    int areaZ = 12;
 
                     int centerOffset = areaX / 2;
 
@@ -155,7 +157,7 @@ namespace SlimeCore.Core
                         for (int z = 0 - centerOffset; z < areaZ - centerOffset; z++)
                         {
                             Chunk chunk = new Chunk();
-                            chunk.Build(x, z, true, i);
+                            chunk.Build(x, z, true, 2);
 
                             new ChunkDataPacket(_clientHandler).Write(chunk);
                             i++;
@@ -163,7 +165,7 @@ namespace SlimeCore.Core
                     }
 
                     Border border = new Border(new int[2] { 0, 2 })
-                    { 
+                    {
                         Diameter = areaX * 16
                     };
 
@@ -186,7 +188,7 @@ namespace SlimeCore.Core
 
                     break;
                 case SB_PlayPacketType.TELEPORT_CONFIRM:
-                    
+
                     break;
                 case SB_PlayPacketType.KEEP_ALIVE:
                     /*long keepAliveID = bm.ReadLong();
@@ -237,9 +239,54 @@ namespace SlimeCore.Core
                     new EntityLookPacket(_clientHandler).Broadcast(_minecraftClient, false);
                     new EntityHeadLookPacket(_clientHandler).Broadcast(_minecraftClient, false);
                     break;
+                case SB_PlayPacketType.ANIMATION:
+                    HandleAnimation(bm.GetBytes());
+                    break;
+                case SB_PlayPacketType.CHAT_MESSAGE:
+                    HandleChatMessage(bm.GetBytes());
+                    break;
             }
 
             _clientHandler.UpdateMinecraftClient(_minecraftClient);
+        }
+
+
+        public void HandleAnimation(byte[] bytes)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            bool isOffHand = bm.ReadBool();
+
+            EntityAnimation e_anim = new EntityAnimation().GetEntityFromMinecraftClient(_minecraftClient)
+                                                          .SetAnimation(isOffHand ? AnimationType.SWING_OFFHAND : AnimationType.SWING_MAIN_ARM);
+            new AnimationPacket(_clientHandler).Broadcast(e_anim, false);
+        }
+
+        public void HandleChatMessage(byte[] bytes)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            string unparsed_text = bm.ReadString();
+
+            ChatMessage chat_msg = new ChatMessage().SetEntity(_minecraftClient)
+                                                    .SetText(unparsed_text)
+                                                    .SetPosition(ChatPositionType.CHAT_BOX);
+
+            new ChatMessagePacket(_clientHandler).Broadcast(chat_msg, true);
+        }
+
+        public void HandlePlayerDigging(byte[] bytes)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            DiggingStatusType status = (DiggingStatusType)(int)bm.ReadVarInt();
+            Position location = bm.ReadPosition();
+            Face face = (Face)bm.ReadByte();
+
+
         }
     }
 }

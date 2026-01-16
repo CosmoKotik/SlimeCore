@@ -93,7 +93,7 @@ namespace SlimeCore.Core
         }
         public MinecraftClient SetPitch(float pitch)
         {
-            this.Pitch = (byte)pitch;
+            this.Pitch = (byte)Math.Clamp(pitch, -90, 90);
             return this;
         }
         public MinecraftClient SetIsOnGround(bool value)

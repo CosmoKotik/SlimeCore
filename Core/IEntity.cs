@@ -9,5 +9,6 @@ namespace SlimeCore.Core
     public interface IEntity
     {
         public int EntityID { get; set; }
+        public string Username { get; set; }
     }
 }

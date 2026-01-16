@@ -16,10 +16,12 @@ namespace SlimeCore.Network.Queue
         public int QueueCount { get; set; }
         public object QueueLockObject = new object();
 
-        private int _poolSize = 200;
+        private int _poolSize = 1000;
         private ClientHandler _handler;
 
         private int _poolSizeThreshold = 30;
+
+        private CancellationTokenSource _cancellation;
 
         public QueueHandler(ClientHandler client) 
         {
@@ -27,15 +29,20 @@ namespace SlimeCore.Network.Queue
 
             CreatePool(this._poolSize);
 
-            Task.Run(async () => 
+            using (_cancellation = new CancellationTokenSource())
             {
-                while (true)
+                CancellationToken token = _cancellation.Token;
+                
+                Task.Run(async () =>
                 {
-                    await HandleBytes();
+                    while (true)
+                    {
+                        await HandleBytes();
 
-                    await Task.Delay(1);
-                }
-            });
+                        await Task.Delay(1);
+                    }
+                }, token);
+            }
 
             QueueHandlers.Add(this);
         }
@@ -111,6 +118,11 @@ namespace SlimeCore.Network.Queue
 
             foreach (QueueHandler handler in handlers)
                 handler.AddPacket(obj);
+        }
+
+        public void Dispose()
+        {
+            _cancellation.Cancel();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SlimeCore.Core
     public class ServerManager
     {
         public string IP { get => _ip; }
-        private string _ip = "10.0.0.3";
+        private string _ip = "0.0.0.0";
 
         public int Port { get => _port; }
         private int _port = 11000;

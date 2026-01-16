@@ -242,7 +242,12 @@ namespace SlimeCore.Network
             return value | ((b & 0x7F) << (size * 7));
         }
 
-        
+        public Position ReadPosition()
+        {
+            long encoded_pos = ReadLong();
+            Position pos = Position.Decode(encoded_pos);
+            return pos;
+        }
 
         public int ReadInt(bool isReversed = true)
         {

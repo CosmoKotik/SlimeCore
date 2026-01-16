@@ -20,6 +20,10 @@ namespace SlimeCore.Enums.Clientbound
         ENTITY_LOOK_AND_RELATIVE_MOVE = 0x27,
         ENTITY_LOOK = 0x28,
         ENTITY_HEAD_LOOK = 0x36,
-        DESTROY_ENTITIES = 0x32
+        DESTROY_ENTITIES = 0x32,
+        ANIMATION = 0x06,
+        CHAT_MESSAGE = 0x0F,
+        BLOCK_BREAK_ANIMATION = 0x08,
+        BLOCK_CHANGE = 0x0B
     }
 }
