@@ -307,9 +307,8 @@ namespace SlimeCore.Core
                                 .SetLocation(location)
                                 .SetData(1)
                                 .SetDisableRelativeVolume(false);
-                            
-                            for (int i = 0; i < 100; i++)
-                                new EffectPacket(_clientHandler).Broadcast(break_effect, true);
+
+                            new EffectPacket(_clientHandler).Broadcast(break_effect, true);
                         }
                         break;
                     }
