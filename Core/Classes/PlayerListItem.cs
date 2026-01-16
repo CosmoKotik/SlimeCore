@@ -12,7 +12,7 @@ namespace SlimeCore.Core.Classes
         public PlayerListItemAction Action { get; set; }
         public Guid UUID { get; set; }
         public string Username { get; set; } = string.Empty;
-        public int Gamemode { get; set; }
+        public Gamemode Gamemode { get; set; }
         public int Ping { get; set; }
         public bool HasDisplayName { get; set; }
         public string DisplayName { get; set; } = string.Empty;

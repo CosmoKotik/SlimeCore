@@ -1,4 +1,5 @@
-﻿using SlimeCore.Structs;
+﻿using SlimeCore.Enums;
+using SlimeCore.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace SlimeCore.Core
         public bool IsConnected { get; set; } = true;
         public int Ping { get; set; }
 
-        public byte Gamemode { get; set; } = 1;
+        public Gamemode Gamemode { get; set; } = Gamemode.CREATIVE;
 
         public string Locale { get; set; } = string.Empty;          //Language
         public byte ViewDistance { get; set; }                      //Client-side render distance, in chunks
@@ -87,7 +88,7 @@ namespace SlimeCore.Core
         }
         public MinecraftClient SetYaw(float yaw)
         {
-            float angle = (yaw / 360) * 256;
+            int angle = (int)((yaw / 360) * 256);
             this.Yaw = (byte)angle;
             return this;
         }
@@ -100,6 +101,11 @@ namespace SlimeCore.Core
         {
             this.IsOnGround = value;
             return this;
+        }
+
+        public int GetXZDistance(Position target)
+        {
+            return (int)Position.GetDistance(_worldPosition.GetXZ(), target.GetXZ());
         }
     }
 }

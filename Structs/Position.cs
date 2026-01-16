@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,7 +28,7 @@ namespace SlimeCore.Structs
 
         public static long Encode(Position pos)
         {
-            return (((int)pos.X & 0x3FFFFFF) << 38) | (((int)pos.Y & 0xFFF) << 26) | ((int)pos.Z & 0x3FFFFFF);
+            return (((long)pos.X & 0x3FFFFFF) << 38) | (((long)pos.Y & 0xFFF) << 26) | ((long)pos.Z & 0x3FFFFFF);
         }
         public static Position Decode(long value)
         {
@@ -38,7 +39,40 @@ namespace SlimeCore.Structs
             return new Position(x, y, z);
         }
 
+        public static double GetDistance(Position from, Position to)
+        {
+            double distance = Math.Sqrt(
+                Math.Pow((to.X - from.X), 2) +
+                Math.Pow((to.Y - from.Y), 2) +
+                Math.Pow((to.Z - from.Z), 2)
+                );
+
+            return distance;
+        }
+
+        public Position GetXZ()
+        {
+            return new Position(this.X, 0, this.Z);
+        }
+        public Position GetXY()
+        {
+            return new Position(this.X, this.Y, 0);
+        }
+        public Position GetZY()
+        {
+            return new Position(0, this.Y, this.Z);
+        }
+
         public static implicit operator long(Position pos) => Encode(pos);
         public static implicit operator string(Position pos) => $"X: {pos.X} Y: {pos.Y} Z: {pos.Z}";
+
+        public static Position operator +(Position a, Position b)
+        {
+            return new Position(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+        public static Position operator -(Position a, Position b)
+        {
+            return new Position(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
     }
 }

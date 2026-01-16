@@ -128,8 +128,7 @@ namespace SlimeCore.Core
 
             //Console.WriteLine("Sent: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
-            if (client.Connected)
-                await client.SendAsync(bytes);
+            await client.SendAsync(bytes);
         }
 
         public MinecraftClient[] GetAllPlayers()
@@ -154,6 +153,8 @@ namespace SlimeCore.Core
             _isDisposed = true;
             _isAlive = false;
 
+            this.NetworkListener.RemoveClientHandler(this);
+
             try
             {
                 this.Client?.Dispose();
@@ -162,6 +163,9 @@ namespace SlimeCore.Core
             catch { }
 
             Logger.Warn("Connection disposed.", true);
+
+            GC.Collect();
+            Logger.Warn("GC called to collect.", true);
         }
     }
 }

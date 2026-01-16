@@ -110,7 +110,10 @@ namespace SlimeCore.Network
             byte boolByte = value ? (byte)1 : (byte)0;
             _buffer.Add(boolByte);
         }
-
+        public void WritePosition(Position pos)
+        {
+            WriteLong(pos);
+        }
         public void WriteVarInt(int value)
         {
             /*while ((value & -128) != 0)

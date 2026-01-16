@@ -42,7 +42,7 @@ namespace SlimeCore.Network.Packets.Play
 
             //int uid = new Random().Next(int.MaxValue);
             bm.WriteInt(client.EntityID);   //Player Entity ID
-            bm.WriteByte(client.Gamemode);    //Gamemode
+            bm.WriteByte((byte)client.Gamemode);    //Gamemode
             bm.WriteInt(client.WorldDimension);     //Dimension
             bm.WriteByte(0);    //Difficulty
             bm.WriteByte(0);    //Max Players, in modern minecraft its ignored(at least in 1.12.2)

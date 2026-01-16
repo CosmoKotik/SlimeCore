@@ -90,6 +90,11 @@ namespace SlimeCore.Network
             ClientHandlers.Add(handler);
             return this;
         }
+        protected internal NetworkListener RemoveClientHandler(ClientHandler handler)
+        {
+            ClientHandlers.Remove(handler);
+            return this;
+        }
         protected internal NetworkListener AddQueueHandler(ref QueueHandler handler)
         {
             QueueHandlers.Add(handler);

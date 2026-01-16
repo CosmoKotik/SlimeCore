@@ -35,7 +35,7 @@ namespace SlimeCore.Network.Queue
                 
                 Task.Run(async () =>
                 {
-                    while (true)
+                    while (!token.IsCancellationRequested)
                     {
                         await HandleBytes();
 
@@ -115,13 +115,15 @@ namespace SlimeCore.Network.Queue
 
             if (!includeSelf)
                 handlers.Remove(this);
-
+            
             foreach (QueueHandler handler in handlers)
                 handler.AddPacket(obj);
         }
 
         public void Dispose()
         {
+            lock (QueueHandlers)
+                QueueHandlers.Remove(this);
             _cancellation.Cancel();
         }
     }

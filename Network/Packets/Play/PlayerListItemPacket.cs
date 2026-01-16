@@ -38,12 +38,12 @@ namespace SlimeCore.Network.Packets.Play
                 case Enums.PlayerListItemAction.ADD_PLAYER:
                     bm.WriteString(item.Username);
                     bm.WriteVarInt(0);      //Number of properties, currently not implemented
-                    bm.WriteVarInt(item.Gamemode);
+                    bm.WriteVarInt((byte)item.Gamemode);
                     bm.WriteVarInt(item.Ping);
                     bm.WriteBool(item.HasDisplayName);    //Has display name, currently fuck you
                     break;
                 case Enums.PlayerListItemAction.UPDATE_GAMEMODE:
-                    bm.WriteVarInt(item.Gamemode);
+                    bm.WriteVarInt((int)item.Gamemode);
                     break;
                 case Enums.PlayerListItemAction.UPDATE_LATENCY:
                     bm.WriteVarInt(item.Ping);
@@ -78,12 +78,12 @@ namespace SlimeCore.Network.Packets.Play
                 case Enums.PlayerListItemAction.ADD_PLAYER:
                     bm.WriteString(item.Username);
                     bm.WriteVarInt(0);      //Number of properties, currently not implemented
-                    bm.WriteVarInt(item.Gamemode);
+                    bm.WriteVarInt((int)item.Gamemode);
                     bm.WriteVarInt(item.Ping);
                     bm.WriteBool(item.HasDisplayName);    //Has display name, currently fuck you
                     break;
                 case Enums.PlayerListItemAction.UPDATE_GAMEMODE:
-                    bm.WriteVarInt(item.Gamemode);
+                    bm.WriteVarInt((int)item.Gamemode);
                     break;
                 case Enums.PlayerListItemAction.UPDATE_LATENCY:
                     bm.WriteVarInt(item.Ping);

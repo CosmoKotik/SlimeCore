@@ -38,8 +38,6 @@ namespace SlimeCore.Network.Packets.Play
 
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 
-            Logger.Error("Sending keep alive packet", true);
-
             return this;
         }
 

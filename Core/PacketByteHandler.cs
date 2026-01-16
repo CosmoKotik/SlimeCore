@@ -41,7 +41,7 @@ namespace SlimeCore.Core
 
         public void HandleBytes(byte packetID, byte[] bytes)
         {
-            //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length + "   packet: " + packetID);
+            Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length + "   packet: " + packetID.ToString("X"));
 
             switch (_clientHandler.State)
             {
@@ -212,6 +212,8 @@ namespace SlimeCore.Core
                     
                     new PlayerListItemPacket(_clientHandler).Write(playerListItema);
                     new SpawnPlayerPacket(_clientHandler).Write(test_player);*/
+
+                    //new BlockChangePacket(_clientHandler).Broadcast(new Block().SetPosition(_minecraftClient.WorldPosition).SetBlockType(BlockType.Grass), true);
                     break;
                 case SB_PlayPacketType.PLAYER_POSITION_AND_LOOK:
                     Position p_p_pos = new Position(bm.ReadDouble(), bm.ReadDouble(), bm.ReadDouble());
@@ -244,6 +246,9 @@ namespace SlimeCore.Core
                     break;
                 case SB_PlayPacketType.CHAT_MESSAGE:
                     HandleChatMessage(bm.GetBytes());
+                    break;
+                case SB_PlayPacketType.PLAYER_DIGGING:
+                    HandlePlayerDigging(bm.GetBytes());
                     break;
             }
 
@@ -286,7 +291,24 @@ namespace SlimeCore.Core
             Position location = bm.ReadPosition();
             Face face = (Face)bm.ReadByte();
 
+            int distance = _minecraftClient.GetXZDistance(location);
+            if (distance > 6)
+                return;
 
+            switch (status)
+            { 
+                case DiggingStatusType.STARTED_DIGGING: 
+                    {
+                        if (_minecraftClient.Gamemode.Equals(Gamemode.CREATIVE))
+                            new BlockChangePacket(_clientHandler).Broadcast(new Block().SetPosition(location).SetBlockType(BlockType.Air), true);
+                        break;
+                    }
+                case DiggingStatusType.FINISHED_DIGGING: 
+                    {
+                        Logger.Warn("Finished digging");
+                        break;
+                    }
+            }
         }
     }
 }
