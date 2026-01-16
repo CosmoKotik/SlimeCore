@@ -300,7 +300,10 @@ namespace SlimeCore.Core
                 case DiggingStatusType.STARTED_DIGGING: 
                     {
                         if (_minecraftClient.Gamemode.Equals(Gamemode.CREATIVE))
+                        {
                             new BlockChangePacket(_clientHandler).Broadcast(new Block().SetPosition(location).SetBlockType(BlockType.Air), true);
+                            
+                        }
                         break;
                     }
                 case DiggingStatusType.FINISHED_DIGGING: 
