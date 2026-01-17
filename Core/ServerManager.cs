@@ -155,7 +155,10 @@ namespace SlimeCore.Core
                                 .SetData(0)
                                 .SetDisableRelativeVolume(false);
                     new EffectPacket(players[0].ClientHandler).Broadcast(break_effect, true);*/
-                    new BlockChangePacket(players[0].ClientHandler).Broadcast(new Block().SetPosition(players[0].WorldPosition - new Position(0, 1, 0)).SetBlockType(BlockType.Stone), true);
+                    /*new BlockChangePacket(players[0].ClientHandler).Broadcast(new Block().SetPosition(players[0].WorldPosition - new Position(0, 1, 0)).SetBlockType(BlockType.Stone), true);
+                    new BlockChangePacket(players[0].ClientHandler).Broadcast(new Block().SetPosition(players[0].WorldPosition - new Position(1, 1, 0)).SetBlockType(BlockType.Stone), true);
+                    new BlockChangePacket(players[0].ClientHandler).Broadcast(new Block().SetPosition(players[0].WorldPosition - new Position(0, 1, 1)).SetBlockType(BlockType.Stone), true);
+                    new BlockChangePacket(players[0].ClientHandler).Broadcast(new Block().SetPosition(players[0].WorldPosition - new Position(1, 1, 1)).SetBlockType(BlockType.Stone), true);*/
                 }
 
                 await Task.Delay(delay);

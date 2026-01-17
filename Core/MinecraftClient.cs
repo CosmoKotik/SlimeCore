@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Core.Classes;
+using SlimeCore.Enums;
 using SlimeCore.Structs;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace SlimeCore.Core
         private Position _previousWorldPosition;
         public Position ChunkPosition { get => _chunkPosition; }
         private Position _chunkPosition;
-        
+
         public bool IsOnGround { get; set; }
 
         public int WorldDimension { get; set; }
@@ -41,6 +42,9 @@ namespace SlimeCore.Core
         public int Ping { get; set; }
 
         public Gamemode Gamemode { get; set; } = Gamemode.CREATIVE;
+        public Inventory Inventory { get; set; }
+        public short CurrentSelectedSlot { get; set; }
+        public BlockType CurrentlyHoldingBlock { get; set; }
 
         public string Locale { get; set; } = string.Empty;          //Language
         public byte ViewDistance { get; set; }                      //Client-side render distance, in chunks
@@ -49,6 +53,10 @@ namespace SlimeCore.Core
         public byte DisplayedSkinParts { get; set; }
         public int MainHand { get; set; }                           //0: Left, 1: Right
 
+        public void Initialize()
+        {
+            this.Inventory = new Inventory();
+        }
 
         public MinecraftClient SetLocale(string locale)
         {
@@ -82,7 +90,7 @@ namespace SlimeCore.Core
         }
 
         public MinecraftClient SetWorldPosition(Position pos)
-        { 
+        {
             this.WorldPosition = pos;
             return this;
         }
@@ -100,6 +108,16 @@ namespace SlimeCore.Core
         public MinecraftClient SetIsOnGround(bool value)
         {
             this.IsOnGround = value;
+            return this;
+        }
+        public MinecraftClient SetCurrentSelectedSlot(short slot)
+        {
+            this.CurrentSelectedSlot = slot;
+            return this;
+        }
+        public MinecraftClient SetCurrentlyHoldingBlock(BlockType type)
+        { 
+            this.CurrentlyHoldingBlock = type;
             return this;
         }
 

@@ -128,7 +128,11 @@ namespace SlimeCore.Core
 
             //Console.WriteLine("Sent: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length);
 
-            await client.SendAsync(bytes);
+            try
+            {
+                await client.SendAsync(bytes);
+            }
+            catch { }
         }
 
         public MinecraftClient[] GetAllPlayers()

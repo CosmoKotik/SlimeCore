@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SlimeCore.Enums;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -61,6 +62,27 @@ namespace SlimeCore.Structs
         public Position GetZY()
         {
             return new Position(0, this.Y, this.Z);
+        }
+
+        public static Position FromFace(Face face)
+        {
+            switch (face)
+            {
+                case Face.Bottom:
+                    return new Position(0, -1, 0);
+                case Face.Top:
+                    return new Position(0, 1, 0);
+                case Face.North:
+                    return new Position(0, 0, -1);
+                case Face.South:
+                    return new Position(0, 0, 1);
+                case Face.West:
+                    return new Position(-1, 0, 0);
+                case Face.East:
+                    return new Position(1, 0, 0);
+                default:
+                    return new Position(0, 0, 0);
+            }
         }
 
         public static implicit operator long(Position pos) => Encode(pos);

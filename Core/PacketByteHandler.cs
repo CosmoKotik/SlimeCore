@@ -41,7 +41,14 @@ namespace SlimeCore.Core
 
         public void HandleBytes(byte packetID, byte[] bytes)
         {
-            //Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length + "   packet: " + packetID.ToString("X"));
+            if (!packetID.Equals((int)SB_PlayPacketType.KEEP_ALIVE) &&
+                !packetID.Equals((int)SB_PlayPacketType.PLAYER_LOOK) &&
+                !packetID.Equals((int)SB_PlayPacketType.PLAYER) &&
+                !packetID.Equals((int)SB_PlayPacketType.PLAYER_POSITION) &&
+                !packetID.Equals((int)SB_PlayPacketType.PLAYER_POSITION_AND_LOOK) && _clientHandler.State == ClientState.Play)
+            {
+                Console.WriteLine("Received: {0}", BitConverter.ToString(bytes).Replace("-", " ") + "   " + bytes.Length + "   packet: " + packetID.ToString("X"));
+            }
 
             switch (_clientHandler.State)
             {
@@ -116,6 +123,9 @@ namespace SlimeCore.Core
                     Position spawnPos = new Position(2, 32, 1);
 
                     new SpawnPositionPacket(_clientHandler).Write(spawnPos);
+
+                    _minecraftClient.Initialize();
+
                     Task.Run(async () => { await _clientHandler.KeepAlive(); });
                     break;
             }
@@ -250,6 +260,15 @@ namespace SlimeCore.Core
                 case SB_PlayPacketType.PLAYER_DIGGING:
                     HandlePlayerDigging(bm.GetBytes());
                     break;
+                case SB_PlayPacketType.CREATIVE_INVENTORY_ACTION:
+                    HandleCreativeInventoryAction(bm.GetBytes());
+                    break;
+                case SB_PlayPacketType.HELD_ITEM_CHANGE:
+                    HandleHeldItemChange(bm.GetBytes());
+                    break;
+                case SB_PlayPacketType.PLAYER_BLOCK_PLACEMENT:
+                    HandlePlayerBlockPlacement(bm.GetBytes());
+                    break;
             }
 
             _clientHandler.UpdateMinecraftClient(_minecraftClient);
@@ -318,6 +337,64 @@ namespace SlimeCore.Core
                         break;
                     }
             }
+        }
+        public void HandleCreativeInventoryAction(byte[] bytes)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            short slot = bm.ReadShort();
+            short blockID = bm.ReadShort();
+            Slot clickedItem = new Slot()
+                .SetSlotID(slot)
+                .SetBlockID(blockID);
+
+            if (!blockID.Equals((int)BlockType.Empty_No_Encoding))
+                clickedItem.SetItemCount(bm.ReadByte()).SetItemDamage(bm.ReadShort());
+
+            _minecraftClient.Inventory.UpdateSlot(clickedItem);
+
+            if (_minecraftClient.CurrentSelectedSlot.Equals(slot))
+                _minecraftClient.SetCurrentlyHoldingBlock(_minecraftClient.Inventory.GetBlockTypeFromSlotID(slot));
+
+            Logger.Warn("Item set");
+
+            if (_minecraftClient.CurrentSelectedSlot.Equals(slot))
+                new EntityEquipmentPacket(_clientHandler).Broadcast(_minecraftClient, false);
+        }
+        public void HandleHeldItemChange(byte[] bytes) 
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            short hotbarSlotStart = 36;
+            short slotOffset = bm.ReadShort();
+            short slot_id = (short)(hotbarSlotStart + slotOffset);
+
+            _minecraftClient.SetCurrentSelectedSlot(slot_id);
+            _minecraftClient.SetCurrentlyHoldingBlock(_minecraftClient.Inventory.GetBlockTypeFromSlotID(slot_id));
+            Logger.Warn($"Slot: {slot_id} Item: {_minecraftClient.Inventory.GetBlockTypeFromSlotID(slot_id)}");
+
+            new EntityEquipmentPacket(_clientHandler).Broadcast(_minecraftClient, false);
+        }
+        public void HandlePlayerBlockPlacement(byte[] bytes)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            Position location = bm.ReadPosition();  //block position
+            Face face = (Face)(int)bm.ReadVarInt();
+            int hand = bm.ReadVarInt();     //main: 0, off hand: 1
+            Position cursor_position = new Position(
+                bm.ReadFloat(), 
+                bm.ReadFloat(), 
+                bm.ReadFloat());
+
+            Position offset = Position.FromFace(face);
+            
+            BlockType holdingBlock = _minecraftClient.CurrentlyHoldingBlock;
+            Console.WriteLine($"Holding rn: {holdingBlock}");
+            new BlockChangePacket(_clientHandler).Broadcast(new Block().SetPosition(location + offset).SetBlockType(holdingBlock), true);
         }
     }
 }

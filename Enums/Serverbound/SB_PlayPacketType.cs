@@ -19,6 +19,8 @@ namespace SlimeCore.Enums.Serverbound
         ANIMATION = 0x1D,
         CHAT_MESSAGE = 0x02,
         PLAYER_DIGGING = 0x14,
-        PLAYER_BLOCK_PLACEMENT = 0x1F
+        PLAYER_BLOCK_PLACEMENT = 0x1F,
+        CREATIVE_INVENTORY_ACTION = 0x1B,
+        HELD_ITEM_CHANGE = 0x1A
     }
 }

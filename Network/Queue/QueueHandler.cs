@@ -85,7 +85,7 @@ namespace SlimeCore.Network.Queue
 
                 if (QueuePool.Count <= _poolSizeThreshold)
                 {
-                    Logger.Warn($"Pool lower than set threshold: {QueuePool.Count}");
+                    //Logger.Warn($"Pool lower than set threshold: {QueuePool.Count}");
                     for (int i = 0; QueuePool.Count < _poolSize; i++)
                         QueuePool.Add(new QueueFactory().SetQueueID(QueuePool.Count - 1).SetUsedState(false).Build());
                 }

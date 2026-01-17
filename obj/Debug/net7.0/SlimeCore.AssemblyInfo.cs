@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SlimeCore")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e1ecdf2e95ecf5f920af60a35ed530c74a880c43")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b6ef7d283660439d8a2a620152d9beafeea4a7da")]
 [assembly: System.Reflection.AssemblyProductAttribute("SlimeCore")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SlimeCore")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
