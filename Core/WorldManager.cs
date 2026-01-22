@@ -67,14 +67,14 @@ namespace SlimeCore.Core
             }
         }
 
-        public static void SetBlock(Position chunk_pos, BlockType block_type)
+        public static void SetBlock(Position chunk_pos, Position local_block_chunk_pos, BlockType block_type)
         {
             int z_offset = (int)(chunk_pos.Z * WorldSizeZ);
             int chunk_index = z_offset + (int)chunk_pos.X;
 
             lock (ChunkLock)
             {
-                Chunks[chunk_index].SetBlock(chunk_pos, block_type);
+                Chunks[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
             }
         }
 
@@ -149,6 +149,9 @@ namespace SlimeCore.Core
 
                         for (int y = 0; y < blocks.Length / 256; y++)
                         {
+                            int y_section = y / 16;
+                            int block_y = y - (y_section * 16);
+                            //Console.WriteLine(block_y);
                             for (int z = 0; z < 16; z++)
                             {
                                 for (int x = 0; x < 16; x++)
@@ -165,8 +168,9 @@ namespace SlimeCore.Core
 
                                     SetBlock(block);*/
 
-                                    Position chunk_pos = new Position(x, y / 16, z);
-                                    SetBlock(chunk_pos, block_type);
+                                    Position chunk_pos = new Position(chunk_x, y_section, chunk_z);
+                                    Position local_block_chunk_pos = new Position(x, block_y, z);
+                                    SetBlock(chunk_pos, local_block_chunk_pos, block_type);
                                 }
                             }
                         }

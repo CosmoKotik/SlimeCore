@@ -131,7 +131,7 @@ namespace SlimeCore.Core
 
             //this.WorldManager.GenerateFlatWorld(layers);
 
-            //this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca");
+            this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca");
 
             this.IsRunning = true;
 

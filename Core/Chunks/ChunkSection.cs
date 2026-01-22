@@ -79,11 +79,11 @@ namespace SlimeCore.Core.Chunks
             return this;
         }
 
-        public ChunkSection SetBlock(Position chunk_pos, BlockType block_type)
+        public ChunkSection SetBlock(Position chunk_pos, Position local_block_chunk_pos, BlockType block_type)
         {
-            int index_y = (int)(chunk_pos.Y * (_xSize * _zSize));
-            int index_z = (int)(chunk_pos.Z * _zSize);
-            int index_x = (int)chunk_pos.X;
+            int index_y = (int)(local_block_chunk_pos.Y * (_xSize * _zSize));
+            int index_z = (int)(local_block_chunk_pos.Z * _zSize);
+            int index_x = (int)local_block_chunk_pos.X;
 
             int block_index = index_y + index_z + index_x;
 
