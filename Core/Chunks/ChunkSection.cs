@@ -27,7 +27,8 @@ namespace SlimeCore.Core.Chunks
         private int _ySize = 16;
         private int _zSize = 16;
 
-        private Block[] _blocks;
+        //private Block[] _blocks;
+        private BlockType[] _blocks;
 
         private Position _chunkPosition;
 
@@ -35,7 +36,8 @@ namespace SlimeCore.Core.Chunks
         public ChunkSection(int chunk_x, int chunk_z, int y)
         {
             int chunkSize = _xSize * _ySize * _zSize;
-            _blocks = new Block[chunkSize];
+            //_blocks = new Block[chunkSize];
+            _blocks = new BlockType[chunkSize];
 
             _chunkPosition = new Position(chunk_x, y, chunk_z);
 
@@ -52,12 +54,12 @@ namespace SlimeCore.Core.Chunks
                 for (int z = 0; z < _zSize; z++)
                     for (int x = 0; x < _xSize; x++)
                     {
-                        Position pos = new Position(x, y, z);
+                        /*Position pos = new Position(x, y, z);
                         Block block = new Block()
                             .SetBlockType(default_type)
-                            .SetPosition(pos);
+                            .SetPosition(pos);*/
 
-                        _blocks[block_index] = block;
+                        _blocks[block_index] = default_type;
 
                         block_index++;
                     }
@@ -78,12 +80,12 @@ namespace SlimeCore.Core.Chunks
 
             int block_index = index_y + index_z + index_x;
 
-            _blocks[block_index] = block;
+            _blocks[block_index] = block.BlockType;
 
             return this;
         }
 
-        public Block GetBlockFromLocalChunkPosition(Position local_position)
+        /*public Block GetBlockFromLocalChunkPosition(Position local_position)
         {
             int index_y = (int)(local_position.Y * (_xSize * _zSize));
             int index_z = (int)(local_position.Z * _zSize);
@@ -92,7 +94,7 @@ namespace SlimeCore.Core.Chunks
             int block_index = index_y + index_z + index_x;
 
             return _blocks[block_index];
-        }
+        }*/
 
         public ChunkSection GenerateChunkSection()
         {
@@ -111,13 +113,20 @@ namespace SlimeCore.Core.Chunks
                         int startOffset = (blockNumber * this.BitsPerBlock) % 64;
                         int endLong = ((blockNumber + 1) * this.BitsPerBlock - 1) / 64;
 
+                        int index_y = y * (_xSize * _zSize);
+                        int index_z = z * _zSize;
+                        int index_x = x;
+
+                        int block_index = index_y + index_z + index_x;
+
                         /*byte metadata = 0;
                         uint id = (uint)block_id;
 
                         long value = id << 4 | metadata;*/
 
-                        Block block = GetBlockFromLocalChunkPosition(new Position(x, y, z));
-                        long value = block.GetIDWithMeta();
+                        //Block block = GetBlockFromLocalChunkPosition(new Position(x, y, z));
+                        //long value = block.GetIDWithMeta();
+                        long value = (long)_blocks[block_index];
                         value &= individualValueMask;
 
                         data[startLong] |= (value << startOffset);

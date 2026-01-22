@@ -124,7 +124,10 @@ namespace SlimeCore.Core
                 BlockType.Grass_Block  //Y = 3
             };
 
-            //this.WorldManager.GenerateFlatWorld(layers);
+            //int[] ints = new int[16777216];
+            //BlockType[] blockTypes = new BlockType[16777216];
+
+            this.WorldManager.GenerateFlatWorld(layers);
 
             this.IsRunning = true;
 
