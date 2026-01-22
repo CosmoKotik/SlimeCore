@@ -51,6 +51,7 @@ namespace SlimeCore.Network.Packets.Play
                     }
             }
 
+            Logger.Error(BitConverter.ToString(bm.GetBytesWithLength()).Replace("-", " "));
             _handler.QueueHandler.AddBroadcastPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build(), includeSelf);
 
             return this;

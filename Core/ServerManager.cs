@@ -1,4 +1,5 @@
-﻿using SlimeCore.Core.Classes;
+﻿using SlimeCore.Core.Chunks;
+using SlimeCore.Core.Classes;
 using SlimeCore.Enums;
 using SlimeCore.Network;
 using SlimeCore.Network.Packets.Play;
@@ -71,6 +72,8 @@ namespace SlimeCore.Core
 
         public NetworkListener NetworkListener;
 
+        public WorldManager WorldManager;
+
         public List<MinecraftClient> Players = new List<MinecraftClient>();
         private object _players_lock = new object();
 
@@ -111,6 +114,17 @@ namespace SlimeCore.Core
                 Logger.Log("Checking for updates...");
                 Logger.Log("No updates");   //temporary lol
             }
+
+            this.WorldManager = new WorldManager(16, 16);
+            List<BlockType> layers = new List<BlockType>
+            {
+                BlockType.Bedrock,  //Y = 0
+                BlockType.Dirt,  //Y = 1
+                BlockType.Dirt,  //Y = 2
+                BlockType.Grass_Block  //Y = 3
+            };
+
+            //this.WorldManager.GenerateFlatWorld(layers);
 
             this.IsRunning = true;
 

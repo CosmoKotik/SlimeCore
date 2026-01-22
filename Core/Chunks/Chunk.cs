@@ -1,4 +1,5 @@
-﻿using SlimeCore.Network;
+﻿using SlimeCore.Core.Classes;
+using SlimeCore.Network;
 using SlimeCore.Structs;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,72 @@ namespace SlimeCore.Core.Chunks
         public varint NumberOfBlockEntities { get; set; }
         public byte[] BlockEntities { get; set; }
 
+        private ChunkSection[] _chunkSections;
+        private int _height = 16;
 
+        public Chunk()
+        { 
+            _chunkSections = new ChunkSection[16];
+        }
+        public Chunk(int chunk_x, int chunk_z)
+        {
+            this.ChunkX = chunk_x;
+            this.ChunkZ = chunk_z;
+
+            _chunkSections = new ChunkSection[16];
+
+            InitializeChunkSections();
+        }
+
+        private void InitializeChunkSections()
+        { 
+            for (int i = 0; i < _height; i++)
+                _chunkSections[i] = new ChunkSection(this.ChunkX, this.ChunkZ, i);
+        }
+
+        public Chunk SetBlock(Block block)
+        {
+            Position chunk_pos = block.GetChunkPosition();
+            int y_section = (int)chunk_pos.Y;
+            _chunkSections[y_section].SetBlock(block);
+            return this;
+        }
+
+        public Chunk GenerateChunk(bool continuous = true)
+        {
+            this.GroundUpContinuous = continuous;
+
+            int mask = 0;
+            BufferManager bm = new BufferManager();
+
+            for (int y = 0; y < _height; y++)
+            {
+                mask |= (1 << y);
+                ChunkSection section = _chunkSections[y];
+                bm.WriteBytes(ChunkSection.GetBytes(section), false);
+            }
+
+            if (continuous)
+                for (int z = 0; z < 16; z++)
+                {
+                    for (int x = 0; x < 16; x++)
+                    {
+                        bm.WriteByte(127);  //Currently biomes are not supported
+                    }
+                }
+
+            byte[] data = bm.GetBytes();
+
+            PrimaryBitMask = mask;
+            DataSize = data.Length;
+            Data = data;
+
+            NumberOfBlockEntities = 0;  //Currently block entities not supported
+
+            return this;
+        }
+
+        [Obsolete("Method is deprecated, please use GenerateChunk() instead.")]
         public void Build(int xPos, int zPos, bool continuous = true, int block_id = 1)
         { 
             this.ChunkX = xPos;
@@ -56,6 +122,8 @@ namespace SlimeCore.Core.Chunks
 
         public byte[] GetBytes()
         {
+            this.GenerateChunk();
+
             BufferManager bm = new BufferManager();
             
             bm.WriteInt(this.ChunkX);

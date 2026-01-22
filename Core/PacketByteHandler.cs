@@ -156,19 +156,19 @@ namespace SlimeCore.Core
 
                     new PlayerPositionAndLookPacket(_clientHandler).Write(spawnPos);
 
-                    int areaX = 12;
-                    int areaZ = 12;
+                    int areaX = 4;
+                    int areaZ = 4;
 
                     int centerOffset = areaX / 2;
 
                     int i = 1;
-                    for (int x = 0 - centerOffset; x < areaX - centerOffset; x++)
+                    for (int z = 0; z < areaZ; z++)
                     {
-                        for (int z = 0 - centerOffset; z < areaZ - centerOffset; z++)
+                        for (int x = 0; x < areaX; x++)
                         {
-                            Chunk chunk = new Chunk();
-                            chunk.Build(x, z, true, 2);
-
+                            /*Chunk chunk = new Chunk();
+                            chunk.Build(x, z, true, 2);*/
+                            Chunk chunk = WorldManager.GetChunk(x, z);
                             new ChunkDataPacket(_clientHandler).Write(chunk);
                             i++;
                         }
@@ -327,7 +327,8 @@ namespace SlimeCore.Core
                                 .SetData(1)
                                 .SetDisableRelativeVolume(false);
 
-                            new EffectPacket(_clientHandler).Broadcast(break_effect, true);
+                            for (int i = 0; i < 100; i++)
+                                new EffectPacket(_clientHandler).Broadcast(break_effect, true);
                         }
                         break;
                     }
@@ -359,8 +360,8 @@ namespace SlimeCore.Core
 
             Logger.Warn("Item set");
 
-            if (_minecraftClient.CurrentSelectedSlot.Equals(slot))
-                new EntityEquipmentPacket(_clientHandler).Broadcast(_minecraftClient, false);
+            /*if (_minecraftClient.CurrentSelectedSlot.Equals(slot))
+                new EntityEquipmentPacket(_clientHandler).Broadcast(_minecraftClient, true);*/
         }
         public void HandleHeldItemChange(byte[] bytes) 
         {
@@ -375,7 +376,7 @@ namespace SlimeCore.Core
             _minecraftClient.SetCurrentlyHoldingBlock(_minecraftClient.Inventory.GetBlockTypeFromSlotID(slot_id));
             Logger.Warn($"Slot: {slot_id} Item: {_minecraftClient.Inventory.GetBlockTypeFromSlotID(slot_id)}");
 
-            new EntityEquipmentPacket(_clientHandler).Broadcast(_minecraftClient, false);
+            //new EntityEquipmentPacket(_clientHandler).Broadcast(_minecraftClient, true);
         }
         public void HandlePlayerBlockPlacement(byte[] bytes)
         {
@@ -394,7 +395,10 @@ namespace SlimeCore.Core
             
             BlockType holdingBlock = _minecraftClient.CurrentlyHoldingBlock;
             Console.WriteLine($"Holding rn: {holdingBlock}");
-            new BlockChangePacket(_clientHandler).Broadcast(new Block().SetPosition(location + offset).SetBlockType(holdingBlock), true);
+
+            Block block = new Block().SetPosition(location + offset).SetBlockType(holdingBlock);
+            Console.WriteLine(block.GetChunkPosition().ToString());
+            new BlockChangePacket(_clientHandler).Broadcast(block, true);
         }
     }
 }

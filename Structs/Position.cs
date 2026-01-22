@@ -10,9 +10,11 @@ namespace SlimeCore.Structs
 {
     public struct Position
     {
-        public readonly double X;
-        public readonly double Y;
-        public readonly double Z;
+        public double X;
+        public double Y;
+        public double Z;
+
+        public readonly static Position Zero = new Position(0, 0, 0);
 
         public Position(int x, int y, int z)
         { 
@@ -88,6 +90,48 @@ namespace SlimeCore.Structs
         public static implicit operator long(Position pos) => Encode(pos);
         public static implicit operator string(Position pos) => $"X: {pos.X} Y: {pos.Y} Z: {pos.Z}";
 
+        public override string ToString()
+        {
+            return (string)this;
+        }
+
+        public bool IsAllZero()
+        {
+            if (this.X.Equals(0) && 
+                this.Y.Equals(0) && 
+                this.Z.Equals(00))
+                return true;
+            return false;
+        }
+        public Position Absolute()
+        {
+            return new Position(
+                Math.Abs(this.X),
+                Math.Abs(this.Y),
+                Math.Abs(this.Z));
+        }
+        public Position Magnitude()
+        {
+            Position absolute = this.Absolute();
+            Position result = this / absolute;
+
+            if (absolute.X.Equals(0))
+                result.X = 0;
+            if (absolute.Y.Equals(0))
+                result.Y = 0;
+            if (absolute.Z.Equals(0))
+                result.Z = 0;
+
+            return result;
+        }
+        public Position Clamp(double min, double max)
+        {
+            return new Position(
+                Math.Clamp(this.X, min, max),
+                Math.Clamp(this.Y, min, max),
+                Math.Clamp(this.Z, min, max));
+        }
+
         public static Position operator +(Position a, Position b)
         {
             return new Position(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
@@ -95,6 +139,23 @@ namespace SlimeCore.Structs
         public static Position operator -(Position a, Position b)
         {
             return new Position(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+        public static Position operator /(Position a, Position b)
+        {
+            return new Position(a.X / b.X, a.Y / b.Y, a.Z / b.Z);
+        }
+        public static Position operator *(Position a, Position b)
+        {
+            return new Position(a.X * b.X, a.Y * b.Y, a.Z * b.Z);
+        }
+
+        public static Position operator /(Position a, int b)
+        {
+            return new Position((int)(a.X / b), (int)(a.Y / b), (int)(a.Z / b));
+        }
+        public static Position operator *(Position a, int b)
+        {
+            return new Position(a.X * b, a.Y * b, a.Z * b);
         }
     }
 }

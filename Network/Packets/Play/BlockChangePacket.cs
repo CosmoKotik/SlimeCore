@@ -29,6 +29,7 @@ namespace SlimeCore.Network.Packets.Play
         public object Broadcast(object obj = null, bool includeSelf = false)
         {
             Block block = (Block)obj;
+            Console.WriteLine(block.GetChunkPosition().ToString());
 
             BufferManager bm = new BufferManager();
             bm.SetPacketId((byte)Id);
