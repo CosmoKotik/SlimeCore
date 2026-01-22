@@ -115,14 +115,14 @@ namespace SlimeCore.Core
                 Logger.Log("No updates");   //temporary lol
             }
 
-            this.WorldManager = new WorldManager(32, 32);
-            List<BlockType> layers = new List<BlockType>
+            this.WorldManager = new WorldManager(32, 32);   //blocktype[] => ~300mb, ushort[] => 140mb
+            /*List<BlockType> layers = new List<BlockType>
             {
                 BlockType.Bedrock,  //Y = 0
                 BlockType.Dirt,  //Y = 1
                 BlockType.Dirt,  //Y = 2
                 BlockType.Grass_Block,  //Y = 3
-            };
+            };*/
 
             /*for (int i = 0; i < 256; i++)
             {
@@ -132,6 +132,12 @@ namespace SlimeCore.Core
             //this.WorldManager.GenerateFlatWorld(layers);
 
             this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca");
+
+            //BlockType[] blocks = new BlockType[65536 * 1024];       //269 mb
+            //ushort[] test_1 = new ushort[65536 * 1024];             //141 mb      ==>     preffered
+            //short[] test_2 = new short[65536 * 1024];               //140 mb
+            //uint[] test_3 = new uint[65536 * 1024];                   //269 mb
+            //int[] test_4 = new int[65536 * 1024];                   //269 mb
 
             this.IsRunning = true;
 

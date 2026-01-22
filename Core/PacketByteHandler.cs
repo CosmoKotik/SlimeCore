@@ -120,7 +120,7 @@ namespace SlimeCore.Core
 
                     new JoinGamePacket(_clientHandler, _configs).Write(_minecraftClient);
 
-                    Position spawnPos = new Position(2, 32, 1);
+                    Position spawnPos = new Position(48, 65, 47);
 
                     new SpawnPositionPacket(_clientHandler).Write(spawnPos);
 
@@ -150,7 +150,7 @@ namespace SlimeCore.Core
                                     .SetDisplayedSkinParts(bm.ReadByte())
                                     .SetMainHand(bm.ReadVarInt());
 
-                    Position spawnPos = new Position(1, 128, 2);
+                    Position spawnPos = new Position(48, 65, 47);
 
                     _minecraftClient.SetWorldPosition(spawnPos);
 
@@ -320,15 +320,18 @@ namespace SlimeCore.Core
                     {
                         if (_minecraftClient.Gamemode.Equals(Gamemode.CREATIVE))
                         {
-                            new BlockChangePacket(_clientHandler).Broadcast(new Block().SetPosition(location).SetBlockType(BlockType.Air), true);
+                            Block block = new Block().SetPosition(location).SetBlockType(BlockType.Air);
+
+                            new BlockChangePacket(_clientHandler).Broadcast(block, true);
                             Effect break_effect = new Effect()
                                 .SetEffectID(EffectType.BLOCK_BREAK)
                                 .SetLocation(location)
                                 .SetData(1)
                                 .SetDisableRelativeVolume(false);
 
-                            for (int i = 0; i < 100; i++)
-                                new EffectPacket(_clientHandler).Broadcast(break_effect, true);
+                            new EffectPacket(_clientHandler).Broadcast(break_effect, true);
+
+                            WorldManager.SetBlock(block);
                         }
                         break;
                     }
@@ -397,8 +400,10 @@ namespace SlimeCore.Core
             Console.WriteLine($"Holding rn: {holdingBlock}");
 
             Block block = new Block().SetPosition(location + offset).SetBlockType(holdingBlock);
-            Console.WriteLine(block.GetChunkPosition().ToString());
+            //Console.WriteLine(block.GetChunkPosition().ToString());
             new BlockChangePacket(_clientHandler).Broadcast(block, true);
+
+            WorldManager.SetBlock(block);
         }
     }
 }

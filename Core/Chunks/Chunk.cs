@@ -70,33 +70,35 @@ namespace SlimeCore.Core.Chunks
             this.GroundUpContinuous = continuous;
 
             int mask = 0;
-            BufferManager bm = new BufferManager();
-
-            for (int y = 0; y < _height; y++)
-            {
-                mask |= (1 << y);
-                ChunkSection section = _chunkSections[y];
-                bm.WriteBytes(ChunkSection.GetBytes(section), false);
-            }
-
-            if (continuous)
-                for (int z = 0; z < 16; z++)
+            using (BufferManager bm = new BufferManager())
+            { 
+                for (int y = 0; y < _height; y++)
                 {
-                    for (int x = 0; x < 16; x++)
-                    {
-                        bm.WriteByte(127);  //Currently biomes are not supported
-                    }
+                    mask |= (1 << y);
+                    ChunkSection section = _chunkSections[y];
+                    bm.WriteBytes(ChunkSection.GetBytes(section), false);
                 }
 
-            byte[] data = bm.GetBytes();
+                if (continuous)
+                    for (int z = 0; z < 16; z++)
+                    {
+                        for (int x = 0; x < 16; x++)
+                        {
+                            bm.WriteByte(127);  //Currently biomes are not supported
+                        }
+                    }
 
-            PrimaryBitMask = mask;
-            DataSize = data.Length;
-            Data = data;
+                byte[] data = bm.GetBytes();
 
-            NumberOfBlockEntities = 0;  //Currently block entities not supported
+                PrimaryBitMask = mask;
+                DataSize = data.Length;
+                Data = data;
 
-            return this;
+                NumberOfBlockEntities = 0;  //Currently block entities not supported
+
+                return this;
+            }
+
         }
 
         [Obsolete("Method is deprecated, please use GenerateChunk() instead.")]
@@ -138,17 +140,18 @@ namespace SlimeCore.Core.Chunks
         {
             this.GenerateChunk();
 
-            BufferManager bm = new BufferManager();
-            
-            bm.WriteInt(this.ChunkX);
-            bm.WriteInt(this.ChunkZ);
-            bm.WriteBool(this.GroundUpContinuous);
-            bm.WriteVarInt(this.PrimaryBitMask);
-            bm.WriteVarInt(this.DataSize);
-            bm.WriteBytes(this.Data, false);
-            bm.WriteVarInt(this.NumberOfBlockEntities);
+            using (BufferManager bm = new BufferManager())
+            { 
+                bm.WriteInt(this.ChunkX);
+                bm.WriteInt(this.ChunkZ);
+                bm.WriteBool(this.GroundUpContinuous);
+                bm.WriteVarInt(this.PrimaryBitMask);
+                bm.WriteVarInt(this.DataSize);
+                bm.WriteBytes(this.Data, false);
+                bm.WriteVarInt(this.NumberOfBlockEntities);
 
-            return bm.GetBytes();
+                return bm.GetBytes();
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace SlimeCore.Core.Chunks
     public class ChunkSection
     {
         public byte BitsPerBlock { get; set; }  //fucking shit
-        public IPalette? Palette { get; set; }  //EVEN WORSE
+        //public IPalette? Palette { get; set; }  //EVEN WORSE
         public int DataLength { get; set; }
         //public List<long> Data { get; set; } = new List<long>();
         public long[] Data { get; set; }
@@ -27,7 +27,8 @@ namespace SlimeCore.Core.Chunks
         private int _ySize = 16;
         private int _zSize = 16;
 
-        private BlockType[] _blocks;
+        //private BlockType[] _blocks;
+        private ushort[] _blocks;
 
         private Position _chunkPosition;
 
@@ -36,12 +37,13 @@ namespace SlimeCore.Core.Chunks
         {
             int chunkSize = _xSize * _ySize * _zSize;
             //_blocks = new Block[chunkSize];
-            _blocks = new BlockType[chunkSize];
+            //_blocks = new BlockType[chunkSize];
+            _blocks = new ushort[chunkSize];
 
             _chunkPosition = new Position(chunk_x, y, chunk_z);
 
             this.BitsPerBlock = 13;
-            this.Palette = new DirectPalette();
+            //this.Palette = new DirectPalette();
 
             this.InitializeBlocks();
         }
@@ -53,7 +55,7 @@ namespace SlimeCore.Core.Chunks
                 for (int z = 0; z < _zSize; z++)
                     for (int x = 0; x < _xSize; x++)
                     {
-                        _blocks[block_index] = default_type;
+                        _blocks[block_index] = (ushort)default_type;
 
                         block_index++;
                     }
@@ -74,7 +76,7 @@ namespace SlimeCore.Core.Chunks
 
             int block_index = index_y + index_z + index_x;
 
-            _blocks[block_index] = block.BlockType;
+            _blocks[block_index] = (ushort)block.BlockType;
 
             return this;
         }
@@ -87,7 +89,7 @@ namespace SlimeCore.Core.Chunks
 
             int block_index = index_y + index_z + index_x;
 
-            _blocks[block_index] = block_type;
+            _blocks[block_index] = (ushort)block_type;
 
             return this;
         }
@@ -137,7 +139,7 @@ namespace SlimeCore.Core.Chunks
                         /*if (_blocks[block_index] != BlockType.Air)
                             Console.WriteLine(_blocks[block_index]);*/
 
-                        long value = (long)_blocks[block_index];
+                        long value = _blocks[block_index];
                         value &= individualValueMask;
 
                         data[startLong] |= (value << startOffset);
@@ -153,13 +155,14 @@ namespace SlimeCore.Core.Chunks
 
             //fuck next section of code, unimplemented piece of shit code
             byte blockLight = 13;
-            List<byte> blockLightArray = new List<byte>();
-            //byte[] blockLightArray = new byte[4096];
+            //List<byte> blockLightArray = new List<byte>();
+            byte[] blockLightArray = new byte[2048];
 
             byte skyLight = 1;
-            List<byte> skyLightArray = new List<byte>();
-            //byte[] skyLightArray = new byte[4096];
+            //List<byte> skyLightArray = new List<byte>();
+            byte[] skyLightArray = new byte[2048];
 
+            int i = 0;
             for (int y = 0; y < _ySize; y++)
                 for (int z = 0; z < _zSize; z++)
                     for (int x = 0; x < _xSize; x += 2)
@@ -170,10 +173,13 @@ namespace SlimeCore.Core.Chunks
                         int z_offset = z * _zSize;
                         int index = x + y_offset + z_offset;*/
 
-                        blockLightArray.Add(value);
-                        //blockLightArray[index] = value;
+                        //blockLightArray.Add(value);
+                        blockLightArray[i] = value;
+
+                        i++;
                     }
 
+            i = 0;
             for (int y = 0; y < _ySize; y++)
                 for (int z = 0; z < _zSize; z++)
                     for (int x = 0; x < _xSize; x += 2)
@@ -184,12 +190,13 @@ namespace SlimeCore.Core.Chunks
                         int z_offset = z * _zSize;
                         int index = x + y_offset + z_offset;*/
 
-                        skyLightArray.Add(value);
-                        //skyLightArray[index] = value;
+                        //skyLightArray.Add(value);
+                        skyLightArray[i] = value;
+                        i++;
                     }
 
-            this.BlockLigth = blockLightArray.ToArray();
-            this.SkyLight = skyLightArray.ToArray();
+            this.BlockLigth = blockLightArray;
+            this.SkyLight = skyLightArray;
 
             return this;
         }
@@ -292,19 +299,21 @@ namespace SlimeCore.Core.Chunks
         {
             ChunkSection generated_section = section.GenerateChunkSection();
 
-            BufferManager bm = new BufferManager();
-            bm.WriteByte(generated_section.BitsPerBlock);
-            bm.WriteBytes(generated_section.Palette.GetBytes(), false);
-            //bm.WriteByte(0);
-            bm.WriteVarInt(generated_section.DataLength);
-            
-            for (int i = 0; i < generated_section.DataLength; i++)
-                bm.WriteLong(generated_section.Data[i]);
+            using (BufferManager bm = new BufferManager())
+            {
+                bm.WriteByte(generated_section.BitsPerBlock);
+                //bm.WriteBytes(generated_section.Palette.GetBytes(), false);
+                bm.WriteByte(0);
+                bm.WriteVarInt(generated_section.DataLength);
 
-            bm.WriteBytes(generated_section.BlockLigth, false);
-            bm.WriteBytes(generated_section.SkyLight, false);
+                for (int i = 0; i < generated_section.DataLength; i++)
+                    bm.WriteLong(generated_section.Data[i]);
 
-            return bm.GetBytes();
+                bm.WriteBytes(generated_section.BlockLigth, false);
+                bm.WriteBytes(generated_section.SkyLight, false);
+
+                return bm.GetBytes();
+            }
         }
 
         private static byte GetBitsPerBlock(int block_id)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Network
 {
-    internal class BufferManager
+    internal class BufferManager : IDisposable
     {
         private List<byte> _buffer = new List<byte>();
 
@@ -463,5 +463,11 @@ namespace SlimeCore.Network
         private byte ToHexCharBranchless(int b) =>
             // b + 0x30 for [0-9] if 0 <= b <= 9 and b + 0x30 + 0x27 for [a-f] if 10 <= b <= 15
             (byte)(b + 0x30 + (0x27 & ~((b - 0xA) >> 31)));
+
+        public void Dispose()
+        {
+            _buffer.Clear();
+            GC.ReRegisterForFinalize(_buffer);
+        }
     }
 }

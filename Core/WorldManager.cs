@@ -53,6 +53,8 @@ namespace SlimeCore.Core
                     Chunks[index] = new Chunk(x, z);
                 }
             }
+
+            GC.Collect();
         }
 
         public static void SetBlock(Block block)
