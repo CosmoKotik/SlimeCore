@@ -1,4 +1,6 @@
-﻿using SlimeCore.Core.Chunks;
+﻿using fNbt;
+using SlimeCore.Core.Chunks;
+using SlimeCore.Core.Chunks.Loader;
 using SlimeCore.Core.Classes;
 using SlimeCore.Enums;
 using SlimeCore.Structs;
@@ -14,6 +16,8 @@ namespace SlimeCore.Core
 {
     public class WorldManager
     {
+        public static LevelType LevelType { get; private set; }
+
         public static int WorldSizeX { get; set; }
         public static int WorldSizeZ { get; set; }
 
@@ -63,6 +67,17 @@ namespace SlimeCore.Core
             }
         }
 
+        public static void SetBlock(Position chunk_pos, BlockType block_type)
+        {
+            int z_offset = (int)(chunk_pos.Z * WorldSizeZ);
+            int chunk_index = z_offset + (int)chunk_pos.X;
+
+            lock (ChunkLock)
+            {
+                Chunks[chunk_index].SetBlock(chunk_pos, block_type);
+            }
+        }
+
         public static Chunk GetChunk(int x, int z)
         {
             int z_offset = z * WorldSizeZ;
@@ -78,6 +93,8 @@ namespace SlimeCore.Core
         {
             Logger.Log("Loading world...");
             Stopwatch stopwatch = Stopwatch.StartNew();
+
+            LevelType = LevelType.FLAT;
 
             for (int chunk_z = 0; chunk_z < WorldSizeZ; chunk_z++)
             {
@@ -106,6 +123,61 @@ namespace SlimeCore.Core
 
             stopwatch.Stop();
             Logger.Log($"World loaded for {stopwatch.Elapsed.TotalMilliseconds}ms");
+
+            return this;
+        }
+
+        internal WorldManager LoadWorldFromFile(string path)
+        {
+            Logger.Log("Loading world...");
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            LevelType = LevelType.DEFAULT;
+
+            var region = new RegionFile(path);
+
+            for (int chunk_z = 0; chunk_z < 32; chunk_z++)
+            {
+                for (int chunk_x = 0; chunk_x < 32; chunk_x++)
+                {
+                    byte[] chunkData = region.ReadChunk(chunk_x, chunk_z);
+
+                    if (chunkData != null)
+                    {
+                        var chunkNbt = WorldLoader.LoadChunkNBT(chunkData);
+                        var blocks = WorldLoader.ParseChunk(chunkNbt);
+
+                        for (int y = 0; y < blocks.Length / 256; y++)
+                        {
+                            for (int z = 0; z < 16; z++)
+                            {
+                                for (int x = 0; x < 16; x++)
+                                {
+                                    int y_offset = y * 256;
+                                    int z_offset = z * 16;
+                                    int block_index = y_offset + z_offset + x;
+
+                                    BlockType block_type = blocks[block_index];
+                                    /*Position block_pos = new Position(x + (chunk_x * _chunk_size_x), y, z + (chunk_z * _chunk_size_z));
+                                    Block block = new Block()
+                                        .SetBlockType(block_type)
+                                        .SetPosition(block_pos);
+
+                                    SetBlock(block);*/
+
+                                    Position chunk_pos = new Position(x, y / 16, z);
+                                    SetBlock(chunk_pos, block_type);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            stopwatch.Stop();
+            Logger.Log($"World loaded for {stopwatch.Elapsed.TotalMilliseconds}ms");
+
+            GC.Collect();
 
             return this;
         }

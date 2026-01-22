@@ -46,7 +46,17 @@ namespace SlimeCore.Network.Packets.Play
             bm.WriteInt(client.WorldDimension);     //Dimension
             bm.WriteByte(0);    //Difficulty
             bm.WriteByte(0);    //Max Players, in modern minecraft its ignored(at least in 1.12.2)
-            bm.WriteString("default"); //level type
+
+            switch (WorldManager.LevelType)
+            {
+                case Enums.LevelType.DEFAULT:
+                    bm.WriteString("default"); //level type
+                    break;
+                case Enums.LevelType.FLAT:
+                    bm.WriteString("flat"); //level type
+                    break;
+            }
+
             bm.WriteBool(false);    //debug shit
 
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());

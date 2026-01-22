@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Core.Classes;
+using SlimeCore.Enums;
 using SlimeCore.Network;
 using SlimeCore.Structs;
 using System;
@@ -51,6 +52,16 @@ namespace SlimeCore.Core.Chunks
             //Console.WriteLine(chunk_pos.ToString());
 
             _chunkSections[y_section].SetBlock(block);
+            return this;
+        }
+
+        public Chunk SetBlock(Position chunk_pos, BlockType block_type)
+        {
+            int y_section = (int)chunk_pos.Y;
+
+            //Console.WriteLine(chunk_pos.ToString());
+
+            _chunkSections[y_section].SetBlock(chunk_pos, block_type);
             return this;
         }
 

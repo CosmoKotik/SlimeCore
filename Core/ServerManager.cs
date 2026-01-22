@@ -115,46 +115,23 @@ namespace SlimeCore.Core
                 Logger.Log("No updates");   //temporary lol
             }
 
-            this.WorldManager = new WorldManager(20, 20);
+            this.WorldManager = new WorldManager(32, 32);
             List<BlockType> layers = new List<BlockType>
             {
                 BlockType.Bedrock,  //Y = 0
                 BlockType.Dirt,  //Y = 1
                 BlockType.Dirt,  //Y = 2
                 BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
-                BlockType.Grass_Block,  //Y = 3
             };
 
-            this.WorldManager.GenerateFlatWorld(layers);
+            /*for (int i = 0; i < 256; i++)
+            {
+                layers.Add(BlockType.Grass_Block);
+            }*/
+
+            //this.WorldManager.GenerateFlatWorld(layers);
+
+            //this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca");
 
             this.IsRunning = true;
 

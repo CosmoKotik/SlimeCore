@@ -2,6 +2,19 @@
   "version": 3,
   "targets": {
     "net7.0": {
+      "fNbt/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/fNbt.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/fNbt.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Microsoft.NETFramework.ReferenceAssemblies/1.0.2": {
         "type": "package",
         "dependencies": {
@@ -42,6 +55,23 @@
     }
   },
   "libraries": {
+    "fNbt/1.0.0": {
+      "sha512": "OiwNayfP9McvuKg0NHvEeK1w/csI+thYaEYxx+788mTvc20Sul398wmOzbnxqncEaYu1uPbf9Cbn3mS45vpwsQ==",
+      "type": "package",
+      "path": "fnbt/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "docs/Changelog.md",
+        "docs/LICENSE.txt",
+        "docs/README.md",
+        "fnbt.1.0.0.nupkg.sha512",
+        "fnbt.nuspec",
+        "icon.png",
+        "lib/netstandard2.0/fNbt.dll",
+        "lib/netstandard2.0/fNbt.xml"
+      ]
+    },
     "Microsoft.NETFramework.ReferenceAssemblies/1.0.2": {
       "sha512": "5/cSEVld+px/CuRrbohO/djfg6++eR6zGpy88MgqloXvkj//WXWpFZyu/OpkXPN0u5m+dN/EVwLNYFUxD4h2+A==",
       "type": "package",
@@ -430,7 +460,8 @@
   "projectFileDependencyGroups": {
     "net7.0": [
       "Newtonsoft.Json >= 13.0.3",
-      "Tommy >= 3.1.2"
+      "Tommy >= 3.1.2",
+      "fNbt >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -485,6 +516,10 @@
           "Tommy": {
             "target": "Package",
             "version": "[3.1.2, )"
+          },
+          "fNbt": {
+            "target": "Package",
+            "version": "[1.0.0, )"
           }
         },
         "imports": [

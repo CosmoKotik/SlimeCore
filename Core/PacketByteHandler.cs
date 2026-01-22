@@ -156,8 +156,8 @@ namespace SlimeCore.Core
 
                     new PlayerPositionAndLookPacket(_clientHandler).Write(spawnPos);
 
-                    int areaX = 4;
-                    int areaZ = 4;
+                    int areaX = 16;
+                    int areaZ = 16;
 
                     int centerOffset = areaX / 2;
 

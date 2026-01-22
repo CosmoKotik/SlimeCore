@@ -79,6 +79,19 @@ namespace SlimeCore.Core.Chunks
             return this;
         }
 
+        public ChunkSection SetBlock(Position chunk_pos, BlockType block_type)
+        {
+            int index_y = (int)(chunk_pos.Y * (_xSize * _zSize));
+            int index_z = (int)(chunk_pos.Z * _zSize);
+            int index_x = (int)chunk_pos.X;
+
+            int block_index = index_y + index_z + index_x;
+
+            _blocks[block_index] = block_type;
+
+            return this;
+        }
+
         /*public Block GetBlockFromLocalChunkPosition(Position local_position)
         {
             int index_y = (int)(local_position.Y * (_xSize * _zSize));
