@@ -47,6 +47,9 @@ namespace SlimeCore.Core.Chunks
         {
             Position chunk_pos = block.GetChunkPosition();
             int y_section = (int)chunk_pos.Y;
+
+            //Console.WriteLine(chunk_pos.ToString());
+
             _chunkSections[y_section].SetBlock(block);
             return this;
         }

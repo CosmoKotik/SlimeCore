@@ -115,17 +115,44 @@ namespace SlimeCore.Core
                 Logger.Log("No updates");   //temporary lol
             }
 
-            this.WorldManager = new WorldManager(16, 16);
+            this.WorldManager = new WorldManager(20, 20);
             List<BlockType> layers = new List<BlockType>
             {
                 BlockType.Bedrock,  //Y = 0
                 BlockType.Dirt,  //Y = 1
                 BlockType.Dirt,  //Y = 2
-                BlockType.Grass_Block  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
+                BlockType.Grass_Block,  //Y = 3
             };
-
-            //int[] ints = new int[16777216];
-            //BlockType[] blockTypes = new BlockType[16777216];
 
             this.WorldManager.GenerateFlatWorld(layers);
 

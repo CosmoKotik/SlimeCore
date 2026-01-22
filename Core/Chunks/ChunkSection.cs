@@ -16,7 +16,7 @@ namespace SlimeCore.Core.Chunks
     public class ChunkSection
     {
         public byte BitsPerBlock { get; set; }  //fucking shit
-        //public IPalette? Palette { get; set; }  //EVEN WORSE
+        public IPalette? Palette { get; set; }  //EVEN WORSE
         public int DataLength { get; set; }
         //public List<long> Data { get; set; } = new List<long>();
         public long[] Data { get; set; }
@@ -27,7 +27,6 @@ namespace SlimeCore.Core.Chunks
         private int _ySize = 16;
         private int _zSize = 16;
 
-        //private Block[] _blocks;
         private BlockType[] _blocks;
 
         private Position _chunkPosition;
@@ -42,9 +41,9 @@ namespace SlimeCore.Core.Chunks
             _chunkPosition = new Position(chunk_x, y, chunk_z);
 
             this.BitsPerBlock = 13;
-            //this.Palette = new DirectPalette();
+            this.Palette = new DirectPalette();
 
-            InitializeBlocks();
+            this.InitializeBlocks();
         }
 
         private void InitializeBlocks(BlockType default_type = BlockType.Air)
@@ -54,11 +53,6 @@ namespace SlimeCore.Core.Chunks
                 for (int z = 0; z < _zSize; z++)
                     for (int x = 0; x < _xSize; x++)
                     {
-                        /*Position pos = new Position(x, y, z);
-                        Block block = new Block()
-                            .SetBlockType(default_type)
-                            .SetPosition(pos);*/
-
                         _blocks[block_index] = default_type;
 
                         block_index++;
@@ -118,7 +112,7 @@ namespace SlimeCore.Core.Chunks
                         int index_x = x;
 
                         int block_index = index_y + index_z + index_x;
-
+                        //Console.WriteLine(block_index);
                         /*byte metadata = 0;
                         uint id = (uint)block_id;
 
@@ -126,6 +120,10 @@ namespace SlimeCore.Core.Chunks
 
                         //Block block = GetBlockFromLocalChunkPosition(new Position(x, y, z));
                         //long value = block.GetIDWithMeta();
+
+                        /*if (_blocks[block_index] != BlockType.Air)
+                            Console.WriteLine(_blocks[block_index]);*/
+
                         long value = (long)_blocks[block_index];
                         value &= individualValueMask;
 
@@ -141,13 +139,13 @@ namespace SlimeCore.Core.Chunks
             this.Data = data;
 
             //fuck next section of code, unimplemented piece of shit code
-            byte blockLight = 0;
-            //List<byte> blockLightArray = new List<byte>();
-            byte[] blockLightArray = new byte[4096];
+            byte blockLight = 13;
+            List<byte> blockLightArray = new List<byte>();
+            //byte[] blockLightArray = new byte[4096];
 
             byte skyLight = 1;
-            //List<byte> skyLightArray = new List<byte>();
-            byte[] skyLightArray = new byte[4096];
+            List<byte> skyLightArray = new List<byte>();
+            //byte[] skyLightArray = new byte[4096];
 
             for (int y = 0; y < _ySize; y++)
                 for (int z = 0; z < _zSize; z++)
@@ -155,12 +153,12 @@ namespace SlimeCore.Core.Chunks
                     {
                         byte value = (byte)(blockLight | (blockLight << 4));
 
-                        int y_offset = y * _zSize * _xSize;
+                        /*int y_offset = y * _zSize * _xSize;
                         int z_offset = z * _zSize;
-                        int index = x + y_offset + z_offset;
+                        int index = x + y_offset + z_offset;*/
 
-                        //blockLightArray.Add(value);
-                        blockLightArray[index] = value;
+                        blockLightArray.Add(value);
+                        //blockLightArray[index] = value;
                     }
 
             for (int y = 0; y < _ySize; y++)
@@ -169,16 +167,16 @@ namespace SlimeCore.Core.Chunks
                     {
                         byte value = (byte)(skyLight | (skyLight << 4));
 
-                        int y_offset = y * _zSize * _xSize;
+                        /*int y_offset = y * _zSize * _xSize;
                         int z_offset = z * _zSize;
-                        int index = x + y_offset + z_offset;
+                        int index = x + y_offset + z_offset;*/
 
-                        //skyLightArray.Add(value);
-                        skyLightArray[index] = value;
+                        skyLightArray.Add(value);
+                        //skyLightArray[index] = value;
                     }
 
-            this.BlockLigth = blockLightArray;
-            this.SkyLight = skyLightArray;
+            this.BlockLigth = blockLightArray.ToArray();
+            this.SkyLight = skyLightArray.ToArray();
 
             return this;
         }
@@ -283,8 +281,8 @@ namespace SlimeCore.Core.Chunks
 
             BufferManager bm = new BufferManager();
             bm.WriteByte(generated_section.BitsPerBlock);
-            //bm.WriteBytes(generated_section.Palette.GetBytes(), false);
-            bm.WriteByte(0);
+            bm.WriteBytes(generated_section.Palette.GetBytes(), false);
+            //bm.WriteByte(0);
             bm.WriteVarInt(generated_section.DataLength);
             
             for (int i = 0; i < generated_section.DataLength; i++)

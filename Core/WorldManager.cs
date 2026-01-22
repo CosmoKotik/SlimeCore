@@ -65,8 +65,8 @@ namespace SlimeCore.Core
 
         public static Chunk GetChunk(int x, int z)
         {
-            int z_offset = (int)(z * WorldSizeZ);
-            int chunk_index = z_offset + (int)x;
+            int z_offset = z * WorldSizeZ;
+            int chunk_index = z_offset + x;
 
             //Console.WriteLine($"x: {x} z: {z} index: {chunk_index}");
 
@@ -74,25 +74,33 @@ namespace SlimeCore.Core
                 return Chunks[chunk_index];
         }
 
-        internal WorldManager GenerateFlatWorld(List<BlockType> layers)
+        internal WorldManager GenerateFlatWorld(List<BlockType> layers, int y_offset = 0)
         {
             Logger.Log("Loading world...");
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            for (int y = 0; y < layers.Count; y++)
+            for (int chunk_z = 0; chunk_z < WorldSizeZ; chunk_z++)
             {
-                BlockType block_type = layers[y];
-                for (int z = 0; z < WorldSizeZ; z++)
+                for (int chunk_x = 0; chunk_x < WorldSizeX; chunk_x++)
                 {
-                    for (int x = 0; x < WorldSizeX; x++)
-                    {
-                        Position block_pos = new Position(x, y, z);
-                        Block block = new Block()
-                            .SetBlockType(block_type)
-                            .SetPosition(block_pos);
 
-                        SetBlock(block);
+                    for (int y = 0; y < layers.Count; y++)
+                    {
+                        BlockType block_type = layers[y];
+                        for (int x = 0; x < _chunk_size_x; x++)
+                        {
+                            for (int z = 0; z < _chunk_size_x; z++)
+                            {
+                                Position block_pos = new Position(x + (chunk_x * _chunk_size_x), y + y_offset, z + (chunk_z * _chunk_size_z));
+                                Block block = new Block()
+                                    .SetBlockType(block_type)
+                                    .SetPosition(block_pos);
+
+                                SetBlock(block);
+                            }
+                        }
                     }
+
                 }
             }
 
