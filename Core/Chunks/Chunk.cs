@@ -59,7 +59,12 @@ namespace SlimeCore.Core.Chunks
         {
             int y_section = (int)chunk_pos.Y;
 
-            //Console.WriteLine(chunk_pos.ToString());
+            _chunkSections[y_section].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
+            return this;
+        }
+        public Chunk SetBlock(Position chunk_pos, Position local_block_chunk_pos, ushort block_type)
+        {
+            int y_section = (int)chunk_pos.Y;
 
             _chunkSections[y_section].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
             return this;

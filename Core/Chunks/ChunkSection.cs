@@ -50,7 +50,7 @@ namespace SlimeCore.Core.Chunks
 
         private void InitializeBlocks(BlockType default_type = BlockType.Air)
         {
-            int block_index = 0;
+            /*int block_index = 0;
             for (int y = 0; y < _ySize; y++)
                 for (int z = 0; z < _zSize; z++)
                     for (int x = 0; x < _xSize; x++)
@@ -58,7 +58,13 @@ namespace SlimeCore.Core.Chunks
                         _blocks[block_index] = (ushort)default_type;
 
                         block_index++;
-                    }
+                    }*/     //1.759 sec
+
+            int total_size = _ySize * _zSize * _xSize;
+
+            for (int i = 0; i < total_size; i++)
+                _blocks[i] = (ushort)default_type;
+            //1.604 sec
         }
 
         public ChunkSection SetBlock(Block block)
@@ -90,6 +96,18 @@ namespace SlimeCore.Core.Chunks
             int block_index = index_y + index_z + index_x;
 
             _blocks[block_index] = (ushort)block_type;
+
+            return this;
+        }
+        public ChunkSection SetBlock(Position chunk_pos, Position local_block_chunk_pos, ushort block_type)
+        {
+            int index_y = (int)(local_block_chunk_pos.Y * (_xSize * _zSize));
+            int index_z = (int)(local_block_chunk_pos.Z * _zSize);
+            int index_x = (int)local_block_chunk_pos.X;
+
+            int block_index = index_y + index_z + index_x;
+
+            _blocks[block_index] = block_type;
 
             return this;
         }
@@ -127,17 +145,6 @@ namespace SlimeCore.Core.Chunks
                         int index_x = x;
 
                         int block_index = index_y + index_z + index_x;
-                        //Console.WriteLine(block_index);
-                        /*byte metadata = 0;
-                        uint id = (uint)block_id;
-
-                        long value = id << 4 | metadata;*/
-
-                        //Block block = GetBlockFromLocalChunkPosition(new Position(x, y, z));
-                        //long value = block.GetIDWithMeta();
-
-                        /*if (_blocks[block_index] != BlockType.Air)
-                            Console.WriteLine(_blocks[block_index]);*/
 
                         long value = _blocks[block_index];
                         value &= individualValueMask;
@@ -155,11 +162,9 @@ namespace SlimeCore.Core.Chunks
 
             //fuck next section of code, unimplemented piece of shit code
             byte blockLight = 13;
-            //List<byte> blockLightArray = new List<byte>();
             byte[] blockLightArray = new byte[2048];
 
             byte skyLight = 1;
-            //List<byte> skyLightArray = new List<byte>();
             byte[] skyLightArray = new byte[2048];
 
             int i = 0;
@@ -168,12 +173,6 @@ namespace SlimeCore.Core.Chunks
                     for (int x = 0; x < _xSize; x += 2)
                     {
                         byte value = (byte)(blockLight | (blockLight << 4));
-
-                        /*int y_offset = y * _zSize * _xSize;
-                        int z_offset = z * _zSize;
-                        int index = x + y_offset + z_offset;*/
-
-                        //blockLightArray.Add(value);
                         blockLightArray[i] = value;
 
                         i++;
@@ -185,12 +184,6 @@ namespace SlimeCore.Core.Chunks
                     for (int x = 0; x < _xSize; x += 2)
                     {
                         byte value = (byte)(skyLight | (skyLight << 4));
-
-                        /*int y_offset = y * _zSize * _xSize;
-                        int z_offset = z * _zSize;
-                        int index = x + y_offset + z_offset;*/
-
-                        //skyLightArray.Add(value);
                         skyLightArray[i] = value;
                         i++;
                     }

@@ -21,12 +21,16 @@ namespace SlimeCore.Core.Chunks.Loader
             }
         }
 
-        public static BlockType[] ParseChunk(NbtCompound chunk)
+        public static ushort[] ParseChunk(NbtCompound chunk)
         {
+            //Before => 182mb
+            //Now => 179mb & 1.588 sec
+
             var level = chunk.Get<NbtCompound>("Level");
             var sections = level.Get<NbtList>("Sections");
 
-            BlockType[] blocks = new BlockType[16 * 256 * 16];
+            //BlockType[] blocks = new BlockType[16 * 256 * 16];
+            ushort[] blocks = new ushort[16 * 256 * 16];
 
             for (int section_index = 0; section_index < sections.Count; section_index++)
             {
@@ -39,16 +43,16 @@ namespace SlimeCore.Core.Chunks.Loader
 
                 for (int i = 0; i < 4096; i++)
                 {
-                    int x = i & 15;
+                    /*int x = i & 15;
                     int z = (i >> 4) & 15;
                     int y = (i >> 8) & 15;
+*/
+                    ushort blockId = (ushort)(ids[i] & 0xFF);
+                    byte meta_value = (byte)((i & 1) == 0 ? meta[i >> 1] & 0x0F : (meta[i >> 1] >> 4) & 0x0F);
 
-                    int blockId = ids[i] & 0xFF;
-                    int meta_value = (i & 1) == 0 ? meta[i >> 1] & 0x0F : (meta[i >> 1] >> 4) & 0x0F;
+                    ushort encoded = (ushort)((blockId << 4) | meta_value);
 
-                    int encoded = (blockId << 4) | meta_value;
-
-                    blocks[i + (yBase * 256)] = (BlockType)encoded;
+                    blocks[i + (yBase * 256)] = encoded;
                 }
             }
 

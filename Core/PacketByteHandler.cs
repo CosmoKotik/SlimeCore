@@ -150,7 +150,7 @@ namespace SlimeCore.Core
                                     .SetDisplayedSkinParts(bm.ReadByte())
                                     .SetMainHand(bm.ReadVarInt());
 
-                    Position spawnPos = new Position(48, 65, 47);
+                    Position spawnPos = new Position(0, 65, 0);
 
                     _minecraftClient.SetWorldPosition(spawnPos);
 
@@ -161,13 +161,15 @@ namespace SlimeCore.Core
 
                     int centerOffset = areaX / 2;
 
+
                     int i = 1;
-                    for (int z = 0; z < areaZ; z++)
+                    for (int z = 0 - centerOffset; z < areaZ - centerOffset; z++)
                     {
-                        for (int x = 0; x < areaX; x++)
+                        for (int x = 0 - centerOffset; x < areaX - centerOffset; x++)
                         {
                             /*Chunk chunk = new Chunk();
                             chunk.Build(x, z, true, 2);*/
+
                             Chunk chunk = WorldManager.GetChunk(x, z);
                             new ChunkDataPacket(_clientHandler).Write(chunk);
                             i++;

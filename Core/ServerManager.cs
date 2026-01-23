@@ -131,7 +131,13 @@ namespace SlimeCore.Core
 
             //this.WorldManager.GenerateFlatWorld(layers);
 
-            this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca");
+            this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca", 0, 0);
+            this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.0.mca", -1, 0);
+            this.WorldManager.LoadWorldFromFile("world\\region\\r.0.-1.mca", 0, -1);
+            this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.-1.mca", -1, -1);
+            //this.WorldManager.LoadWorldFromFile("world\\region\\r.0.-1.mca");
+            //this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.0.mca");
+            //this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca");
 
             //BlockType[] blocks = new BlockType[65536 * 1024];       //269 mb
             //ushort[] test_1 = new ushort[65536 * 1024];             //141 mb      ==>     preffered

@@ -157,5 +157,56 @@ namespace SlimeCore.Structs
         {
             return new Position(a.X * b, a.Y * b, a.Z * b);
         }
+
+        public static bool operator >(Position a, Position b)
+        {
+            if (a.X > b.X &&
+                a.Y > b.Y &&
+                a.Z > b.Z)
+                return true;
+            return false;
+        }
+        public static bool operator <(Position a, Position b)
+        {
+            if (a.X < b.X &&
+                a.Y < b.Y &&
+                a.Z < b.Z)
+                return true;
+            return false;
+        }
+
+        public static bool operator >=(Position a, Position b)
+        {
+            if (a.X >= b.X &&
+                a.Y >= b.Y &&
+                a.Z >= b.Z)
+                return true;
+            return false;
+        }
+        public static bool operator <=(Position a, Position b)
+        {
+            if (a.X <= b.X &&
+                a.Y <= b.Y &&
+                a.Z <= b.Z)
+                return true;
+            return false;
+        }
+
+        public static bool operator ==(Position a, Position b)
+        {
+            if (a.X == b.X &&
+                a.Y == b.Y &&
+                a.Z == b.Z)
+                return true;
+            return false;
+        }
+        public static bool operator !=(Position a, Position b)
+        {
+            if (a.X != b.X &&
+                a.Y != b.Y &&
+                a.Z != b.Z)
+                return true;
+            return false;
+        }
     }
 }
