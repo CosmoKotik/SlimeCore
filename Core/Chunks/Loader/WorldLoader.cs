@@ -21,12 +21,12 @@ namespace SlimeCore.Core.Chunks.Loader
             }
         }
 
-        public static ushort[] ParseChunk(NbtCompound chunk)
+        public static ushort[] ParseChunk(NbtCompound level)
         {
             //Before => 182mb
             //Now => 179mb & 1.588 sec
 
-            var level = chunk.Get<NbtCompound>("Level");
+            //var level = chunk.Get<NbtCompound>("Level");
             var sections = level.Get<NbtList>("Sections");
 
             //BlockType[] blocks = new BlockType[16 * 256 * 16];

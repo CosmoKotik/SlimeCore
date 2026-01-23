@@ -70,6 +70,13 @@ namespace SlimeCore.Core.Chunks
             return this;
         }
 
+        public Block GetBlock(Position chunk_pos, Position local_block_chunk_pos)
+        {
+            int y_section = (int)chunk_pos.Y;
+
+            return _chunkSections[y_section].GetBlock(local_block_chunk_pos);
+        }
+
         public Chunk GenerateChunk(bool continuous = true)
         {
             this.GroundUpContinuous = continuous;

@@ -14,7 +14,6 @@ namespace SlimeCore.Core.Chunks.Loader
 
         public RegionFile(string path)
         { 
-            //_stream = File.OpenRead(path);
             _path = path;
         }
 

@@ -112,6 +112,20 @@ namespace SlimeCore.Core.Chunks
             return this;
         }
 
+        public Block GetBlock(Position local_block_chunk_pos)
+        {
+            int index_y = (int)(local_block_chunk_pos.Y * (_xSize * _zSize));
+            int index_z = (int)(local_block_chunk_pos.Z * _zSize);
+            int index_x = (int)local_block_chunk_pos.X;
+
+            int block_index = index_y + index_z + index_x;
+
+            BlockType block_type = (BlockType)_blocks[block_index];
+
+            return new Block().SetBlockType(block_type).SetPosition(local_block_chunk_pos + (_chunkPosition * 16));
+
+        }
+
         /*public Block GetBlockFromLocalChunkPosition(Position local_position)
         {
             int index_y = (int)(local_position.Y * (_xSize * _zSize));

@@ -331,6 +331,9 @@ namespace SlimeCore.Core
                                 .SetData(1)
                                 .SetDisableRelativeVolume(false);
 
+                            Block breaked_block = WorldManager.GetBlock(location);
+                            Console.WriteLine($"{breaked_block.BlockType}  {breaked_block.Position}");
+
                             new EffectPacket(_clientHandler).Broadcast(break_effect, true);
 
                             WorldManager.SetBlock(block);
