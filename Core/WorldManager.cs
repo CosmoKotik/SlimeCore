@@ -102,16 +102,31 @@ namespace SlimeCore.Core
         public static void SetBlock(Block block)
         {
             Position chunk_pos = block.GetChunkPosition();
-            int z_offset = (int)(chunk_pos.Z * WorldSizeZ);
-            int chunk_index = z_offset + (int)chunk_pos.X;
+            bool is_z_negative = chunk_pos.Z < 0;
+            bool is_x_negative = chunk_pos.X < 0;
+
+            int z_offset = (int)((chunk_pos.Z + (is_z_negative ? 1 : 0)) * WorldSizeZ);
+            int chunk_index = z_offset + (int)(chunk_pos.X + (is_x_negative ? 1 : 0));
+
+            if ((!is_x_negative && is_z_negative) || (is_x_negative && !is_z_negative))
+                chunk_index = z_offset - (int)(chunk_pos.X + (is_x_negative ? 1 : 0));
 
             chunk_index = Math.Abs(chunk_index);
-            Console.WriteLine(chunk_index);
 
-            lock (Chunk_0_0_Lock) 
-            {
-                Chunks_0_0[chunk_index].SetBlock(block);
-            }
+            if (chunk_pos.X >= 0 && chunk_pos.Z >= 0)
+                lock (Chunk_0_0_Lock)
+                    Chunks_0_0[chunk_index].SetBlock(block);
+            else if (chunk_pos.X < 0 && chunk_pos.Z >= 0)
+                lock (Chunk_1_0_Lock)
+                    Chunks_1_0[chunk_index].SetBlock(block);
+            else if (chunk_pos.X >= 0 && chunk_pos.Z < 0)
+                lock (Chunk_0_1_Lock)
+                    Chunks_0_1[chunk_index].SetBlock(block);
+            else if (chunk_pos.X < 0 && chunk_pos.Z < 0)
+                lock (Chunk_1_1_Lock)
+                    Chunks_1_1[chunk_index].SetBlock(block);
+            else
+                Logger.Error("oopsie out of chunk range...");
         }
 
         public static void SetBlock(Position chunk_pos, Position local_block_chunk_pos, BlockType block_type)
@@ -136,11 +151,6 @@ namespace SlimeCore.Core
                 chunk_index = z_offset - (int)(chunk_pos.X + (is_x_negative ? 1 : 0));
 
             chunk_index = Math.Abs(chunk_index);
-
-
-            //chunk_index = (WorldSizeX * WorldSizeZ) - chunk_index - 1;
-            /*if (chunk_pos.Z < 0 && chunk_pos.X < 0 && chunk_pos.Z >= -2 && chunk_pos.X >= -2)
-                Console.WriteLine(chunk_pos.ToString());*/
 
             if (chunk_pos.X >= 0 && chunk_pos.Z >= 0)
                 lock (Chunk_0_0_Lock)
