@@ -10,9 +10,6 @@ namespace SlimeCore
     {
         public static void Main(string[] args)
         {
-            Block block = new Block().SetPosition(new Position(43, 18, 21));
-            Console.WriteLine(block.GetChunkPosition().ToString());
-
             ServerManager serverManager = new ServerManager();
             serverManager.Start();
 

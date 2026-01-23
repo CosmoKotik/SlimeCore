@@ -10,9 +10,9 @@ namespace SlimeCore.Structs
 {
     public struct Position
     {
-        public double X;
-        public double Y;
-        public double Z;
+        public float X;
+        public float Y;
+        public float Z;
 
         public readonly static Position Zero = new Position(0, 0, 0);
 
@@ -24,9 +24,9 @@ namespace SlimeCore.Structs
         }
         public Position(double x, double y, double z)
         {
-            this.X = x;
-            this.Y = y;
-            this.Z = z;
+            this.X = (float)x;
+            this.Y = (float)y;
+            this.Z = (float)z;
         }
 
         public static long Encode(Position pos)

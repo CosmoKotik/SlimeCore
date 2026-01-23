@@ -56,29 +56,6 @@ namespace SlimeCore.Core.Chunks.Loader
                 }
             }
 
-            /*foreach (NbtCompound section in sections)
-            {
-                int yBase = section.Get<NbtByte>("Y").Value * 16;
-
-                byte[] ids = section.Get<NbtByteArray>("Blocks").Value;
-                byte[] meta = section.Get<NbtByteArray>("Data").Value;
-
-                for (int i = 0; i < 4096; i++)
-                {
-                    int x = i & 15;
-                    int z = (i >> 4) & 15;
-                    int y = (i >> 8) & 15;
-
-                    int blockId = ids[i] & 0xFF;
-                    int meta_value = (i & 1) == 0 ? meta[i >> 1] & 0x0F : (meta[i >> 1] >> 4) & 0x0F;
-
-                    int encoded = (blockId << 4) | meta_value;
-
-                    blocks[i + (yBase * 256)] = (BlockType)encoded; 
-                }
-
-            }*/
-
             return blocks;
         }
     }

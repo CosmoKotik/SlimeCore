@@ -7,6 +7,7 @@ using SlimeCore.Structs;
 using SlimeCore.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -79,6 +80,8 @@ namespace SlimeCore.Core
 
         public void Start()
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             Logger.Log("Loading config...");
             try
             {
@@ -131,10 +134,12 @@ namespace SlimeCore.Core
 
             //this.WorldManager.GenerateFlatWorld(layers);
 
-            this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca", 0, 0);
+            Task.Run(async () => { await LoadRegions(); }).Wait();
+
+            /*this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca", 0, 0);
             this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.0.mca", -1, 0);
             this.WorldManager.LoadWorldFromFile("world\\region\\r.0.-1.mca", 0, -1);
-            this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.-1.mca", -1, -1);
+            this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.-1.mca", -1, -1);*/
             //this.WorldManager.LoadWorldFromFile("world\\region\\r.0.-1.mca");
             //this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.0.mca");
             //this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca");
@@ -150,6 +155,31 @@ namespace SlimeCore.Core
             Task.Run(async () => { await HandleTick(); });
 
             this.NetworkListener = new NetworkListener(this).Start();
+
+            stopwatch.Stop();
+            Logger.Log($"Done ({Math.Round(stopwatch.Elapsed.TotalSeconds, 3)}s)!");
+
+            GC.ReRegisterForFinalize(this.WorldManager);
+            GC.Collect();
+        }
+
+        private async Task LoadRegions()
+        {
+            Logger.Log("Loading terrain");
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
+            Task r_0_0 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca", 0, 0); });
+            Task r_1_0 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.0.mca", -1, 0); });
+            Task r_0_1 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.0.-1.mca", 0, -1); });
+            Task r_1_1 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.-1.mca", -1, -1); });
+
+            while (!r_0_0.IsCompleted ||
+                   !r_1_0.IsCompleted ||
+                   !r_0_1.IsCompleted ||
+                   !r_1_1.IsCompleted) { await Task.Delay(1); }
+
+            stopwatch.Stop();
+            Logger.Log($"Terrain loaded for {stopwatch.Elapsed.TotalMilliseconds}ms");
         }
 
         public void AddPlayer(MinecraftClient player)

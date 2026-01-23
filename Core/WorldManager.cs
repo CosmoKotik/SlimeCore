@@ -39,6 +39,8 @@ namespace SlimeCore.Core
         {
             Logger.Warn("Initializing world", true);
 
+            GC.SuppressFinalize(this);
+
             WorldSizeX = size_x;
             WorldSizeZ = size_z;
 
@@ -96,7 +98,7 @@ namespace SlimeCore.Core
                 Chunks_1_1[i] = new Chunk(-x - 1, -z - 1);
             }
 
-            GC.Collect();
+            //GC.Collect();
         }
 
         public static void SetBlock(Block block)
@@ -153,17 +155,13 @@ namespace SlimeCore.Core
             chunk_index = Math.Abs(chunk_index);
 
             if (chunk_pos.X >= 0 && chunk_pos.Z >= 0)
-                lock (Chunk_0_0_Lock)
-                    Chunks_0_0[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
+                Chunks_0_0[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
             else if (chunk_pos.X < 0 && chunk_pos.Z >= 0)
-                lock (Chunk_1_0_Lock)
-                    Chunks_1_0[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
+                Chunks_1_0[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
             else if (chunk_pos.X >= 0 && chunk_pos.Z < 0)
-                lock (Chunk_0_1_Lock)
-                    Chunks_0_1[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
+                Chunks_0_1[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
             else if (chunk_pos.X < 0 && chunk_pos.Z < 0)
-                lock (Chunk_1_1_Lock)
-                    Chunks_1_1[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
+                Chunks_1_1[chunk_index].SetBlock(chunk_pos, local_block_chunk_pos, block_type);
             else
                 Logger.Error("oopsie out of chunk range...");
         }
@@ -249,14 +247,9 @@ namespace SlimeCore.Core
 
         internal WorldManager LoadWorldFromFile(string path, int region_x = 0, int region_z = 0)
         {
-            Logger.Log("Loading world...");
+            Logger.Log($"Loading region {region_x} {region_z}", true);
             Stopwatch stopwatch = Stopwatch.StartNew();
-/*
-            if (region_x == 0)
-                region_x = 1;
-            if (region_z == 0)
-                region_z = 1;
-*/
+
             LevelType = LevelType.DEFAULT;
 
             var region = new RegionFile(path);
@@ -275,13 +268,12 @@ namespace SlimeCore.Core
 
                         int chunk_z_pos = level.Get<NbtInt>("zPos").Value;
                         int chunk_x_pos = level.Get<NbtInt>("xPos").Value;
-                        /*if (region_z < 0)
-                            Console.WriteLine($"x: {chunk_x_pos} z: {chunk_z_pos}");*/
+
                         for (int y = 0; y < blocks.Length / 256; y++)
                         {
                             int y_section = y / 16;
                             int block_y = y - (y_section * 16);
-                            //Console.WriteLine(block_y);
+
                             for (int z = 0; z < 16; z++)
                             {
                                 for (int x = 0; x < 16; x++)
@@ -290,14 +282,7 @@ namespace SlimeCore.Core
                                     int z_offset = z * 16;
                                     int block_index = y_offset + z_offset + x;
 
-                                    //BlockType block_type = blocks[block_index];
                                     ushort block_type = blocks[block_index];
-                                    /*Position block_pos = new Position(x + (chunk_x * _chunk_size_x), y, z + (chunk_z * _chunk_size_z));
-                                    Block block = new Block()
-                                        .SetBlockType(block_type)
-                                        .SetPosition(block_pos);
-
-                                    SetBlock(block);*/
 
                                     Position chunk_pos = new Position(chunk_x_pos, y_section, chunk_z_pos);
                                     Position local_block_chunk_pos = new Position(x, block_y, z);
@@ -310,9 +295,9 @@ namespace SlimeCore.Core
             }
 
             stopwatch.Stop();
-            Logger.Log($"World loaded for {stopwatch.Elapsed.TotalMilliseconds}ms");
+            Logger.Log($"World loaded for {stopwatch.Elapsed.TotalMilliseconds}ms", true);
 
-            GC.Collect();
+            //GC.Collect();
 
             return this;
         }
