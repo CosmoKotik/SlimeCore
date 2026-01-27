@@ -10,6 +10,7 @@ The goal with this project is to learn something new, do something while im bore
 - [x] Basic chat (no commands)
 - [x] Player movement
 - [x] Inventory
+- [ ] Commands, and colored chat
 - [ ] Full survival mode
 - [ ] Mobs
 - [ ] Physics
