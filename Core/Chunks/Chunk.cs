@@ -21,6 +21,9 @@ namespace SlimeCore.Core.Chunks
         public varint NumberOfBlockEntities { get; set; }
         public byte[] BlockEntities { get; set; }
 
+        public readonly byte[,] Heightmap = new byte[16, 16];
+        public readonly byte[,] Biomes = new byte[16, 16];
+
         private ChunkSection[] _chunkSections;
         private int _height = 16;
 
@@ -75,6 +78,31 @@ namespace SlimeCore.Core.Chunks
             int y_section = (int)chunk_pos.Y;
 
             return _chunkSections[y_section].GetBlock(local_block_chunk_pos);
+        }
+        public Block GetBlock(int y_section, Position local_block_chunk_pos)
+        {
+            return _chunkSections[y_section].GetBlock(local_block_chunk_pos);
+        }
+
+        public void RebuildHeightmap()
+        {
+            for (int x = 0; x < 16; x++)
+                for (int z = 0; z < 16; z++)
+                {
+                    int y;
+                    for (y = 255; y >= 0; y--)
+                    {
+                        int section_y = y / 16;
+                        int local_block_y = y - (section_y * 16);
+                        Position local_block_chunk_pos = new Position(x, local_block_y, z);
+
+                        BlockType block_type = GetBlock(section_y, local_block_chunk_pos).BlockType;
+
+                        if (block_type != BlockType.Air && block_type != BlockType.Water)
+                            break;
+                    }
+                    Heightmap[x, z] = (byte)Math.Max(0, y);
+                }
         }
 
         public Chunk GenerateChunk(bool continuous = true)

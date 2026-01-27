@@ -134,7 +134,8 @@ namespace SlimeCore.Core
 
             //this.WorldManager.GenerateFlatWorld(layers);
 
-            Task.Run(async () => { await LoadRegions(); }).Wait();
+            Task.Run(async () => { await LoadRegions(); }).Wait();        //Load from file
+            //this.WorldManager.GenerateVanillaWorld(96318125);
 
             /*this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca", 0, 0);
             this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.0.mca", -1, 0);

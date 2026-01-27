@@ -1,5 +1,6 @@
 ﻿using fNbt;
 using SlimeCore.Core.Chunks;
+using SlimeCore.Core.Chunks.Generation;
 using SlimeCore.Core.Chunks.Loader;
 using SlimeCore.Core.Classes;
 using SlimeCore.Enums;
@@ -34,6 +35,8 @@ namespace SlimeCore.Core
         private static int _chunk_size_x = 16;
         private static int _chunk_size_y = 16;
         private static int _chunk_size_z = 16;
+
+        private ChunkGeneratorOverworld _chunkGenerator_overworld;
 
         public WorldManager(int size_x, int size_z) 
         {
@@ -437,6 +440,17 @@ namespace SlimeCore.Core
                 }
             }
             //Logger.Log($"Done loading from x: {from_chunk_x} to {to_chunk_x}    z: {from_chunk_z} to {to_chunk_z}");
+        }
+
+        public void GenerateVanillaWorld(int seed)
+        {
+            _chunkGenerator_overworld = new ChunkGeneratorOverworld(seed);
+
+            for (int z = 0; z < WorldSizeZ; z++)
+                for (int x = 0; x < WorldSizeX; x++)
+                {
+                    _chunkGenerator_overworld.GenerateChunk(x, z);
+                }
         }
     }
 }
