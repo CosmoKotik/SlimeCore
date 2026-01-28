@@ -1,5 +1,6 @@
 ﻿using SlimeCore.Core.Chunks;
 using SlimeCore.Core.Classes;
+using SlimeCore.Core.Commands;
 using SlimeCore.Enums;
 using SlimeCore.Network;
 using SlimeCore.Network.Packets.Play;
@@ -74,6 +75,8 @@ namespace SlimeCore.Core
         public NetworkListener NetworkListener;
 
         public WorldManager WorldManager;
+
+        public CommandHandler CommandHandler;
 
         public List<MinecraftClient> Players = new List<MinecraftClient>();
         private object _players_lock = new object();
@@ -155,6 +158,8 @@ namespace SlimeCore.Core
 
             Task.Run(async () => { await HandleTick(); });
 
+            this.CommandHandler = new CommandHandler(this);
+
             this.NetworkListener = new NetworkListener(this).Start();
 
             stopwatch.Stop();
@@ -227,6 +232,12 @@ namespace SlimeCore.Core
 
                 await Task.Delay(delay);
             }
+        }
+
+
+        public void ChangePlayerGamemode(MinecraftClient player, Gamemode gamemode)
+        {
+            player.ChangeGamemode(gamemode);
         }
     }
 }

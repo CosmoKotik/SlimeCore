@@ -28,6 +28,7 @@ namespace SlimeCore.Enums.Clientbound
         PARTICLE = 0x22,
         EFFECT = 0x21,
         HELD_ITEM_CHANGE = 0x3A,
-        ENTITY_EQUIPMENT = 0x3F
+        ENTITY_EQUIPMENT = 0x3F,
+        CHANGE_GAME_STATE = 0x1E
     }
 }

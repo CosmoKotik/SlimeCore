@@ -2,6 +2,7 @@
 using SlimeCore.Core.Chat;
 using SlimeCore.Core.Chunks;
 using SlimeCore.Core.Classes;
+using SlimeCore.Core.Commands;
 using SlimeCore.Enums;
 using SlimeCore.Enums.Serverbound;
 using SlimeCore.Network;
@@ -295,6 +296,24 @@ namespace SlimeCore.Core
             bm.SetBytes(bytes);
 
             string unparsed_text = bm.ReadString();
+
+            if (unparsed_text.Length < 1)
+                return;
+
+            if (unparsed_text.StartsWith('/'))
+            {
+                CommandStatus status;
+                bool success = CommandHandler.HandleCommand(_minecraftClient, unparsed_text.TrimStart('/'), out status);
+
+                ChatMessage command_msg = new ChatMessage()
+                        .SetEntity(_minecraftClient)
+                        .SetText(status.Message)
+                        .SetPosition(ChatPositionType.CHAT_BOX);
+
+                _minecraftClient.SendMessage(command_msg);
+
+                return;
+            }
 
             ChatMessage chat_msg = new ChatMessage().SetEntity(_minecraftClient)
                                                     .SetText(unparsed_text)

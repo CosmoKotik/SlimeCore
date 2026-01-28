@@ -10,7 +10,7 @@ namespace SlimeCore.Enums
     {
         SURVIVAL = 0,
         CREATIVE = 1,
-        SPECTATOR = 2,
-        ADVENTURE = 3
+        ADVENTURE = 2,
+        SPECTATOR = 3
     }
 }

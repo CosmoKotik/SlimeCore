@@ -1,5 +1,7 @@
-﻿using SlimeCore.Core.Classes;
+﻿using SlimeCore.Core.Chat;
+using SlimeCore.Core.Classes;
 using SlimeCore.Enums;
+using SlimeCore.Network.Packets.Play;
 using SlimeCore.Structs;
 using System;
 using System.Collections.Generic;
@@ -124,6 +126,27 @@ namespace SlimeCore.Core
         public int GetXZDistance(Position target)
         {
             return (int)Position.GetDistance(_worldPosition.GetXZ(), target.GetXZ());
+        }
+
+        public void ChangeGamemode(Gamemode gamemode)
+        {
+            if (this.ClientHandler == null)
+                return;
+
+            GameState gameState = new GameState()
+            { 
+                Reason = GameStateType.CHANGE_GAMEMODE,
+                Value = (float)gamemode
+            };
+
+            new ChangeGameStatePacket(this.ClientHandler).Write(gameState);
+        }
+
+        public void SendMessage(ChatMessage message)
+        {
+            if (this.ClientHandler == null)
+                return;
+            new ChatMessagePacket(this.ClientHandler).Write(message);
         }
     }
 }
