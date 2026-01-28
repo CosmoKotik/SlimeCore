@@ -11,6 +11,7 @@ The goal with this project is to learn something new, do something while im bore
 - [x] Player movement
 - [x] Inventory
 - [ ] Commands, and colored chat
+- [ ] Crafting
 - [ ] Full survival mode
 - [ ] Mobs
 - [ ] Physics
