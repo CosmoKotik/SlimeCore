@@ -30,6 +30,7 @@ namespace SlimeCore.Enums.Clientbound
         HELD_ITEM_CHANGE = 0x3A,
         ENTITY_EQUIPMENT = 0x3F,
         CHANGE_GAME_STATE = 0x1E,
-        OPEN_WINDOW = 0x13
+        OPEN_WINDOW = 0x13,
+        CONFIRM_TRANSACTION = 0x11
     }
 }

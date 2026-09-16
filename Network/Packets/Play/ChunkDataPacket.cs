@@ -34,7 +34,6 @@ namespace SlimeCore.Network.Packets.Play
 
             Chunk chunk = (Chunk)obj;
 
-
             bm.WriteBytes(chunk.GetBytes(), false);
 
             if (chunk.ChunkX == 1 && chunk.ChunkZ == -2)

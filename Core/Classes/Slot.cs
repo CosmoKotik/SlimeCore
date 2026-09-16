@@ -71,5 +71,15 @@ namespace SlimeCore.Core.Classes
 
             return bm.GetBytes();
         }
+
+        public Slot FromBytes(byte[] bytes)
+        {
+            BufferManager bm = new BufferManager();
+            bm.SetBytes(bytes);
+
+            int blockID = bm.ReadShort();
+
+            
+        }
     }
 }

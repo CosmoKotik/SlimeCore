@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using fNbt;
 
 namespace SlimeCore.Core.Chunks
 {
@@ -19,7 +20,7 @@ namespace SlimeCore.Core.Chunks
         public varint DataSize { get; set; }
         public byte[] Data { get; set; }
         public varint NumberOfBlockEntities { get; set; }
-        public byte[] BlockEntities { get; set; }
+        public List<NbtTag> BlockEntities { get; set; }
 
         public readonly byte[,] Heightmap = new byte[16, 16];
         public readonly byte[,] Biomes = new byte[16, 16];
@@ -37,7 +38,7 @@ namespace SlimeCore.Core.Chunks
             this.ChunkZ = chunk_z;
 
             _chunkSections = new ChunkSection[16];
-
+            
             InitializeChunkSections();
         }
 
@@ -189,6 +190,14 @@ namespace SlimeCore.Core.Chunks
                 bm.WriteVarInt(this.DataSize);
                 bm.WriteBytes(this.Data, false);
                 bm.WriteVarInt(this.NumberOfBlockEntities);
+
+                if (this.NumberOfBlockEntities > 0)
+                {
+                    for (int i = 0; i < this.NumberOfBlockEntities; i++)
+                    {
+                        
+                    }
+                }
 
                 return bm.GetBytes();
             }
