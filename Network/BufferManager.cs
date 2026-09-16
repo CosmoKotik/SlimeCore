@@ -105,6 +105,10 @@ namespace SlimeCore.Network
             //_buffer.Add((byte)1);
             _buffer.Add(value);
         }
+        //public void WriteSByte(sbyte value)
+        //{
+        //    _buffer.Add(value);
+        //}
         public void WriteBool(bool value)
         {
             byte boolByte = value ? (byte)1 : (byte)0;

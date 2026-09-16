@@ -14,6 +14,11 @@ namespace SlimeCore.Core.Chat
         public string Unformatted_Text { get; set; } = string.Empty;
         public string Json { get; set; } = string.Empty;
 
+        public static ChatMessage Empty()
+        {
+            return new ChatMessage();
+        }
+
         public ChatMessage SetEntity(IEntity entity)
         {
             this.Entity = entity;
@@ -35,9 +40,12 @@ namespace SlimeCore.Core.Chat
             return this;
         }
 
-        public string GetJson()
+        public string GetJson(bool includeUsername = true)
         {
-            string text = $"<{this.Entity.Username}> {this.Unformatted_Text}";
+            string text = $"{this.Unformatted_Text}";
+
+            if (includeUsername)
+                text = $"<{this.Entity.Username}> " + text;
 
             dynamic chat = new
             {

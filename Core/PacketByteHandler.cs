@@ -138,6 +138,8 @@ namespace SlimeCore.Core
             BufferManager bm = new BufferManager();
             bm.SetBytes(bytes);
 
+            Logger.Warn(packetType.ToString());
+
             switch (packetType)
             {
                 case SB_PlayPacketType.CLIENT_STATUS:
@@ -151,7 +153,7 @@ namespace SlimeCore.Core
                                     .SetDisplayedSkinParts(bm.ReadByte())
                                     .SetMainHand(bm.ReadVarInt());
 
-                    Position spawnPos = new Position(0, 65, 0);
+                    Position spawnPos = new Position(-2, 70, 51);
 
                     _minecraftClient.SetWorldPosition(spawnPos);
 
@@ -271,6 +273,11 @@ namespace SlimeCore.Core
                     break;
                 case SB_PlayPacketType.PLAYER_BLOCK_PLACEMENT:
                     HandlePlayerBlockPlacement(bm.GetBytes());
+                    break;
+                case SB_PlayPacketType.CRAFT_RECIPE_REQUEST:
+                    CraftRecipeRequestPacket recipePacket = (CraftRecipeRequestPacket)new CraftRecipeRequestPacket(_clientHandler).Read(new object[] { bm.GetBytes() });
+
+                    Logger.Warn(recipePacket.Recipe.GetString());
                     break;
             }
 
@@ -411,6 +418,29 @@ namespace SlimeCore.Core
             bm.SetBytes(bytes);
 
             Position location = bm.ReadPosition();  //block position
+            Block blockAtLocation = WorldManager.GetBlock(location);
+            switch(blockAtLocation.BlockType)
+            {
+                case BlockType.Crafting_Table:
+                    Logger.Warn("Opening");
+                    new OpenWindowPacket(_clientHandler).Write(new Window()
+                        .SetWindowID(1)
+                        .SetWindowType("minecraft:crafting_table")
+                        .SetWindowTitle("Crafting Table")
+                        .SetNumsOfSlots((byte)0));
+                    return;
+                case BlockType.Chest:
+                    Logger.Warn("Opening");
+                    
+                    new OpenWindowPacket(_clientHandler).Write(new Window()
+                        .SetWindowID(1)
+                        .SetWindowType("minecraft:chest")
+                        .SetWindowTitle("Chest")
+                        .SetNumsOfSlots((byte)27));
+                    return;
+            }
+
+
             Face face = (Face)(int)bm.ReadVarInt();
             int hand = bm.ReadVarInt();     //main: 0, off hand: 1
             Position cursor_position = new Position(

@@ -174,10 +174,10 @@ namespace SlimeCore.Core
             Logger.Log("Loading terrain");
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            Task r_0_0 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.0.0.mca", 0, 0); });
-            Task r_1_0 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.0.mca", -1, 0); });
-            Task r_0_1 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.0.-1.mca", 0, -1); });
-            Task r_1_1 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world\\region\\r.-1.-1.mca", -1, -1); });
+            Task r_0_0 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world/region/r.0.0.mca", 0, 0); });
+            Task r_1_0 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world/region/r.-1.0.mca", -1, 0); });
+            Task r_0_1 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world/region/r.0.-1.mca", 0, -1); });
+            Task r_1_1 = Task.Run(() => { this.WorldManager.LoadWorldFromFile("world/region/r.-1.-1.mca", -1, -1); });
 
             while (!r_0_0.IsCompleted ||
                    !r_1_0.IsCompleted ||

@@ -1,4 +1,5 @@
-﻿using SlimeCore.Enums;
+﻿using SlimeCore.Core.Chat;
+using SlimeCore.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +8,16 @@ using System.Threading.Tasks;
 
 namespace SlimeCore.Core.Classes
 {
-    public class Inventory
+    public class Inventory : IWindow
     {
         public Slot[] Slots { get; set; }
 
         public bool IsInitialized { get; set; }
+
+        public byte WindowID { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string WindowType { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public ChatMessage WindowTitle { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public byte NumberOfSlots { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Inventory()
         {

@@ -21,6 +21,7 @@ namespace SlimeCore.Enums.Serverbound
         PLAYER_DIGGING = 0x14,
         PLAYER_BLOCK_PLACEMENT = 0x1F,
         CREATIVE_INVENTORY_ACTION = 0x1B,
-        HELD_ITEM_CHANGE = 0x1A
+        HELD_ITEM_CHANGE = 0x1A,
+        CRAFT_RECIPE_REQUEST = 0x12
     }
 }
