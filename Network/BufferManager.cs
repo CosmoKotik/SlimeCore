@@ -376,6 +376,14 @@ namespace SlimeCore.Network
             return value;
         }
 
+        public byte[] ReadRemainingBytes()
+        {
+            byte[] bytes = _buffer.ToArray();
+            _buffer.Clear();
+
+            return bytes;
+        }
+
         public Guid ReadUUID()
         {
             byte[] result = new byte[16];

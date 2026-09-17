@@ -1,4 +1,5 @@
 ﻿using SlimeCore.Enums;
+using SlimeCore.Enums.Serverbound;
 using SlimeCore.Network;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,14 @@ namespace SlimeCore.Core.Classes
         { 
             this.SlotID = slotID;
             this.SlotType = type;
+        }
+
+        public static Slot Empty()
+        {
+            Slot slot = new Slot();
+            slot.SetBlockType(BlockType.Empty);
+
+            return slot;
         }
 
         public Slot SetBlockType(BlockType type)
@@ -72,14 +81,22 @@ namespace SlimeCore.Core.Classes
             return bm.GetBytes();
         }
 
-        public Slot FromBytes(byte[] bytes)
+        public static Slot FromBytes(byte[] bytes)
         {
             BufferManager bm = new BufferManager();
             bm.SetBytes(bytes);
 
             int blockID = bm.ReadShort();
 
-            
+            if (blockID == -1)
+                return Slot.Empty();
+
+            Slot slot = new Slot();
+            slot.SetBlockID(blockID);
+            slot.SetItemCount(bm.ReadByte());
+            slot.SetItemDamage(bm.ReadByte());
+
+            return slot;
         }
     }
 }

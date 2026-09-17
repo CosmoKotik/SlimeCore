@@ -56,7 +56,9 @@ namespace SlimeCore.Network.Packets.Play
                 .SetButton(bm.ReadByte())
                 .SetActionNumber(bm.ReadShort())
                 .SetMode((byte)bm.ReadVarInt())
-                .SetClickedItem();
+                .SetClickedItem(Slot.FromBytes(bm.ReadRemainingBytes()));
+
+            return window_click;
         }
     }
 }

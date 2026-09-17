@@ -51,7 +51,7 @@ namespace SlimeCore.Network.Packets.Play
                 .SetWindowTitle("")
                 .SetNumsOfSlots((byte)0);
 
-            bm.WriteBytes(test_window.GetBytes());
+            bm.WriteBytes(test_window.GetBytes(), false);
 
             _handler.QueueHandler.AddPacket(new QueueFactory().SetBytes(bm.GetBytesWithLength()).Build());
 

@@ -279,6 +279,9 @@ namespace SlimeCore.Core
 
                     Logger.Warn(recipePacket.Recipe.GetString());
                     break;
+                case SB_PlayPacketType.CLICK_WINDOW:
+                    HandleWindowClick(bm.GetBytes());
+                    break;
             }
 
             _clientHandler.UpdateMinecraftClient(_minecraftClient);
@@ -458,6 +461,14 @@ namespace SlimeCore.Core
             new BlockChangePacket(_clientHandler).Broadcast(block, true);
 
             WorldManager.SetBlock(block);
+        }
+        public void HandleWindowClick(byte[] bytes)
+        {
+            ClickWindow click_window = (ClickWindow)new ClickWindowPacket(_clientHandler).Read(new object[] { bytes });
+
+            Logger.Warn($"Action number: {click_window.ActionNumber}");
+
+
         }
     }
 }
