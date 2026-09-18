@@ -138,7 +138,7 @@ namespace SlimeCore.Core
             BufferManager bm = new BufferManager();
             bm.SetBytes(bytes);
 
-            Logger.Warn(packetType.ToString());
+            //Logger.Warn(packetType.ToString());
 
             switch (packetType)
             {
@@ -440,6 +440,9 @@ namespace SlimeCore.Core
                         .SetWindowType("minecraft:chest")
                         .SetWindowTitle("Chest")
                         .SetNumsOfSlots((byte)27));
+
+
+                    new ExplosionPacket(_clientHandler).Write();
                     return;
             }
 
@@ -468,7 +471,25 @@ namespace SlimeCore.Core
 
             Logger.Warn($"Action number: {click_window.ActionNumber}");
 
+            int client_id = _minecraftClient.EntityID;
+            int slot_id = click_window.Slot;
 
+            switch ((WindowClickMode)click_window.Mode)
+            {
+                case WindowClickMode.DRAG:
+                    bool isFinishDrag = (slot_id == -999);
+
+                    if (isFinishDrag)
+                    {
+                        Logger.Error("Drag finished slot: " + slot_id);
+                        break;
+                    }
+
+                    Logger.Error("Starting to drag from slot: " + slot_id);
+                    break;
+            }
+
+            //Logger.Error($"{client_id} slot: {slot_id}");
         }
     }
 }
