@@ -443,6 +443,7 @@ namespace SlimeCore.Core
 
 
                     new ExplosionPacket(_clientHandler).Write();
+                    //new BossBarPacket(_clientHandler).Write();
                     return;
             }
 

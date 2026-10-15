@@ -32,6 +32,7 @@ namespace SlimeCore.Enums.Clientbound
         CHANGE_GAME_STATE = 0x1E,
         OPEN_WINDOW = 0x13,
         CONFIRM_TRANSACTION = 0x11,
-        EXPLOSION_PACKET = 0x1C
+        EXPLOSION_PACKET = 0x1C,
+        BOSS_BAR = 0x0C
     }
 }
